@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html style="height:100%">
+<head>
+   <title>Guide</title>
+   <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+   <script src="lib/bootstrap.min.js"></script> 
+   <link rel="stylesheet" href="assets/css/home.css" />       
+   <link href="tablecloth/tablecloth.css" rel="stylesheet" type="text/css" media="screen" />
+   <script type="text/javascript" src="quest.js"></script>
+   <script type="text/javascript">
+   $(document).ready(function($){
+
+      $('.theme-login').click(function(){
+         $('.theme-popover-mask').show();
+         $('.theme-popover-mask').height($(document).height());
+         $('.theme-popover').slideDown(200);
+      })
+      $('.theme-poptit .close').click(function(){
+         $('.theme-popover-mask').hide();
+         $('.theme-popover').slideUp(200);
+      })
+
+   });
+   </script>
+   <script language="javascript"> 
+    function handler(){
+      form = document.loginform;
+      var info = new Object();
+      info.username = form.username.value;
+      info.password = form.password.value;
+      login(info);
+    }
+  </script>
+   <script language="javascript">
+    function handler1(){
+      form = document.loginform;
+      var info = new Object();
+      info.username = form.username.value;
+      info.password = form.password.value;
+      register(info);
+    }
+ 
+  </script>
+  <script type="text/javascript">
+window.onresize=function(){
+     document.getElementById("movie").style.height=document.getElementById("movie").scrollWidth*0.68+"px";}
+$(document).ready(function(){
+   $("#moviebox").height($("#words").height());//chrome下高度获取为0，所以使用IECC使得仅针对IE6
+});
+</script>
+</head>
+
+<body style="width: 100%; padding:0">
+  <a  name="home" ></a>
+<!-- 
+ <div class='mask-div'>
+   <div style="float:left">
+   <h3>Make the web-page more interactive</h3><br>
+   <p>Add-on Filter lets you filter in web-based visualizations without any coding</p>
+   <p>With defined region of interest, it provides direct manipulation of the underlying visual objects</p><br><br><br>
+    <div class="theme-buy">
+    <a class="btn btn-primary theme-login" href="javascript:;">Create a Free Account</a>
+    </div>
+   </div>
+    <div style="float:left;"><embed src="http://video.mp4" 
+  width="380" height="300" 
+  type="application/x-shockwave-flash">
+  </embed>
+  </div>
+ -->  
+ <div style="width: 100%;background: rgba(9, 9, 9, 0.125);">
+ <div class='mask-div'>
+   <div id="words" style="float:left; width:60%">
+   <h2>Make the web-based visualization more interactive</h2> 
+   <h4>Drag to your bookbar for a try! <a id="abc" token="1" username="" class="a"  href="javascript:(function(){var script=document.createElement('script');script.setAttribute('src','http://192.168.10.9/addonfilter/addonfilter.js');document.getElementsByTagName('head')[0].appendChild(script);})();">Add-on Filter</a></h4> <br><br>
+   <p>Add-on Filter lets you filter in web-based visualizations without any coding</p>
+   <p>With defined region of interest, it provides direct manipulation of the underlying visual objects</p>
+       
+      <div class="theme-buy">
+      <a class="btn btn-primary theme-login" href="javascript:;">Create a Free Account</a>
+      </div>
+ </div>
+    <div id="moviebox" style="float:right;padding-top:15px;width:40%;text-align:center;height:90%">
+    <embed id="movie" src="http://video.mp4" width="90%" height="100%" align="middle" type="application/x-shockwave-flash">  </embed>
+  </div>
+ <div style="clear:both"></div> 
+ </div>
+</div>
+
+<div class='mask-div'>
+<h3>Web-based Visualization Cases</h3>   
+<div class="row">
+    <div class="col-sm-6 col-md-2" style="padding:4px;margin-left:0;max-width: 400px;width:25%">
+      <a href="#" class="thumbnail" >
+        <img src="illustration/step1.png" style="height:100%; width: 100%; display: block;" alt="">
+      </a>
+      <div class="caption">
+        <h4 style="text-align:center">Case 1: 2013 US Budget Proposal</h4> 
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-md-2" style="padding:4px;margin-left:0;max-width: 400px;width:25%">
+      <a href="#" class="thumbnail" >
+        <img src="illustration/step2.png" style="height:100%; width: 100%; display: block;" alt="">
+      </a>
+      <div class="caption"> 
+        <h4 style="text-align:center">Case 2: 2015 NFL Prediction</h4> 
+      </div>
+      </div>
+
+     <div class="col-sm-6 col-md-2" style="padding:4px;margin-left:0;max-width: 400px;width:25%">
+      <a href="#" class="thumbnail" >
+        <img src="illustration/step3.png" style="height:100%; width: 100%; display: block;" alt="">
+      </a>
+      <div class="caption">
+        <h4 style="text-align:center"><a href="http://neuralengr.com/asifr/journals/" target="blank">Publication Counts in Neuroscience and Brain Stimulation</a></h4> 
+      </div>
+      </div>
+
+      <div class="col-sm-6 col-md-2" style="padding:4px;margin-left:0;max-width: 400px;width:25%">
+      <a href="#" class="thumbnail" >
+        <img src="illustration/step4.png" style="height:100%; width: 100%; display: block;" alt="">
+      </a>
+      <div class="caption">
+        <h4 style="text-align:center">Case 4: </h4> 
+      </div>
+      </div>
+   </div>
+</div>
+
+<div style="width: 100%;background: rgba(9, 9, 9, 0.125);">
+<div class='mask-div'>
+<h3>PLAYGROUND</h3>   
+<div>
+<table cellspacing="0" cellpadding="0">      
+  <tr>        
+    <th> Website </th>
+    <th> Evolved User Count </th>
+    <th> Your Evolvement </th>
+  </tr>
+  <tr>
+    <td><a href="http://www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html" target="blank">2013 US Budget Proposal</a></td>
+    <td>32</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td><a href="http://www.brightpointinc.com/2015-nfl-predictions/" target="blank">2015 NFL Prediction</a></td>
+    <td>24</td>
+    <td>0</td>
+  </tr>
+  <tr>
+    <td><a href="http://neuralengr.com/asifr/journals/" target="blank">Publication Counts in Neuroscience and Brain Stimulation</a></td>
+    <td>16</td>
+    <td>1</td>
+  </tr>  
+  <tr>
+    <td>...</td>
+    <td>...</td>
+    <td>...</td>
+  </tr>         
+</table>
+<div class="theme-buy">
+    <a class="btn btn-primary theme-login" href="javascript:;">Submit a Website!</a>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class='mask-div'>
+<h3>Features</h3>   
+<div class="row">
+    <div class="col-sm-6 col-md-2" style="width: 50%">
+      <a href="#" class="thumbnail" >
+        <img src="img_feature/define_interested_region.png" style="height:100%; width: 100%; display: block;" alt="">
+      </a>
+      <div class="caption">
+        <h4 style="text-align:center">Abitrary Region</h4> 
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-md-2" style="width: 50%">
+      <a href="#" class="thumbnail" >
+        <img src="img_feature/quick_count.png" style="height:100%; width: 100%; display: block;" alt="">
+      </a>
+      <div class="caption"> 
+        <h4 style="text-align:center">Quick Statistics</h4> 
+      </div>
+      </div>
+
+     <div class="col-sm-6 col-md-2" style="width: 50%">
+      <a href="#" class="thumbnail" >
+        <img src="img_feature/flexible_query.png" style="height:100%; width: 100%; display: block;" alt="">
+      </a>
+      <div class="caption">
+        <h4 style="text-align:center">Customized Property</h4> 
+      </div>
+      </div>
+
+      <div class="col-sm-6 col-md-2" style="width: 50%">
+      <a href="#" class="thumbnail" >
+        <img src="img_feature/flexible_query.png" style="height:100%; width: 100%; display: block;" alt="">
+      </a>
+      <div class="caption">
+        <h4 style="text-align:center">Compound Object</h4> 
+      </div>
+      </div>
+   </div>
+</div>
+
+<div class="theme-popover-mask"></div>
+
+<div class="theme-popover">
+   <div class="theme-poptit">
+      <a href="javascript:;" title="close" class="close">×</a>
+   </div>
+   <div class="theme-popbod dform">
+      <form class="theme-signin" name="loginform">
+         <ol>
+            <li><h4>If you have a account, press log in!</h4></li>
+            <li><strong>Username:</strong><input class="ipt" type="text" name="username" placeholder="Cooper" size="20" /></li>
+            <li><strong>Password:</strong><input class="ipt" type="password" name="password" placeholder="***" size="20" /></li>
+            <li>
+               <input class="btn btn-primary" type="submit" name="submit" value=" Register " onclick="handler1();"/>
+               <input class="btn btn-primary" type="submit" name="submit" value=" Log In " onclick="handler();" />
+            </li>
+         </ol>
+      </form>
+   </div>
+</div>
+</body>
+</html>

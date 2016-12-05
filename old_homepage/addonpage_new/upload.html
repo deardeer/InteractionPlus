@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>TEST</title>
+	<link rel="stylesheet" href="assets/css/addon_style.css">
+    <script src="lib/jquery-1.11.3.min.js"></script>
+	<script src="request.js"></script>
+</head>
+<body>
+			<div class="row panel intro_row">
+	<div class="col-md-12" style="margin-bottom:10px;">
+
+			<!--
+					<div style="position: absolute; left: 10px; top: 10px;">
+						<img src="images/pkuvis.jpg" width="100px">
+						<a href="http://vis.pku.edu.cn" target="blank" style="margin-left:10px">http://vis.pku.edu.cn</a>
+					</div>
+			-->
+					
+					<div style="margin-top:20px">
+						<h1 style="text-align:center" style="font-weight:700">
+							Upload Your SVG and start Exploring!
+						</h1>
+					</div>
+<div class="row" id="show_area">	
+    <form action="http://vis.pku.edu.cn/addonfilter_server/show_svg" id="aa" enctype="multipart/form-data" method="post">
+        <input type="file" name="upload" multiple="multiple">
+<!--
+        <input type="file" class ='filestyle' data-classButton = 'btn btn-primary' data-input="false" data-classIcon = 'icon-plus' data-buttonText = 'upload'  name="upload" multiple="multiple">
+
+-->
+        <input type="submit" value="Upload file" />
+    </form>
+</div>
+</div>	</div>
+</body>
+</html>

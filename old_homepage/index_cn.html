@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+	<title>Filter+ HomePage</title>
+	<style type="text/css"> 
+		frameset {border:0px;frameborder:"no";} 
+		frame {border:0px;frameborder:"no"} 
+	</style>
+
+	<!-- 新 Bootstrap 核心 CSS 文件 -->
+	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
+
+	<!-- 可选的Bootstrap主题文件（一般不用引入） -->
+	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="assets/css/addon_style.css">
+
+	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+	<script src="lib/jquery-1.11.3.min.js"></script>
+
+	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+	<script src="lib/bootstrap/js/bootstrap.min.js"></script>
+
+	<script src="request.js"></script>
+	<script src="updatecase.js"></script>
+	<script src="specialurl.js"></script>
+
+</head>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+
+			<!-- <div class="page-header" style="margin:0px !important">
+				<h1>
+					Add-on Filter
+				</h1>
+			</div> -->
+
+			<div class="row panel intro_row">
+
+				<!-- title -->
+				<div class="col-md-12" style="margin-bottom:10px">
+					<h1 style="text-align:center" style="font-weight:700">
+						北京大学 PKUVIS 可视分析工具之: 
+					</h1>
+					<h1 style="text-align:center" style="font-weight:700; margin-top:-2px">
+						Filter+</h1>
+					<div style="position: absolute; left: 0px; top: 0px;">
+						<img src="images/pkuvis.jpg" width="140px"><br>
+						<a href="http://vis.pku.edu.cn" target="blank">http://vis.pku.edu.cn</a>
+						<!-- <div class="btn-group btn-group-sm btn-group-danger">				 
+							<button class="btn btn-danger btn-xs">
+								Language
+							</button> 
+							<button data-toggle="dropdown" class="btn btn-danger dropdown-toggle btn-xs">
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="#">English</a>
+								</li>
+								<li>
+									<a href="#">中文</a>
+								</li>								
+							</ul>
+						</div> -->
+					</div>
+
+					<div class="btn-group" id="toggle_event_editing" style="position: absolute; right: 0px; top: 0px;">
+			<!-- 			<button type="button" class="btn btn-xs btn-danger locked_active" 
+                        >English</button> -->
+
+                        <a href="index.html" class="btn btn-xs btn-default locked_active">English</a>
+                        <a href="index_cn.html" class="btn btn-xs  btn-danger btn-default unlocked_inactive">中文</a>
+
+						<!-- <button type="button" class="btn btn-xs btn-default unlocked_inactive">中文</button> -->
+					</div>
+					<!-- <div class="alert alert-info" id="switch_status">Switched off.</div> -->
+				</div>
+		
+
+    			<div class="intro_content_row">
+					<div class="col-md-5">
+						<div class="row">
+							<div class="col-md-12">
+								<h3 style="text-align:left" style="margin-top: 0px !important">
+									过滤的四步法： 
+								</h3>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								 <p></p>
+								 <ol>
+									 <li class="li_intro">
+									 	打开网页
+									 </li> 
+									 <li class="li_intro"> 
+									 	拖动选定过滤区域
+									 </li>
+									 <li class="li_intro">
+									 	选择预过滤对象
+									 </li>
+									 <li class="li_intro">
+									 	刷选属性进行过滤
+									 </li>
+								</ol>
+
+								 <!-- Let you filter web-based visualizations without any coding -->
+								 <!-- With defined region of interest, it provides direct manipulation of the underlying visual objects. -->
+
+								<div>									
+      								<a style="float:right; font-family:arial; font-size:14px;" href="manual_cn.html" target="blank"><p>使用手册</p></a>
+      							</div>
+
+      							<div style="padding-top:10px">
+
+									<h4 style="text-align:left">
+										拖到书签栏试一试吧 <a href="javascript:(function(){USER ='lumin'; var script=document.createElement('script');script.setAttribute('src','http://vis.pku.edu.cn/addonfilter/addonfilter.js');document.getElementsByTagName('head')[0].appendChild(script);})();" style="color: black;background: #f2dede;padding: 5px;border: 1px solid rgba(0,0,0,.075);border-radius: 5px;">Filter+</a>
+									</h4>
+
+								</div>
+
+							</div>
+						</div>
+
+					</div>
+					<div class="col-md-7" style="margin-top: 23px">
+						<video src="video/introduction.mp4" controls="controls" width="100%"> <!--  -->
+							<img alt="Bootstrap Image Preview" src="images/teaser.png" style="width:100%"/>
+						</video>						
+					</div>
+				</div>
+
+			</div>
+
+
+			<div class="panel">
+
+			
+
+				<div class="row" style="padding-left:15px; padding-right:15px">
+
+
+					<div class="row">
+						<div class="col-md-6">
+							<h3 style="text-align:left; margin-left: 10px">
+												案例
+							</h3>
+						</div>
+
+					<div style="text-align:right">
+				     	<a href="examplelist_cn.html" target="blank">更多案例</a>
+				    </div>
+
+			<!-- 			<div class="col-md-6" id="create_case" style="float:right">							 
+							<a href="">
+								<button type="button" class="btn btn-danger btn-xs" style="float:right;margin-top: 15px;
+margin-right:10px">
+								Create Use Case
+								</button>
+						</div> -->
+						
+					</div>
+
+					<div class="col-md-3 use_case_div" style="padding-left: 0px; padding-right: 0px" caseurl="http://bl.ocks.org/mbostock/3887118" >
+						<a class="use_case_url" href="http://bl.ocks.org/mbostock/3887118" target="_blank" />			
+						<div class='case_row'>
+					<!-- 	<h3 style="color: black; margin: 5px;">
+							case 1
+						</h3> -->
+						<img class='case_image' alt="Classical Visualization" src="images/scatterplot.png" />
+						<dl class='case_descri_text'>
+						<!-- 	<dt>
+								经典可视化
+							</dt> -->
+							<dd>
+								经典散点图可视化. 
+							</dd>
+						</dl> 
+<!-- 
+						<div class="case_stat">
+							<ul class="nav nav-pills">							
+								<li style="margin-right:10px">
+									 <span class="badge pull-right case_user_num" style="margin-left:5px">0</span>用户
+								</li>
+
+								<li style="margin-right:10px">
+									 <span class="badge pull-right case_submission_num" style="margin-left:5px">0</span>分享
+								</li>
+							</ul>
+						</div>	 -->
+<!-- 
+						<a href="http://bl.ocks.org/mbostock/4062045" class="btn btn-danger btn-xs" target="_blank">Enter</a>
+ -->
+
+						<!-- <button type="button" class="" href=""> -->
+							<!-- Enter -->
+						<!-- </button> -->
+						</div>
+					</div>
+
+
+				<div class="col-md-3 use_case_div" caseurl="http://bl.ocks.org/mbostock/3887051" style="padding-left: 0px; padding-right: 0px">		
+						<a class="use_case_url" href="http://bl.ocks.org/mbostock/3887051" target="_blank" />				
+						<div class="case_row">
+						<img class='case_image' alt="Classical Visualization" src="images/stackbar.png" /> 
+						<dl class='case_descri_text'>
+							<dd>
+								柱形图可视化
+							</dd>
+						</dl> 
+
+				<!-- 		<div class="case_stat">
+							<ul class="nav nav-pills">							
+								<li style="margin-right:10px">
+									 <span class="badge pull-right case_user_num" style="margin-left:5px">0</span>User
+								</li>
+
+								<li style="margin-right:10px">
+									 <span class="badge pull-right case_submission_num" style="margin-left:5px">0</span>Submission
+								</li>
+							</ul>
+						</div>	 -->
+
+						<!-- 	<a href="http://www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html" class="btn btn-danger btn-xs" target="_blank" >Enter</a> -->
+						</div>
+					</div>
+
+					<div class="col-md-3 use_case_div" caseurl="http://neuralengr.com/asifr/journals/" style="padding-left: 0px; padding-right: 0px">	
+						<a  class="use_case_url" href="http://neuralengr.com/asifr/journals/" target="_blank" />				
+						<div class="case_row">
+						<!-- <h3 style="color: black; margin: 5px;">
+							case 2
+						</h3> -->
+						<img class='case_image' alt="Visualization in Artical" src="images/publication.png" /> 
+						<dl class='case_descri_text'>
+							<!-- <dt>
+								博客中的可视化
+							</dt> -->
+							<dd>
+								神经系统研究领域论文可视化
+							</dd>
+						</dl> 
+
+					<!-- 	<div class="case_stat">
+							<ul class="nav nav-pills">							
+								<li style="margin-right:10px">
+									 <span class="badge pull-right case_user_num" style="margin-left:5px">0</span>用户
+								</li>
+
+								<li style="margin-right:10px">
+									 <span class="badge pull-right case_submission_num" style="margin-left:5px">0</span>分享
+								</li>
+							</ul>
+						</div>	 -->
+<!-- 
+							<a href="http://neuralengr.com/asifr/journals/" class="btn btn-danger btn-xs" target="_blank">Enter</a> -->
+						</div>
+					</div>
+
+
+
+<!--
+					<div class="col-md-3 use_case_div" caseurl="http://www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html" style="padding-left: 0px; padding-right: 0px">		
+						<a class="use_case_url" href="http://www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html" target="_blank" />				
+						<div class="case_row">
+						<img class='case_image' alt="Visualization in Journal" src="images/budget.png" /> 
+						<dl class='case_descri_text'>
+							<dt>
+								Visualization in Journal
+							</dt>
+							<dd>
+								Visualization of 2013 US budget proposal on <text style="font-style:italic">The New York Times</text>
+							</dd>
+						</dl> 
+
+						<div class="case_stat">
+							<ul class="nav nav-pills">							
+								<li style="margin-right:10px">
+									 <span class="badge pull-right case_user_num" style="margin-left:5px">16</span>User
+								</li>
+
+								<li style="margin-right:10px">
+									 <span class="badge pull-right case_submission_num" style="margin-left:5px">16</span>Submission
+								</li>
+							</ul>
+						</div>	
+
+							<a href="http://www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html" class="btn btn-danger btn-xs" target="_blank" >Enter</a>
+						</div>
+					</div>
+				-->					
+
+					<div class="col-md-3 use_case_div" caseurl="http://www.brightpointinc.com/2015-nfl-predictions/" style="padding-left: 0px; padding-right: 0px">	
+							<a class="use_case_url" href="http://www.brightpointinc.com/2015-nfl-predictions/" target="_blank" />	
+
+							<div class="case_row">
+						<!-- 	<h3 style="color: black; margin: 5px;">
+								case 3
+							</h3> -->
+							<img class='case_image' alt="Explorative Visualization" src="images/NFL.png" /> 
+							<dl class='case_descri_text'>
+								<!-- <dt>
+									可视化
+								</dt> -->
+								<dd>
+									2015美国橄榄球联盟赛预测结果的可视化
+								</dd>
+							</dl> 
+<!-- 
+							<div class="case_stat">
+								<ul class="nav nav-pills">							
+									<li style="margin-right:10px">
+										 <span class="badge pull-right case_user_num" style="margin-left:5px">0</span>用户
+									</li>
+
+									<li style="margin-right:10px">
+										 <span class="badge pull-right case_submission_num" style="margin-left:5px">0</span>分享
+									</li>
+								</ul>
+							</div>	 -->
+
+	<!-- 						<a href="http://www.brightpointinc.com/2015-nfl-predictions/" class="btn btn-danger btn-xs" target="_blank">Enter</a> -->
+							</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<!-- share -->
+				<div style="margin-right:15px;">
+				 <a name="xn_share" onclick="shareClick()" type="button" href="javascript:;"></a>
+    <img src="http://www.sinaimg.cn/blog/developer/icon/publish_button_16.gif" onclick="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&title=',e(d.title)].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));" style="float:right">
+    			</div>
+</div>
+
+<script type="text/javascript">
+	initSpecialUrlMap();
+   	// updateCaseStats();
+
+   	//change the language
+   	$('#toggle_event_editing button').click(function(){
+	if($(this).hasClass('locked_active') || $(this).hasClass('unlocked_inactive')){
+		/* code to do when unlocking */
+        $('#switch_status').html('Switched on.');
+	}else{
+		/* code to do when locking */
+        $('#switch_status').html('Switched off.');
+	}
+	
+	/* reverse locking status */
+	$('#toggle_event_editing button').eq(0).toggleClass('locked_inactive locked_active btn-default btn-danger');
+	$('#toggle_event_editing button').eq(1).toggleClass('unlocked_inactive unlocked_active btn-danger btn-default');
+
+	console.log(' hello ');
+
+});
+</script>
+<!-- 	<frameset noresize frameborder="0" rows="45px,*">
+		<frame noresize frameborder="0" scrolling="no" src="menu.html" name = "menu"></frame>
+		<frame noresize frameborder="0" src="home_origin.html" name = "infopart"></frame>
+	</frameset>
+    <noframes></noframes> -->
+</html>

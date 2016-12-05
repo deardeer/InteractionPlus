@@ -1,0 +1,43 @@
+.li_intro{
+    font-size: 20px
+}
+
+.panel{
+	position: relative;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px #333;
+    padding: 10px 20px;
+    margin: 15px;
+    vertical-align: top;
+    background: rgba(242, 222, 222, 0.34);
+}
+
+.intro_row{
+}
+
+.case_row{	
+    margin: 3px;
+    border: solid 1px black;
+    box-shadow: 1px 1px 1px #F2DEDE;
+    background:white;
+    padding: 5px;    
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.case_descri_text{
+	color:black;
+	margin-bottom: 2px;
+}
+
+.case_image{
+	width:100%;
+}
+
+
+.manual_image{
+    left:20%;
+    position: relative;
+    width:60%;
+}
+    
