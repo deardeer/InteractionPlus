@@ -587,12 +587,15 @@ function ElementPropoerties(){
 		}
 		return VisElePro;
 	}
+	
 	Info.getElebyId = function(iId){
 		return this.m_mapIdElement[iId];
 	}
+	
 	Info.getElements = function(){
 		return this.m_liElements;
 	}
+
 	Info.getEleIdByElement = function(Element){
 		var iEleId = -1;
 		var iIndex = this.m_liElements.indexOf(Element);

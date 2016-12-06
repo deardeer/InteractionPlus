@@ -237,11 +237,48 @@ function InObjRender(iId, inObj){
     
     var self = this;
     var rectSel = addOnSvg.select('#' + this.m_DragRectGName).select(".define_region");
+    // var modifySel = addOnSvg.select('#' + this.)
     var radius = 3;
 
     var absAddonDivPos = $('#addondiv').offset();
 
     rectSel
+         .on('dblclick', function(event){
+            console.log(" click ", self.m_mouseHoverCurrentEleId);
+            //get the position
+            // var pos = self.m_ElementProperties.getElebyId(self.m_mouseHoverCurrentEleId);
+
+            //get the modify group
+            var modifyGroup = addOnSvg.select('.modifygroup');
+            if(modifyGroup.empty() == true){
+              modifyGroup = addOnSvg.append('g')
+              .attr('class', 'modifygroup');
+            }
+
+            var globalEleRect = self.m_ElementProperties.getGlobalRectofElement(self.m_mouseHoverCurrentEleId);
+            var width = globalEleRect['x2'] - globalEleRect['x1'], height = globalEleRect['y2'] - globalEleRect['y1'];
+            
+
+            console.log(' width ', width, 'height', height);
+      
+            modifyGroup.selectAll('.modify_rect')
+            .remove();
+
+            //add the rect
+            modifyGroup
+            .append('rect')
+            .attr('class', 'modify_rect')
+            .attr('id', 'modify_' + self.m_mouseHoverCurrentEleId)
+            .attr('x', globalEleRect['x1'] - absAddonDivPos.left)
+            .attr('y', globalEleRect['y1'] - absAddonDivPos.top)
+            .attr('width', width)
+            .attr('height', height)
+            .style('stroke', 'black')
+            .style('fill', 'none');
+
+            //pop out the dialog
+
+         })
          .on('mousemove', function(event){
             
             if(self.m_ElementDetector == undefined)
