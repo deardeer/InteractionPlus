@@ -1,0 +1,28 @@
+<table cellspacing='0' cellpadding='0' border='1' >
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%
+      // repeat items 
+      _.each(items,function(item,key,list){
+        // create variables
+        var f = item.name.split("").shift().toLowerCase();
+    %>
+      <tr>
+        <!-- use variables -->
+        <td><%= key %></td>
+        <td class="<%= f %>">
+          <!-- use %- to inject un-sanitized user input (see 'Demo of XSS hack') -->
+          <h3><%- item.name %></h3>
+          <p><%- item.interests %></p>
+        </td>
+      </tr>
+    <%
+      });
+    %>
+  </tbody>
+</table>

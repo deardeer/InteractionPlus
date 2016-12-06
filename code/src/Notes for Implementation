@@ -1,0 +1,50 @@
+Notes for Implementation
+
+-- Define Mask -- 
+
+1. Define a mask
+
+- button panel: selection of four types: 
+
+``addonfilter.js`` addFloatPanel() 
+
+- configure the mask: region to define, mask to configure
+
+``definearea.js`` RegionMask
+
+2. Get info. of a mask 
+
+``definearea.js`` function getDefinedMask(){}
+
+-- Detect Ele & Group --
+
+1. Check the detected eles 
+
+``detectedelepro.js`` updateInsideElements()
+
+2. Generate group 
+
+``objectpanelmanager.js`` detectGroupsbyMask()
+
+-- Draw Interface --
+
+``drawfilter.js`` drawFilter() 
+
+	-- Draw Objects -- 
+
+	``drawobjectpanel.js`` drawObjectPart()
+
+	-- Draw Properties -- 
+
+	``drawpropertypanel.js`` drawButtonsinPropertyPanel
+
+	-- Manipulate Objects --
+
+	Filter, Search from different angles
+
+	//generate new visualizations, 
+
+	```` 
+
+
+

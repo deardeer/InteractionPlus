@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Quadtree</title>
+<style>
+
+.point {
+  fill: #f46d43;
+  stroke: #fff;
+}
+
+.point.scanned {
+  fill: orange;
+  fill-opacity: 1;
+  stroke: brown;
+}
+
+.point.selected {
+  fill: red;
+  fill-opacity: 1;
+}
+
+.node {
+  fill: none;
+  stroke: #ccc;
+  shape-rendering: crispEdges;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+</style>
+<body>
+<script src="../library/d3.js"></script>
+<script>
+
+var width = 960,
+    height = 500;
+
+var randomNum = 2000;
+var data = d3.range(randomNum).map(function() {
+  return [Math.random() * width, Math.random() * width];
+});
+
+var data2 = d3.range(randomNum).map(function(){
+  return [Math.random() * width, Math.random() * width];
+});
+
+var quadtree = d3.geom.quadtree()
+    .extent([[-1, -1], [width + 1, height + 1]])
+    (data);
+
+var brush = d3.svg.brush()
+    .x(d3.scale.identity().domain([0, width]))
+    .y(d3.scale.identity().domain([0, height]))
+    .extent([[-1, -1], [-1, -1]])
+    .on("brush", brushed);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+// svg.selectAll(".node")
+//     .data(nodes(quadtree))
+//     .enter().append("rect")
+//     .attr("class", "node")
+//     .attr("x", function(d) { return d.x; })
+//     .attr("y", function(d) { return d.y; })
+//     .attr("width", function(d) { return d.width; })
+//     .attr("height", function(d) { return d.height; });
+
+var point = svg.selectAll(".point")
+    .data(data)
+    .enter().append("circle")
+    .attr("class", "point")
+    .attr("cx", function(d) { return d[0]; })
+    .attr("cy", function(d) { return d[1]; })
+    .attr("r", 4);
+
+var rect = svg.selectAll(".rectangular")
+    .data(data2)
+    .enter().append("rect")
+    .attr("class", "rectangular")
+    .attr("x", function(d) { return d[0]; })
+    .attr("y", function(d) { return d[1]; })
+    .attr("width", 8)
+    .attr("height", 8)
+    .attr('fill', '#74add1')
+    .attr('stroke', '#e0e0e0');
+
+svg.append("g")
+    .attr("class", "brush")
+    .call(brush);
+
+brushed();
+
+function brushed() {
+  var extent = brush.extent();
+  point.each(function(d) { d.scanned = d.selected = false; });
+  search(quadtree, extent[0][0], extent[0][1], extent[1][0], extent[1][1]);
+  point.classed("scanned", function(d) { return d.scanned; });
+  point.classed("selected", function(d) { return d.selected; });
+}
+
+// Collapse the quadtree into an array of rectangles.
+function nodes(quadtree) {
+  var nodes = [];
+  quadtree.visit(function(node, x1, y1, x2, y2) {
+    nodes.push({x: x1, y: y1, width: x2 - x1, height: y2 - y1});
+  });
+  return nodes;
+}
+
+// Find the nodes within the specified rectangle.
+function search(quadtree, x0, y0, x3, y3) {
+  quadtree.visit(function(node, x1, y1, x2, y2) {
+    var p = node.point;
+    if (p) {
+      p.scanned = true;
+      p.selected = (p[0] >= x0) && (p[0] < x3) && (p[1] >= y0) && (p[1] < y3);
+    }
+    return x1 >= x3 || y1 >= y3 || x2 < x0 || y2 < y0;
+  });
+}
+
+</script>
