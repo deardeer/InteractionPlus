@@ -21,6 +21,8 @@ function InObj(iId, bMask, maskType){
 		this.m_CurrentSelectGroupId = -1;
 
  		this.m_TempElementDetector = new ElementDetetor(-1);
+
+ 		this.m_iAnnotationNextId = 0;
 	}
 
 //~~~~~~~~~ API for drag selection rect~~~~~~~~~~~~//
@@ -105,9 +107,21 @@ function InObj(iId, bMask, maskType){
 		//logic composition
 		this.m_LogicCompositionManager = new LogicCompositionManager(this.m_iId, this, this.m_ObjectGroupManager);
 		this.m_LogicCompositionManager.addObjectCompositionDialog();
+
+		//annotation 
+		this.m_AnnotationDialog = new AnnotationDialog(this.m_iId, this);
+		this.m_AnnotationDialog.addAnnotationDialog();
  	}
 
 //~~~~~~~~~~~ API from filter panel ~~~~~~~~~~~~~~~//
+	//feedback by clicking the annotation button
+	Info.addAnnotation = function(bAnnotation, annotationText){
+		var self = this;
+		console.log(" annotation 2 ");
+		self.m_Render.addAnnotation(bAnnotation, annotationText, self.m_iAnnotationNextId);
+		self.m_iAnnotationNextId += 1;
+	}
+
 	//feedback by clicking a group button
 	Info.clickGroupButton = function(iGroupId){
 
@@ -272,6 +286,12 @@ function InObj(iId, bMask, maskType){
 	Info.clickLogicComposition = function(){
 		//console.log(" click logic c");
 		this.m_LogicCompositionManager.defineLogicComposition();
+	}
+
+	//click annotation button
+	Info.clickAnnotation = function(){
+		console.log(" click annotation ");
+		this.m_AnnotationDialog.openAnnotationDialog();
 	}
 
 	//change the mask

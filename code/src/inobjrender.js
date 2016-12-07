@@ -27,6 +27,7 @@ function InObjRender(iId, inObj){
     this.m_ExpandDivId; //
 
     this.m_mouseHoverCurrentEleId = -1;
+    this.m_Annotation = false;
     // this.m_mouseHoverCurrentEleId = [];
     this.m_mouseHoverEleOriginStyle = {};
 
@@ -244,42 +245,53 @@ function InObjRender(iId, inObj){
 
     rectSel
          .on('dblclick', function(event){
+            self.m_Annotation = true;
             console.log(" click ", self.m_mouseHoverCurrentEleId);
+
+            var newEle = self.m_ElementProperties.getElebyId(self.m_mouseHoverCurrentEleId);
+            self.m_mouseHoverEleOriginStyle['stroke'] = newEle.style.stroke;   
+            self.m_mouseHoverEleOriginStyle['stroke-width'] = newEle.style['stroke-width'];
+            // //console.log(" new style ! ", self.m_mouseHoverEleOriginSxtyle, newEle.style);           
+            newEle.style.stroke = 'black';
+            newEle.style['stroke-width'] = "2px";
             //get the position
             // var pos = self.m_ElementProperties.getElebyId(self.m_mouseHoverCurrentEleId);
 
             //get the modify group
-            var modifyGroup = addOnSvg.select('.modifygroup');
-            if(modifyGroup.empty() == true){
-              modifyGroup = addOnSvg.append('g')
-              .attr('class', 'modifygroup');
-            }
+            // var modifyGroup = addOnSvg.select('.modifygroup');
+            // if(modifyGroup.empty() == true){
+            //   modifyGroup = addOnSvg.append('g')
+            //   .attr('class', 'modifygroup');
+            // }
 
-            var globalEleRect = self.m_ElementProperties.getGlobalRectofElement(self.m_mouseHoverCurrentEleId);
-            var width = globalEleRect['x2'] - globalEleRect['x1'], height = globalEleRect['y2'] - globalEleRect['y1'];
+            // var globalEleRect = self.m_ElementProperties.getGlobalRectofElement(self.m_mouseHoverCurrentEleId);
+            // var width = globalEleRect['x2'] - globalEleRect['x1'], height = globalEleRect['y2'] - globalEleRect['y1'];
             
-
-            console.log(' width ', width, 'height', height);
+            // console.log(' width ', width, 'height', height);
       
-            modifyGroup.selectAll('.modify_rect')
-            .remove();
+            // modifyGroup.selectAll('.modify_rect')
+            // .remove();
 
             //add the rect
-            modifyGroup
-            .append('rect')
-            .attr('class', 'modify_rect')
-            .attr('id', 'modify_' + self.m_mouseHoverCurrentEleId)
-            .attr('x', globalEleRect['x1'] - absAddonDivPos.left)
-            .attr('y', globalEleRect['y1'] - absAddonDivPos.top)
-            .attr('width', width)
-            .attr('height', height)
-            .style('stroke', 'black')
-            .style('fill', 'none');
+            // modifyGroup
+            // .append('rect')
+            // .attr('class', 'modify_rect')
+            // .attr('id', 'modify_' + self.m_mouseHoverCurrentEleId)
+            // .attr('x', globalEleRect['x1'] - absAddonDivPos.left)
+            // .attr('y', globalEleRect['y1'] - absAddonDivPos.top)
+            // .attr('width', width)
+            // .attr('height', height)
+            // .style('stroke', 'black')
+            // .style('fill', 'none');
 
             //pop out the dialog
+            self.m_InObj.clickAnnotation();
 
          })
          .on('mousemove', function(event){
+
+            if(self.m_Annotation == true)
+              return;
             
             if(self.m_ElementDetector == undefined)
               return ;
@@ -435,6 +447,129 @@ function InObjRender(iId, inObj){
             } 
         });
     
+  }
+
+  Info.addAnnotation = function(bAnnotation, annotationText, annotationId){
+
+    var self = this;
+    console.log(' add annotation 3');
+    
+    self.m_Annotation = false;
+
+    if(bAnnotation == false)
+      return;
+
+    var absAddonDivPos = $('#addondiv').offset();
+    var globalEleRect = self.m_ElementProperties.getGlobalRectofElement(self.m_mouseHoverCurrentEleId);
+    var width = globalEleRect['x2'] - globalEleRect['x1'], height = globalEleRect['y2'] - globalEleRect['y1'];
+
+    var eleRect = {
+      'left': globalEleRect['x1'] - absAddonDivPos.left,
+      'top': globalEleRect['y1'] - absAddonDivPos.top,
+      'width': width,
+      'height': height,
+      'cx': globalEleRect['x1'] + width/2. - absAddonDivPos.left,
+      'cy': globalEleRect['y1'] + height/2. - absAddonDivPos.top,
+    }
+
+    var textLeft = globalEleRect['x2'] - absAddonDivPos.left + 10, textTop = globalEleRect['y1'] - absAddonDivPos.top - 30;
+
+    var font = '15px arial';
+
+    var textSize = getTextSize(annotationText, font);
+    textSize.w += 10;
+
+   var annotationgroup = d3.select('#addondiv svg')
+    .append('g')
+    .attr('class', 'annotation-group')
+    .attr('id', 'annotation-group-' + annotationId)
+    .attr('width', textSize.w)
+    .attr('height', textSize.h);
+
+    //add the rect
+    // annotationgroup
+    // .append('rect')
+    // .attr('x', eleRect.left)
+    // .attr('y', eleRect.top)
+    // .attr('width', eleRect.width)
+    // .attr('height', eleRect.height)
+    // .style('stroke', 'red')
+    // .style('fill', 'none');
+
+
+    annotationgroup
+    .append('rect')    
+    .attr('id', 'annotation-rect-' + annotationId)
+    .attr('x', textLeft)
+    .attr('y', textTop- textSize.h/2.)
+    .attr('width', textSize.w)
+    .attr('height', textSize.h)
+    .style('stroke', 'black')
+    .style('stroke-width', '1px')
+    .style('fill', 'white');
+
+    var drag = d3.behavior.drag();
+
+    d3.select('#annotation-group-' +  annotationId).call(drag);
+
+    d3.select('#annotation-group-' +  annotationId).on("click", function() {
+      console.log(" group click ", annotationId);
+      if (d3.event.defaultPrevented) return; // click suppressed
+      //console.log("clicked!");
+    });
+
+    drag.on("dragstart", function() {
+      // //console.log(' drag start ', d);
+      console.log(" drag start ");
+      d3.event.sourceEvent.stopPropagation(); // silence other listeners
+    });
+
+    drag.on("drag", function(){
+
+      // //console.log(' draging ', d3.event.x, ', ', d3.event.y);
+
+      var offset = $('#annotation-rect-' + annotationId).offset();
+      var annotationSize = {
+        'w': Number(d3.select(this).attr('width')),
+        'h': Number(d3.select(this).attr('height'))
+      }
+      console.log('drag annotatin size ', annotationSize);
+
+      var textLeft = d3.event.x, textTop = d3.event.y;
+
+      // console.log(" dragging ", textLeft, textTop);
+
+      $('#annotation-rect-' + annotationId).css({
+        x: textLeft,
+        y: textTop - annotationSize.h/2.,
+      });
+
+      d3.select('#annotation-text-' + annotationId)
+      .attr('transform', function(){
+        return "translate(" + (textLeft + 3) + ',' + (textTop + 2)  + ')'
+      });
+
+      d3.select('#annotation-line-' + annotationId)
+      .attr('x2', textLeft)
+      .attr('y2', textTop)
+
+    });
+
+    annotationgroup.append('text')
+    .text(annotationText)
+    .attr('id', 'annotation-text-' + annotationId)
+    .attr('font', font)
+    .attr('transform', function(){
+      return "translate(" + (textLeft + 3) + ',' + (textTop + 2) + ')'
+    });
+
+    annotationgroup.append('line')
+    .attr('id', 'annotation-line-' + annotationId)
+    .attr('x1', eleRect['cx'])
+    .attr('y1', eleRect['cy'])
+    .attr('x2', textLeft)
+    .attr('y2', textTop)
+    .style('stroke', 'black');
   }
 
   Info.addLineUp = function(posInAddOnDiv, absAddonDivPos, hoverEleRect, liLineAbsEleInfo){

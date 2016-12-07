@@ -130,6 +130,11 @@ document.getElementsByTagName("head")[0].appendChild(iScript);
 
 iScript = document.createElement("script");
 iScript.type="text/javascript";
+iScript.src= serverIp + "src/threepanels/drawannotationdialog.js";
+document.getElementsByTagName("head")[0].appendChild(iScript);
+
+iScript = document.createElement("script");
+iScript.type="text/javascript";
 iScript.src= serverIp + "src/threepanels/drawobjectpanel.js";
 document.getElementsByTagName("head")[0].appendChild(iScript);
 

@@ -340,9 +340,10 @@ function addFlagButton(FlagId, buttonPos, commentText, parentDivId){
     .style("text-anchor", "middle")
     .attr('font-size', function(d) { return '15px'; })
     .style('cursor', 'pointer')
-   .attr("transform", function(){return "translate(" + (radius * 1.1) + "," + (radius * 1.1)+ ")";})
+    .attr("transform", function(){return "translate(" + (radius * 1.1) + "," + (radius * 1.1)+ ")";})
  	.text(function(d){ return '\uf024'; })  
     .on("mouseover", function(){
+
       // alert("delete");
       $(this).siblings('circle')
       .css('stroke-width', '2px');  
