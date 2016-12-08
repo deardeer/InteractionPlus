@@ -115,10 +115,10 @@ function InObj(iId, bMask, maskType){
 
 //~~~~~~~~~~~ API from filter panel ~~~~~~~~~~~~~~~//
 	//feedback by clicking the annotation button
-	Info.addAnnotation = function(bAnnotation, annotationText){
+	Info.addAnnotation = function(bAnnotation, annotationText, annotationHighlight){
 		var self = this;
 		console.log(" annotation 2 ");
-		self.m_Render.addAnnotation(bAnnotation, annotationText, self.m_iAnnotationNextId);
+		self.m_Render.addAnnotation(bAnnotation, annotationText, self.m_iAnnotationNextId, annotationHighlight);
 		self.m_iAnnotationNextId += 1;
 	}
 

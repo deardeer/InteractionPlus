@@ -450,7 +450,7 @@ function InObjRender(iId, inObj){
     
   }
 
-  Info.addAnnotation = function(bAnnotation, annotationText, annotationId){
+  Info.addAnnotation = function(bAnnotation, annotationText, annotationId, annotationHighlight){
 
     var self = this;
     console.log(' add annotation 3');
@@ -513,7 +513,7 @@ function InObjRender(iId, inObj){
     .attr('width', rectSize.w)
     .attr('height', rectSize.h)
     .style('stroke', 'black')
-    .style('stroke-width', '1px')
+    .style('stroke-width', '2px')
     .style('fill', 'white');
 
     var drag = d3.behavior.drag();
@@ -577,19 +577,84 @@ function InObjRender(iId, inObj){
       return "translate(" + (rectLeft + rectSize.w/2. - textSize.w/2.) + ',' + (rectTop + rectSize.h/2. + textSize.h/2.)  + ')';
     });
 
+    if(annotationHighlight == true){
+
+      var frameLine = [];
+      var step = 2;
+      var randomRange = 3;
+
+        //left-vertical
+      for(var i = 0; i < eleRect.height/step; i ++){
+        var point = {};
+        var r1 = 1; //(Math.floor((Math.random() * 10))%2 == 1)? -1: 1;
+        var r2 = (Math.random() * randomRange);
+        point.x = eleRect.left + r1 * r2;
+        point.y = eleRect.top + eleRect.height - i * step;
+        frameLine.push(point);
+      }
+
+      //top-horizontal
+      for(var i = 0; i < eleRect.width/step; i ++){
+        var point = {};
+        var r1 = 1;//(Math.floor((Math.random() * 10))%2 == 1)? -1: 1;
+        var r2 = (Math.random() * randomRange);
+        point.x = eleRect.left + i * step;
+        point.y = eleRect.top + r1 * r2;
+        frameLine.push(point);
+      }
+
+      //right-vertical
+      for(var i = 0; i < eleRect.height/step; i ++){
+        var point = {};
+        var r1 = 1;//(Math.floor((Math.random() * 10))%2 == 1)? -1: 1;
+        var r2 = (Math.random() * randomRange);
+        point.x = eleRect.left + eleRect.width + r1 * r2;
+        point.y = eleRect.top + i * step;
+        frameLine.push(point);
+      }
+
+      //bottom-horizontal
+      for(var i = 0; i < eleRect.width/step; i ++){
+        var point = {};
+        var r1 = 1;//(Math.floor((Math.random() * 10))%2 == 1)? -1: 1;
+        var r2 = (Math.random() * randomRange);
+        point.x = eleRect.left + eleRect.width - i * step;
+        point.y = eleRect.top + eleRect.height + r1 * r2;
+        frameLine.push(point);
+      }
+
+      frameLine.push(frameLine[0]);
+
+      var line = d3.svg.line()
+      .x(function(d){return d.x;})
+      .y(function(d){return d.y;})
+      .interpolate("linear");
+
+      annotationgroup.append('path')
+      // .attr("filter", "url(#glow)")
+      .attr('d', line(frameLine))
+      .attr('stroke', 'black')
+      .attr('stroke-width', '2px')
+      .attr('fill', 'none');
+    }
+
     annotationgroup.append('line')
     .attr("filter", "url(#glow)")
     .attr('id', 'annotation-line-' + annotationId)
-    .attr('x1', eleRect['cx'])
-    .attr('y1', eleRect['cy'])
+    .attr('x1', eleRect.left + eleRect.width)
+    .attr('y1', eleRect.top)
+    // .attr('x1', eleRect['cx'])
+    // .attr('y1', eleRect['cy'])
     .attr('x2', rectLeft)
     .attr('y2', rectTop + rectSize.h)
     .style('stroke', 'black');
 
      annotationgroup.append('circle')
       .attr("filter", "url(#glow)")      
-      .attr('cx', eleRect['cx'])
-      .attr('cy', eleRect['cy'])
+      // .attr('cx', eleRect['cx'])
+      // .attr('cy', eleRect['cy'])      
+    .attr('cx', eleRect.left + eleRect.width)
+    .attr('cy', eleRect.top)
       .attr('r', 3)
       .style('fill', 'black');
   }
