@@ -237,6 +237,7 @@ function InObjRender(iId, inObj){
   Info.initHoverinSelectRect = function(){
     
     var self = this;
+    console.log(" draw Rect Name ", this.m_DragRectGName);
     var rectSel = addOnSvg.select('#' + this.m_DragRectGName).select(".define_region");
     // var modifySel = addOnSvg.select('#' + this.)
     var radius = 3;
@@ -472,19 +473,25 @@ function InObjRender(iId, inObj){
       'cy': globalEleRect['y1'] + height/2. - absAddonDivPos.top,
     }
 
-    var textLeft = globalEleRect['x2'] - absAddonDivPos.left + 10, textTop = globalEleRect['y1'] - absAddonDivPos.top - 30;
+    var rectLeft = globalEleRect['x2'] - absAddonDivPos.left + 10, rectTop = globalEleRect['y1'] - absAddonDivPos.top - 30;
 
     var font = '15px arial';
 
     var textSize = getTextSize(annotationText, font);
-    textSize.w += 10;
+    var rectSize = {
+      'w': textSize.w + 5,
+      'h': textSize.h + 5,
+    }
+    // textSize.w += 10;
 
    var annotationgroup = d3.select('#addondiv svg')
     .append('g')
-    .attr('class', 'annotation-group')
+    .attr('class', 'annotation-group cursor-pointer')
     .attr('id', 'annotation-group-' + annotationId)
-    .attr('width', textSize.w)
-    .attr('height', textSize.h);
+    .attr('width', rectSize.w)
+    .attr('height', rectSize.h)
+    .attr('textWidth', textSize.w)
+    .attr('textHeight', textSize.h);
 
     //add the rect
     // annotationgroup
@@ -499,11 +506,12 @@ function InObjRender(iId, inObj){
 
     annotationgroup
     .append('rect')    
+    .attr("filter", "url(#glow)")
     .attr('id', 'annotation-rect-' + annotationId)
-    .attr('x', textLeft)
-    .attr('y', textTop- textSize.h/2.)
-    .attr('width', textSize.w)
-    .attr('height', textSize.h)
+    .attr('x', rectLeft)
+    .attr('y', rectTop)
+    .attr('width', rectSize.w)
+    .attr('height', rectSize.h)
     .style('stroke', 'black')
     .style('stroke-width', '1px')
     .style('fill', 'white');
@@ -529,47 +537,61 @@ function InObjRender(iId, inObj){
       // //console.log(' draging ', d3.event.x, ', ', d3.event.y);
 
       var offset = $('#annotation-rect-' + annotationId).offset();
-      var annotationSize = {
+
+      var rectSize = {
         'w': Number(d3.select(this).attr('width')),
         'h': Number(d3.select(this).attr('height'))
-      }
-      console.log('drag annotatin size ', annotationSize);
+      };
+      var textSize = {
+        'w': Number(d3.select(this).attr('textWidth')),
+        'h': Number(d3.select(this).attr('textHeight'))
+      };      
 
-      var textLeft = d3.event.x, textTop = d3.event.y;
+      // var addOnDivOffset = $('#addondiv').offset();
+
+      var rectLeft = d3.event.x, rectTop = d3.event.y;
 
       // console.log(" dragging ", textLeft, textTop);
 
       $('#annotation-rect-' + annotationId).css({
-        x: textLeft,
-        y: textTop - annotationSize.h/2.,
+        x: rectLeft,
+        y: rectTop,
       });
 
       d3.select('#annotation-text-' + annotationId)
       .attr('transform', function(){
-        return "translate(" + (textLeft + 3) + ',' + (textTop + 2)  + ')'
+        return "translate(" + (rectLeft + rectSize.w/2. - textSize.w/2.) + ',' + (rectTop + rectSize.h/2. + textSize.h/2.)  + ')'
       });
 
       d3.select('#annotation-line-' + annotationId)
-      .attr('x2', textLeft)
-      .attr('y2', textTop)
+      .attr('x2', rectLeft)
+      .attr('y2', rectTop + rectSize.h)
 
     });
 
     annotationgroup.append('text')
     .text(annotationText)
     .attr('id', 'annotation-text-' + annotationId)
-    .attr('font', font)
+    .style('font', font)
     .attr('transform', function(){
-      return "translate(" + (textLeft + 3) + ',' + (textTop + 2) + ')'
+      return "translate(" + (rectLeft + rectSize.w/2. - textSize.w/2.) + ',' + (rectTop + rectSize.h/2. + textSize.h/2.)  + ')';
     });
 
     annotationgroup.append('line')
+    .attr("filter", "url(#glow)")
     .attr('id', 'annotation-line-' + annotationId)
     .attr('x1', eleRect['cx'])
     .attr('y1', eleRect['cy'])
-    .attr('x2', textLeft)
-    .attr('y2', textTop)
+    .attr('x2', rectLeft)
+    .attr('y2', rectTop + rectSize.h)
     .style('stroke', 'black');
+
+     annotationgroup.append('circle')
+      .attr("filter", "url(#glow)")      
+      .attr('cx', eleRect['cx'])
+      .attr('cy', eleRect['cy'])
+      .attr('r', 3)
+      .style('fill', 'black');
   }
 
   Info.addLineUp = function(posInAddOnDiv, absAddonDivPos, hoverEleRect, liLineAbsEleInfo){

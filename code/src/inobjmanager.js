@@ -41,6 +41,9 @@ function InObjManager(){
 			inObj.m_ObjectGroupManager.setSelectedGroupId(-1);
 			inObj.m_CrossFilter.clearFilterToWhole();
 		};
+		this.m_mapIdInObj = {};
+		this.m_iCounter = 0;
+		this.m_CurrentObjId = -1;
 	}
 
 	//add a InObj, return valid id
