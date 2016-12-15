@@ -319,6 +319,7 @@ function InObj(iId, bMask, maskType){
 
 	/*~~~~~~~~~~~ Private Function */
 	Info.computeConfigofEleIds = function(){	
+
 		var config = {};	
 
 		var offset = $('#addondiv svg').offset();
@@ -353,6 +354,7 @@ function InObj(iId, bMask, maskType){
     			var rect = attribute['g_box'];
     			var left = rect['x1'] - offset['left'], right = rect['x2'] - offset['left'];
     			var top = rect['y1'] - offset['top'], bottom = rect['y2'] - offset['top'];
+    			
     			// console.log("HHHH  x ", x, ' y ', y);
     			if(i == liEleId.length - 1){
     				x_min = left, y_min = top;
@@ -442,6 +444,7 @@ function InObj(iId, bMask, maskType){
     		var mapEleIdXPos = {};
     		// var liRect = [];
     		for (var i = liEleId.length - 1; i >= 0; i--) {
+
     			var iEleId = liEleId[i];
     			var result = this.m_ElementDetector.m_ElementProperties.getElePropertiesbyId(iEleId);
     			var attribute = result['pros'];
@@ -474,7 +477,6 @@ function InObj(iId, bMask, maskType){
 				// .attr('fill', 'none')
 				// .attr('stroke', 'black')
 				// .attr('stroke-width', '2px');
-				// .attr('opacity', '0.3');
 
 				//step 1.5: draw the 20 boundary
 				
@@ -545,7 +547,7 @@ function InObj(iId, bMask, maskType){
    			mapNewPosPointList[iCount] = [liXPos[0]];
    			for (var i = 1; i < liXPos.length; i++) {
    				var x1 = liXPos[i - 1], x2 = liXPos[i];
-   				if(x2 - x1 > 10){   				
+   				if(x2 - x1 > 10){   	 //10			
    					liNewPos.push(x2); 
    					iCount += 1;
    					mapNewPosPointList[iCount] = [x2];
@@ -588,6 +590,7 @@ function InObj(iId, bMask, maskType){
 					var left = rect['x1'] - offset['left'], right = rect['x2'] - offset['left'];
 					var top = rect['y1'] - offset['top'], bottom = rect['y2'] - offset['top'];
 
+					// step 2: draw cluster frame
 					// d3.select('#addondiv svg')
 					// .append('rect')
 					// .attr('class', 'test_dot')
@@ -598,7 +601,8 @@ function InObj(iId, bMask, maskType){
 					// .attr("width", (bottom - top))
 					// .attr('fill', 'none')
 					// .attr('stroke', color)
-					// .attr('stroke-width', '5px')
+					// .attr('stroke-width', '1px')
+					// // .attr('opacity', '0.2')
 					// .attr('rx', '2px')
 					// .attr('ry', '2px');
 
@@ -674,7 +678,7 @@ function InObj(iId, bMask, maskType){
 	   				var yMinPos = liMinMaxXPos[i][0], yMaxPos = liMinMaxXPos[i][1];
 
 
-					//draw line
+					//step 3: draw line
 					// d3.select('#addondiv svg')
 					// .append('line')
 					// .attr('x1', left)
@@ -684,9 +688,9 @@ function InObj(iId, bMask, maskType){
 					// .style('stroke', color)
 					// // .style('opacity', '0.2')
 					// .style("stroke-width", '3px')
-					// .style('stroke-dasharray', '3px 3px')
+					// .style('stroke-dasharray', '3px 3px');
 
-					//draw center dot
+					// // draw center dot
 	   	// 			d3.select('#addondiv svg')
 					// .append('circle')
 					// .attr('class', 'test_dot')

@@ -606,7 +606,10 @@ function ElementPropoerties(){
 
 	Info.getGlobalRectofElement = function(iEleId){
 		var self = this;
-		var shiftpos = {};
+		var shiftpos = {
+			'x': 0,
+			'y': 0,
+		};
 		var ele = self.getElebyId(iEleId);
 		var tempRect = getRectofElement(ele);
 		var iFrame = self.getIFramebyId(iEleId);

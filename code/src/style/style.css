@@ -466,7 +466,7 @@
 
 .define_boundary_line{
 	stroke-dasharray: 3px 3px;
-	stroke: #E0E0E0; /*black;*/
+	stroke: #000000; /*E0E0E0;*/
 	stroke-width: 2px;
 }
 

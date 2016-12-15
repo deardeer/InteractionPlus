@@ -462,6 +462,7 @@ function InObjRender(iId, inObj){
 
     var absAddonDivPos = $('#addondiv').offset();
     var globalEleRect = self.m_ElementProperties.getGlobalRectofElement(self.m_mouseHoverCurrentEleId);
+  
     var width = globalEleRect['x2'] - globalEleRect['x1'], height = globalEleRect['y2'] - globalEleRect['y1'];
 
     var eleRect = {
@@ -473,9 +474,10 @@ function InObjRender(iId, inObj){
       'cy': globalEleRect['y1'] + height/2. - absAddonDivPos.top,
     }
 
+    console.log(' globalEleRect ', globalEleRect, self.m_mouseHoverCurrentEleId, absAddonDivPos);
     var rectLeft = globalEleRect['x2'] - absAddonDivPos.left + 10, rectTop = globalEleRect['y1'] - absAddonDivPos.top - 30;
 
-    var font = '15px arial';
+    var font = '15px Papyrus, fantasy';
 
     var textSize = getTextSize(annotationText, font);
     var rectSize = {
@@ -506,14 +508,16 @@ function InObjRender(iId, inObj){
 
     annotationgroup
     .append('rect')    
-    .attr("filter", "url(#glow)")
+    // .attr("filter", "url(#glow)")
     .attr('id', 'annotation-rect-' + annotationId)
     .attr('x', rectLeft)
     .attr('y', rectTop)
     .attr('width', rectSize.w)
     .attr('height', rectSize.h)
-    .style('stroke', 'black')
-    .style('stroke-width', '2px')
+    .style('visibility', 'hidden')
+    // .style('border-style', 'outset')
+    // .style('stroke', 'black')
+    // .style('stroke-width', '2px')
     .style('fill', 'white');
 
     var drag = d3.behavior.drag();
@@ -636,27 +640,45 @@ function InObjRender(iId, inObj){
       .attr('stroke', 'black')
       .attr('stroke-width', '2px')
       .attr('fill', 'none');
+
+       annotationgroup.append('line')
+      // .attr("filter", "url(#glow)")
+      .attr('id', 'annotation-line-' + annotationId)
+      .attr('x1', eleRect.left + eleRect.width)
+      .attr('y1', eleRect.top)
+      // .attr('x1', eleRect['cx'])
+      // .attr('y1', eleRect['cy'])
+      .attr('x2', rectLeft)
+      .attr('y2', rectTop + rectSize.h)
+      .style('stroke', 'black');
+
+       annotationgroup.append('circle')
+        // .attr("filter", "url(#glow)")      
+        // .attr('cx', eleRect['cx'])
+        // .attr('cy', eleRect['cy'])      
+      .attr('cx', eleRect.left + eleRect.width)
+      .attr('cy', eleRect.top)
+        .attr('r', 3)
+        .style('fill', 'black');
+    }else{
+       annotationgroup.append('line')
+      // .attr("filter", "url(#glow)")
+      .attr('id', 'annotation-line-' + annotationId)
+      .attr('x1', eleRect['cx'])
+      .attr('y1', eleRect['cy'])
+      .attr('x2', rectLeft)
+      .attr('y2', rectTop + rectSize.h)
+      .style('stroke', 'black');
+
+       annotationgroup.append('circle')
+        // .attr("filter", "url(#glow)")      
+        .attr('cx', eleRect['cx'])
+        .attr('cy', eleRect['cy'])    
+        .attr('r', 3)
+        .style('fill', 'black');
     }
 
-    annotationgroup.append('line')
-    .attr("filter", "url(#glow)")
-    .attr('id', 'annotation-line-' + annotationId)
-    .attr('x1', eleRect.left + eleRect.width)
-    .attr('y1', eleRect.top)
-    // .attr('x1', eleRect['cx'])
-    // .attr('y1', eleRect['cy'])
-    .attr('x2', rectLeft)
-    .attr('y2', rectTop + rectSize.h)
-    .style('stroke', 'black');
-
-     annotationgroup.append('circle')
-      .attr("filter", "url(#glow)")      
-      // .attr('cx', eleRect['cx'])
-      // .attr('cy', eleRect['cy'])      
-    .attr('cx', eleRect.left + eleRect.width)
-    .attr('cy', eleRect.top)
-      .attr('r', 3)
-      .style('fill', 'black');
+   
   }
 
   Info.addLineUp = function(posInAddOnDiv, absAddonDivPos, hoverEleRect, liLineAbsEleInfo){
@@ -933,7 +955,7 @@ function InObjRender(iId, inObj){
         .attr("filter", "url(#glow)")
         .attr('fill', 'none')
         .attr('stroke', '#006064')
-        .attr('stroke-width', '1px')
+        .attr('stroke-width', '3px')
         .attr("stroke-dasharray", "3px 3px")
 
         // .attr('id', this.m_DragRectCircleId)
@@ -971,8 +993,9 @@ function InObjRender(iId, inObj){
           .attr("x", 0)
           .attr('y', 0)
           .attr('fill', 'none')
-          .attr('stroke', 'black')
-          .attr('stroke-width', "1px");
+          .attr('stroke', '')
+          // .attr('stroke', 'black')
+          // .attr('stroke-width', "1px");
       
     }else{     
 

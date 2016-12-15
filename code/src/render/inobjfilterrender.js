@@ -100,7 +100,10 @@ function InObjFilterRender(iId, inObj, objectGroupManager){
 	//draw the draggble button
 	Info.drawDragButton = function(parentpanelid, DrawLTPos){
 
-	    var expandWidth = g_CircleButtonRadius * 2.5;
+	    var circleButtonRadius = 10;
+	    var expandWidth = circleButtonRadius * 2.5;//g_CircleButtonRadius * 2.5;
+
+	    console.log(" expand Width, ", expandWidth);
 		
 		// var DrawLTPos = getDefaultDrawLTPoint();
 		
@@ -126,7 +129,7 @@ function InObjFilterRender(iId, inObj, objectGroupManager){
 	    .attr('y', 0)
 	    .style('z-index', 105)
 	    // .attr('x')
-	    .attr("r", g_CircleButtonRadius)
+	    .attr("r", circleButtonRadius)
 	    .style("fill", "#74c476")
 	    .style("stroke-width", '1px')
 	    .style('stroke', 'black')
