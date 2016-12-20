@@ -126,7 +126,7 @@ function ToolBarRender(){
 			event.stopPropagation();
 
 			$('#addondiv').css("pointer-events", "all"); 			
-			g_ToolBarManager.setSelectEnable(true);		
+			g_ToolBarManager.setRectMaskEnable(true);		
 				
 			$('.function_button-clicked').removeClass('function_button-clicked');
 			$(this).addClass('function_button-clicked');

@@ -63,7 +63,7 @@ function ToolBarManager(){
 	Info.setRectMaskEnable = function(bEnable){
 		this.setMaskFalse();
 		this.m_bSelectEnable = bEnable;
-		this.m_bMask = bEnable;
+		this.m_bMask = false;
 		this.m_bRectM = bEnable;
 	}
 

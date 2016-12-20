@@ -806,7 +806,7 @@ function getWithinEles(children, definedRect, shiftpos){
 
 //check for the tag which is not ele
 function checkforNETag(element){
-	var NETagList = ['script', 'title', 'style', 'audio']; //
+	var NETagList = ['script', 'title', 'style', 'audio', 'image']; //
 	var tagname = $(element).prop('tagName').toLowerCase();
 	if(NETagList.indexOf(tagname) >= 0)
 		return true;
