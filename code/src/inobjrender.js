@@ -489,7 +489,7 @@ function InObjRender(iId, inObj){
    var annotationgroup = d3.select('#addondiv svg')
     .append('g')
     .attr('class', 'annotation-group cursor-pointer')
-    .attr('id', 'annotation-group-' + annotationId)
+    .attr('id', 'annotation-group-' + self.m_iId + '-' + annotationId)
     .attr('width', rectSize.w)
     .attr('height', rectSize.h)
     .attr('textWidth', textSize.w)
@@ -509,7 +509,7 @@ function InObjRender(iId, inObj){
     annotationgroup
     .append('rect')    
     // .attr("filter", "url(#glow)")
-    .attr('id', 'annotation-rect-' + annotationId)
+    .attr('id', 'annotation-rect-' + self.m_iId + '-' + annotationId)
     .attr('x', rectLeft)
     .attr('y', rectTop)
     .attr('width', rectSize.w)
@@ -522,9 +522,9 @@ function InObjRender(iId, inObj){
 
     var drag = d3.behavior.drag();
 
-    d3.select('#annotation-group-' +  annotationId).call(drag);
+    d3.select('#annotation-group-' +  self.m_iId + '-' + annotationId).call(drag);
 
-    d3.select('#annotation-group-' +  annotationId).on("click", function() {
+    d3.select('#annotation-group-' +  self.m_iId + '-' + annotationId).on("click", function() {
       console.log(" group click ", annotationId);
       if (d3.event.defaultPrevented) return; // click suppressed
       //console.log("clicked!");
@@ -540,7 +540,7 @@ function InObjRender(iId, inObj){
 
       // //console.log(' draging ', d3.event.x, ', ', d3.event.y);
 
-      var offset = $('#annotation-rect-' + annotationId).offset();
+      var offset = $('#annotation-rect-' + self.m_iId + '-' + annotationId).offset();
 
       var rectSize = {
         'w': Number(d3.select(this).attr('width')),
@@ -557,17 +557,17 @@ function InObjRender(iId, inObj){
 
       // console.log(" dragging ", textLeft, textTop);
 
-      $('#annotation-rect-' + annotationId).css({
+      $('#annotation-rect-' + self.m_iId + '-' + annotationId).css({
         x: rectLeft,
         y: rectTop,
       });
 
-      d3.select('#annotation-text-' + annotationId)
+      d3.select('#annotation-text-' + self.m_iId + '-' + annotationId)
       .attr('transform', function(){
         return "translate(" + (rectLeft + rectSize.w/2. - textSize.w/2.) + ',' + (rectTop + rectSize.h/2. + textSize.h/2.)  + ')'
       });
 
-      d3.select('#annotation-line-' + annotationId)
+      d3.select('#annotation-line-' + self.m_iId + '-' + annotationId)
       .attr('x2', rectLeft)
       .attr('y2', rectTop + rectSize.h)
 
@@ -575,7 +575,7 @@ function InObjRender(iId, inObj){
 
     annotationgroup.append('text')
     .text(annotationText)
-    .attr('id', 'annotation-text-' + annotationId)
+    .attr('id', 'annotation-text-' + self.m_iId + '-' + annotationId)
     .style('font', font)
     .attr('transform', function(){
       return "translate(" + (rectLeft + rectSize.w/2. - textSize.w/2.) + ',' + (rectTop + rectSize.h/2. + textSize.h/2.)  + ')';
@@ -643,7 +643,7 @@ function InObjRender(iId, inObj){
 
        annotationgroup.append('line')
       // .attr("filter", "url(#glow)")
-      .attr('id', 'annotation-line-' + annotationId)
+      .attr('id', 'annotation-line-' + self.m_iId + '-' + annotationId)
       .attr('x1', eleRect.left + eleRect.width)
       .attr('y1', eleRect.top)
       // .attr('x1', eleRect['cx'])
@@ -663,7 +663,7 @@ function InObjRender(iId, inObj){
     }else{
        annotationgroup.append('line')
       // .attr("filter", "url(#glow)")
-      .attr('id', 'annotation-line-' + annotationId)
+      .attr('id', 'annotation-line-' + self.m_iId + '-' + annotationId)
       .attr('x1', eleRect['cx'])
       .attr('y1', eleRect['cy'])
       .attr('x2', rectLeft)

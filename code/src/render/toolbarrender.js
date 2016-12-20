@@ -229,19 +229,40 @@ function ToolBarRender(){
 
 		$('#tablemask_button').on('click', function(){	
 			self.clickRectMaskSelectButton();
+
+			$('#addondiv').css("pointer-events", "all"); 			
+			// g_ToolBarManager.setRectMaskEnable(true);		
+				
+			$('.function_button-clicked').removeClass('function_button-clicked');
+			$(this).addClass('function_button-clicked');
 		});
 
 		$('#vparallelmask_button').on('click', function(){	
 			self.clickVParallelMaskButton();
+
+			$('#addondiv').css("pointer-events", "all"); 	
+				
+			$('.function_button-clicked').removeClass('function_button-clicked');
+			$(this).addClass('function_button-clicked');
 		});
 
 		$('#hparallelmask_button').on('click', function(){
 			self.clickHParallelMaskButton();
+
+			$('#addondiv').css("pointer-events", "all"); 		
+				
+			$('.function_button-clicked').removeClass('function_button-clicked');
+			$(this).addClass('function_button-clicked');
 		});
 
 
 		$('#radialmask_button').on('click', function(){	
 			self.clickRadialMaskButton();
+
+			$('#addondiv').css("pointer-events", "all"); 		
+				
+			$('.function_button-clicked').removeClass('function_button-clicked');
+			$(this).addClass('function_button-clicked');
 		});
 	}
 
