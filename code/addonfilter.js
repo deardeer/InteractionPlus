@@ -314,7 +314,7 @@ var timer2 = setInterval(function(){
 	collectFeedback();
 	// alert('Collect Feedback');
 	clearInterval(timer2);
-}, 1000 * 60 * 1000)
+}, 1 * 60 * 1000)
 
 var d = new Date()
 d = 'Interaction+ :) ' + d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
@@ -347,29 +347,31 @@ function exec(){
 	g_ToolBarManager = new ToolBarManager();
 	g_NameRender = new NameRender();
 	
-	USER = "Guest";
-	// welcome();
+	// USER = "Guest";
+	welcome();
 
 	//set the feedback dialog
 	// function pleaseFillFeedback(){
 	// 	g_TimeCount += 1;
-	// 	//console.log(' time count ', g_TimeCount);
-	// 	// if(g_TimeCount == 2){
-	// 	// 	//the first 5 min
-	// 	// 	alert('Please Fill Feedback ');
-	// 	// 	g_FeedbackFilled = true;
-	// 	// }
-	// 	// if(!g_FeedbackFilled)
-	// 	clearTimeout();
-	// 	setTimeout(pleaseFillFeedback(), 30000); //5 min
+		//console.log(' time count ', g_TimeCount);
+		// if(g_TimeCount == 2){
+		// 	//the first 5 min
+		// 	alert('Please Fill Feedback ');
+		// 	g_FeedbackFilled = true;
+		// }
+		// if(!g_FeedbackFilled)
+		// clearTimeout();
+		// setTimeout(pleaseFillFeedback(), 30000); //5 min
 			
 	// }
 
 	// setTimeout(pleaseFillFeedback(), 30000); //5 min
 
+	// if(welResult == true){
+	// 	g_ToolBarManager.addFloatPanel();
+	// 	enterAddOn();		
+	// }
 
-	g_ToolBarManager.addFloatPanel();
-	enterAddOn();
 
 	// iScript = document.createElement("script");
 	// iScript.type="text/javascript";
@@ -383,8 +385,14 @@ function exec(){
 
 function welcome(){
 
+	// var welResult = false;
+
 	USER = $.cookie('AddonFilter_User');
-	if(USER == undefined){
+	console.log(" USER = ", USER);
+	console.log(' welcome ! ');
+	if(false){//USER == undefined){
+		console.log('USER not exist ');
+
 		//the first time 
 		addModal();
 		//manual & login
@@ -392,9 +400,9 @@ function welcome(){
 		//remove
 		// removeModal();
 	}else{
-
+		console.log('USER exist ');
 		g_ToolBarManager.addFloatPanel();
-		enterAddOn();	
+		enterAddOn();
 	}
 }
 
@@ -497,7 +505,7 @@ function showOnlyManual(){
 	$('#onlymanual_panel_div').css({   
 	    width: '80%',
 	    background: 'white',
-	    height: '80%',
+	    height: '90%',
 	    'margin-left': '10%',
 	    'border-radius': '5px',
 	    'overflow-y': 'scroll',
@@ -511,13 +519,16 @@ function showOnlyManual(){
 	var titlecom = _.template(titlehtml);
 	testDiv.innerHTML = testDiv.innerHTML + titlecom({});
 
-	var imghtml1 = '<div style="text-align:center"><img src=<%=ImgSrc1%> style="width:95%; border:black 1px solid; border-radius: 5px;"/><img src=<%=ImgSrc2%> style="width:95%; border-radius: 5px;border:black 1px solid; margin-top:10px"/></div>';
+	var imghtml1 = '<div style="text-align:center">'+
+					'<img src=<%=ImgSrc1%> style="width:95%; border:black 1px solid; border-radius: 5px;"/>'+
+					// '<img src=<%=ImgSrc2%> style="width:95%; border-radius: 5px;border:black 1px solid; margin-top:10px"/>'+
+				   '</div>';
 	var imgcompiled1 = _.template(imghtml1);
 	//show_other_button, , feedback_button, exit_2_button
 
 	testDiv.innerHTML = testDiv.innerHTML + imgcompiled1({
 		ImgSrc1: serverIp + "rc/manual_addonfilter.png",
-		ImgSrc2: serverIp + "rc/manual_functions.png",
+		// ImgSrc2: serverIp + "rc/manual_functions.png",
 	});
 
 	
@@ -535,8 +546,10 @@ function showOnlyManual(){
 
 //exist the mode of Interaction+
 function exitAddOn(){
+	removeModal();
 	if(g_InObjManager != undefined)
 		g_InObjManager.clear();
 	$('#addondiv').remove();
 	$('#floatpaneldiv').remove();
+
 }

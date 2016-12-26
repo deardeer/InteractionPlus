@@ -20,6 +20,14 @@
 	margin: 3px;
 }
 
+.btn-welcome:hover{
+	color: black;
+}
+
+.btn-welcome:hover{
+	color: white;
+}
+
 /* pop out delete button */
 .del_pop_but{
 	background: green;

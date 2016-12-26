@@ -486,7 +486,9 @@ function addModal(){
 
   $('#modal_div').on('click', function(){
     //console.log(" MoDAL DIV Click !");
+    // removeModal();    
     removeModal();
+    exitAddOn();
   })
   /*
   modal_div.setAttribute('tabindex', '-1')
@@ -507,7 +509,18 @@ function removeModal(){
 //show the manual page
 function showManual(){
   //add the img div
-  var imghtml = '<div class="row" id="manual_panel_div"><div class="col-md-12" style="padding-bottom: 10px;"><div style="text-align: center;"><img src=<%=ImgSrc%> style="width:70%; border-radius: 5px;" id="manualimage"/></div><div style="text-align: center; margin-top: 5px"><button id="login_button" type="button" class="btn btn-success btn-lg" style="padding: 6px 50px;border-radius: 5px;background: #74C476;font-size: 20px;">Register</button></div></div></div>';
+  var imghtml = '<div class="row" id="manual_panel_div">'+
+                  '<div class="col-md-12" style="padding-bottom: 10px;">'+
+                    '<div style="text-align: center;">'+
+                      '<img src=<%=ImgSrc%> style="width:60%; border-radius: 5px;" id="manualimage"/>'+
+                    '</div>' +
+                    '<div style="text-align: center; margin-top: 5px">'+
+                      '<button id="cancellogin_button" type="button" class="btn btn-success btn-lg btn-welcome" style="padding: 6px 50px; border-radius: 5px;background: #74C476;font-size: 15px; margin-right: 10px">Cancel</button>'+
+                      '<button id="login_button" type="button" class="btn btn-success btn-lg btn-welcome" style="padding: 6px 50px; border-radius: 5px;background: #74C476;font-size: 15px;">Continue</button>'+
+                    '</div>'+
+                  '</div>'+
+                 '</div>';
+
   var compiled = _.template(imghtml);
   //show_other_button, , feedback_button, exit_2_button
 
@@ -522,6 +535,12 @@ function showManual(){
     event.stopPropagation();
   })
 
+  $('#cancellogin_button').on('click', function(event){
+    event.stopPropagation();
+    removeModal();
+    exitAddOn();
+  })
+
   $('#manualimage').on('click', function(event){
     event.stopPropagation();
   });
@@ -531,7 +550,23 @@ function showManual(){
 //show user login page
 function showLoginIn(){
 
-  var loginhtml = '<div id="login_panel_div" style="width: 40%;text-align:center; border-radius: 5px; margin-top: 20px; padding-top: 10px; padding-bottom: 10px;background: #FFFFFF;margin-left: 30%;"><div class="form-group" style="padding-left: 30px; padding-right: 30px; padding-top:30px"><div class="row" style="margin:5px"><label style="font-size:20px; margin-right:20px; float:left;">E-mail</label><input id="username_input" style="font-size:20px; background: #dff0d8; width:100%"/></div><div class="row" style="margin:5px"><label style="font-size:20px; margin-right:20px; float:left;">Password</label><input id="password_input" type="password" style="font-size:20px; background: #dff0d8; width:100%"/></div></div><div class="row" style="margin:5px"><button id="register_confirm_button" class="btn btn-success btn-lg" style="padding: 6px 50px;border-radius: 5px;background: #74C476;font-size: 20px; margin-top:20px" >Login</button><div></div>';
+  var loginhtml = '<div id="login_panel_div" style="width: 40%;text-align:center; border-radius: 5px; margin-top: 20px; padding-top: 10px; padding-bottom: 10px;background: #FFFFFF;margin-left: 30%;">'+
+                    '<div class="form-group" style="padding-left: 30px; padding-right: 30px; padding-top:30px">'+
+                      '<div class="row" style="margin:5px">'+
+                        '<p style="text-align:left">Please enter your email address below to receive new update of Interaction+. Thank you :)</p>' +
+                        // '<label style="font-size:20px; margin-right:20px; float:left;">E-mail</label>'+
+                        '<input id="username_input" style="font-size:20px; background: #dff0d8; width:100%" placeholder="Email Address"/>'+
+                      '</div>'+
+                    // '<div class="row" style="margin:5px">'+
+                    //   '<label style="font-size:20px; margin-right:20px; float:left;">Password</label>'+
+                    //   '<input id="password_input" type="password" style="font-size:20px; background: #dff0d8; width:100%"/>'+
+                    // '</div>'+
+                  '</div>'+
+                  '<div class="row" style="margin:5px">'+                 
+                    '<button id="register_cancel_button" class="btn btn-success btn-lg btn-welcome" style="padding: 6px 50px;border-radius: 5px;background: #74C476;font-size: 15px; margin-top:20px; margin-right: 10px" >Cancel</button>'+
+                    '<button id="register_confirm_button" class="btn btn-success btn-lg btn-welcome" style="padding: 6px 50px;border-radius: 5px;background: #74C476;font-size: 15px; margin-top:20px" >Start Explore!</button>'+
+                  '</div>';
+
   var compiled = _.template(loginhtml);
 
   var modaldiv = document.getElementById('modal_div');
@@ -539,6 +574,12 @@ function showLoginIn(){
   $('#modal_div').html(compiled({ //loginhtml
     // ImgSrc: serverIp + "rc/teaser.png",
   }));
+
+  $('#modal_div').on('click', function(event){
+
+    removeModal();
+    exitAddOn();    
+  })
 
   $('#register_confirm_button').on('click', function(event){
     event.stopPropagation();
@@ -552,6 +593,11 @@ function showLoginIn(){
   $('#login_panel_div').on('click', function(event){
     event.stopPropagation();    
   });
+
+  $('#register_cancel_button').on('click', function(event){
+    removeModal();
+    exitAddOn();    
+  })
 
 }
 
@@ -596,6 +642,8 @@ function feedbackOfSubmitUserInfo(response){
   //remove the modal
   removeModal();
   
-  addFloatPanel();
+
+  g_ToolBarManager.addFloatPanel();
+  // addFloatPanel();
   enterAddOn(); 
 }
