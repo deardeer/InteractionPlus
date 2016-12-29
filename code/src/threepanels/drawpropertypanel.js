@@ -755,7 +755,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 				svgID: 'scatterplot_' + self.m_iId + '_' + SPID,
 				scatterplotrowdivId: 'scatter_plot_div_' + self.m_iId + '_' + SPID,
 				labelDivWidth: labelDivWidth,
-				disDivWidth, disDivWidth,
+				disDivWidth: disDivWidth,
 			})
 		});
 
@@ -3832,7 +3832,7 @@ function createAScatterProperties(){
 			svgID: 'scatterplot_' + SPID,
 			scatterplotrowdivId: 'scatter_plot_div_' + SPID,
 			labelDivWidth: labelDivWidth,
-			disDivWidth, disDivWidth,
+			disDivWidth: disDivWidth,
 		})
 	});
 

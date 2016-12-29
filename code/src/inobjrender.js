@@ -250,8 +250,9 @@ function InObjRender(iId, inObj){
             console.log(" click ", self.m_mouseHoverCurrentEleId);
 
             var newEle = self.m_ElementProperties.getElebyId(self.m_mouseHoverCurrentEleId);
-            self.m_mouseHoverEleOriginStyle['stroke'] = newEle.style.stroke;   
-            self.m_mouseHoverEleOriginStyle['stroke-width'] = newEle.style['stroke-width'];
+            // self.m_mouseHoverEleOriginStyle['stroke'] = newEle.style.stroke;   
+            // self.m_mouseHoverEleOriginStyle['stroke-width'] = newEle.style['stroke-width'];
+            
             // //console.log(" new style ! ", self.m_mouseHoverEleOriginSxtyle, newEle.style);           
             newEle.style.stroke = 'black';
             newEle.style['stroke-width'] = "2px";
@@ -453,12 +454,25 @@ function InObjRender(iId, inObj){
   Info.addAnnotation = function(bAnnotation, annotationText, annotationId, annotationHighlight){
 
     var self = this;
-    console.log(' add annotation 3');
+    console.log(' add annotation 44');
     
     self.m_Annotation = false;
 
-    if(bAnnotation == false)
+    if(bAnnotation == false){
+      self.m_Annotation = false;
+      if(self.m_mouseHoverCurrentEleId != -1){
+        //recover
+          var oldEle = self.m_ElementProperties.getElebyId(self.m_mouseHoverCurrentEleId);
+          var liAttr = Object.keys(self.m_mouseHoverEleOriginStyle);
+          // console.log(' add annotation 44 ', self.m_mouseHoverCurrentEleId, liAttr, self.m_mouseHoverEleOriginStyle);
+          for (var i = liAttr.length - 1; i >= 0; i--) {
+            var attr = liAttr[i];
+            oldEle.style[attr] = self.m_mouseHoverEleOriginStyle[attr];
+          };          
+      }
+      self.m_mouseHoverCurrentEleId = -1;
       return;
+    }
 
     var absAddonDivPos = $('#addondiv').offset();
     var globalEleRect = self.m_ElementProperties.getGlobalRectofElement(self.m_mouseHoverCurrentEleId);

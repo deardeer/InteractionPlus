@@ -23,7 +23,7 @@ iLink = document.createElement("link");
 iLink.rel="stylesheet";
 iLink.type = 'text/css';
 // iLink.href= serverIp + "library/font-awesome-4.5.0/css/font-awesome.min.css";
-iLink.href= 'https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'
+iLink.href= serverIp + 'library/font-awesome-4.5.0/css/font-awesome.min.css'
 //"https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"; //
 document.getElementsByTagName("head")[0].appendChild(iLink);
 
@@ -314,7 +314,7 @@ var timer2 = setInterval(function(){
 	collectFeedback();
 	// alert('Collect Feedback');
 	clearInterval(timer2);
-}, 1 * 60 * 1000)
+}, 5 * 60 * 1000)
 
 var d = new Date()
 d = 'Interaction+ :) ' + d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
