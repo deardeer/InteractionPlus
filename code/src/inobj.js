@@ -547,7 +547,7 @@ function InObj(iId, bMask, maskType){
    			mapNewPosPointList[iCount] = [liXPos[0]];
    			for (var i = 1; i < liXPos.length; i++) {
    				var x1 = liXPos[i - 1], x2 = liXPos[i];
-   				if(x2 - x1 > 10){   	 //10			
+   				if(x2 - x1 > 30){   	 //10			
    					liNewPos.push(x2); 
    					iCount += 1;
    					mapNewPosPointList[iCount] = [x2];

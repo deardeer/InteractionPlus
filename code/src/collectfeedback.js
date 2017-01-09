@@ -25,6 +25,8 @@ function FeedBackInfo(){
     "Q12: This tool could be applied in various applications", //willingness
   ];
 
+  Info.questionlist = [];
+
   Info.subjectlist = [
     'What does Interaction+ impress you the most?', //best
     'Does this tool provide all the important interaction functions that you concern? If not, please list some of the interactions you concern but not provided by this tool.', //improve

@@ -387,9 +387,9 @@ function welcome(){
 
 	// var welResult = false;
 
-	USER = $.cookie('AddonFilter_User');
-	console.log(" USER = ", USER);
-	console.log(' welcome ! ');
+	// USER = $.cookie('AddonFilter_User');
+	// console.log(" USER = ", USER);
+	// console.log(' welcome ! ');
 	if(false){//USER == undefined){
 		console.log('USER not exist ');
 
