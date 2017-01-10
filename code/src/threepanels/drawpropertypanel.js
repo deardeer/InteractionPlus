@@ -722,8 +722,8 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 	 	var iScatterPlotId = self.m_PropertyManager.createAScatterPlot(iSelectedGroupId, iXPropertyId, iYPropertyId);
 
 	 	//default width	
-		var labelDivWidth = '20%';//labelTextSize['w'] + gapWidth;
-	 	var disDivWidth = '80%';//prodiv.width() - labelDivWidth - labelDisGap;
+		var labelDivWidth = '0%';//labelTextSize['w'] + gapWidth;
+	 	var disDivWidth = '100%';//prodiv.width() - labelDivWidth - labelDisGap;
 
 	 	//add a div
 	 	var SPID = iScatterPlotId;//'scatterplot_' + iScatterPlotId;
@@ -763,7 +763,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		var font = '12px arial';
 		var labelDivWidth, disDivWidth;
 		var xLabel = 'X: ' + xPropertyName, yLabel = 'Y: ' + yPropertyName;
-		var propertyName = xLabel.length>yLabel.length?xLabel:yLabel;
+		var propertyName = xLabel.length > yLabel.length?xLabel:yLabel;
 		var labelTextSize = getTextSize(propertyName, font);
 		var gapWidth = 15;
 		var labelDisGap = 5;
@@ -771,6 +771,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		div = $('#scatter_plot_div_' + self.m_iId + '_' + SPID);
 
 		var labelDivWidth = labelTextSize['w'] + gapWidth;
+		labelDivWidth = 0;
 	 	var disDivWidth = div.width() - labelDivWidth - labelDisGap;
 
 	 	div.find('.scatter_plot_label_div').width(labelDivWidth + 'px');
@@ -794,7 +795,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 			yPropertyLabel: yLabel,
 			deletebuttonid: 'deletebutton_' + self.m_iId + '_' + SPID,
 		});
-		label_div.html(label_div.html() + x_labelhtml);
+		// label_div.html(label_div.html() + x_labelhtml);
 
 		//click event
 		 $('.scatter_plot_label_span').bind('click', function(){
@@ -836,22 +837,24 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 
 		var xAxisLength = $('#scatterplot_' + self.m_iId + '_' + SPID).width();
 		var yAxisLength = $('#scatterplot_' + self.m_iId + '_' + SPID).height();
-		var xLeftPos = xAxisLength * 0.1, xRightPos = xAxisLength * 0.9;
+		var xLeftPos = xAxisLength * 0.13, xRightPos = xAxisLength * 0.9;
+		// var xBasePos = xAxisLength * 0.1;
 		var yBasePos = yAxisLength * 0.1;
 		var yTopPos = yAxisLength * 0.9;
 		var rectWidth = 1. * xAxisLength/(spConfig.ixBinNum);
 		var rectHeight = 1. * yAxisLength/(spConfig.iyBinNum);
 
 		// //console.log(' propertyType ', xPropertyType, ' , ', yPropertyType);
+	
 		var xWidthScale = d3.scale.linear()
 						.domain([0, iMaxValue])
 						.range([0, 1]);
 
 		var xScale = d3.scale.linear()
-					.domain([0, spConfig.ixBinNum])
+					.domain([0, spConfig.ixBinNum - 1])
 					.range([xLeftPos, xRightPos]);//10, xAxisLength]);
 		var yScale = d3.scale.linear()
-					.domain([spConfig.iyBinNum, 0])
+					.domain([spConfig.iyBinNum, 1])
 					.range([yBasePos, yTopPos]);
 					// .range([0, yAxisLength]);
 
@@ -961,7 +964,8 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		.attr('class', 'scatter_plot_bar')
 		.attr('r', function(d){
 			var value = d['count'];
-			return (rectWidth * 0.7 + rectWidth * 0.3 * xWidthScale(value)) * 0.5 * scale + 'px';
+			return '5px';
+			// return rectWidth * xWidthScale(value) * 0.5 + 'px';//(rectWidth * 0.7 + rectWidth * 0.3 * xWidthScale(value)) * 0.5 * scale + 'px';
 			// return rectWidth + 'px';
 		})
 		// .attr('height', function(){
@@ -973,7 +977,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 			var xyIndex = spConfig.getXYIndex(iIndex);
 			var barwidth = rectWidth * 0.7 + rectWidth * 0.3 * xWidthScale(value);
 			// //console.log(" x ", xyIndex.x, ' , ', xScale(xyIndex.x) - rectWidth/2.);
-			return xScale(xyIndex.x) + rectWidth/2. - barwidth/2. - (rectWidth * 0.3 + rectWidth * 0.7 * xWidthScale(value)) * 0.5 + 'px';
+			return  xScale(xyIndex.x);// + rectWidth/2. - barwidth/2. - (rectWidth * 0.3 + rectWidth * 0.7 * xWidthScale(value)) * 0.5 + 'px';
 		})
 		.attr('cy', function(d){
 			var iIndex = d['index'];
@@ -981,7 +985,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 			if(xyIndex.y == 0)
 				return  yBasePos + "px";
 
-			return yBasePos + yScale(xyIndex.y) - rectHeight - (rectWidth * 0.3 + rectWidth * 0.7 * xWidthScale(value)) * 0.5 + 'px';
+			return yScale(xyIndex.y);// + yBasePos - rectHeight - (rectWidth * 0.3 + rectWidth * 0.7 * xWidthScale(value)) * 0.5 + 'px';
 		})
 		.style('fill', function(d){		
 			var iIndex = d['index'];
