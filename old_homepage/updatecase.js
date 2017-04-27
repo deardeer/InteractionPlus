@@ -1,5 +1,0 @@
-
-// updateCaseStats();
-
-// sayHi();
-// fetchCaseStatistics();
