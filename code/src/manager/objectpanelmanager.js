@@ -54,6 +54,8 @@ function ObjectGroupManager(iId, elementProperties){
 	}
 	Info.setGroupNamebyId = function(iGroupId, GroupName){
 		var attr = this.m_mapOGroupIdAttr[iGroupId];
+		//save in semantic map
+		g_VisDecoder.addSemanticMap(attr['name'], GroupName);
 		attr['name'] = GroupName;
 		this.m_mapOGroupIdAttr[iGroupId] = attr;
 	}

@@ -75,7 +75,7 @@ function handleMouseDown(pos, addOnSvg){
       f_bRectCreating = true;
       g_MouseBegin['x'] = pos.x;//getPosInAddonSvg(e)['x'];//parseInt(e.clientX);//pageX);
       g_MouseBegin['y'] = pos.y;//getPosInAddonSvg(e)['y'];//parseInt(e.clientY);//pageY);
-      console.log(" MMMM ", g_ToolBarManager.getMaskType(), g_ToolBarManager.isMaskEnable());
+      // console.log(" MMMM ", g_ToolBarManager.getMaskType(), g_ToolBarManager.isMaskEnable());
       f_CurrentInObjId = g_InObjManager.addInObj(g_ToolBarManager.isMaskEnable(), g_ToolBarManager.getMaskType());
       g_InObjManager.setCurrentObjId(f_CurrentInObjId);
 
@@ -273,6 +273,7 @@ function addShareDialog(){
 }
 
 var g_ImageData;
+
 //share 
 function share(){
 

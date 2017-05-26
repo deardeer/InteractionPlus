@@ -257,19 +257,55 @@ function ObjectPanelRender(iId, inObj, objectGroupManager){
 
 			self.m_ObjectGroupManager.getEleIdsbyGroupId(iGroupId);
 			var buttonLabel = attrs['name']; //+ ':' + liEles.length;
-		
-			var buttonhtml = 
-			'<div style="width: 100%; height: 30px;" class="<%=objdivclass%> object_button_div" id=<%=ID%> value=<%=buttonValue%> >'+
-				'<div style="float: left; width: 40%; height: 100%; padding: 3px">'+
-			 		'<span class="<%=objclass%> object_button_span object_title_span <%=buttonType%>" value=<%=buttonValue%> >'+
-		 			'<div style="position:relative">' +		
-						'<i class="fa fa-times delete_icon hidden" groupid=<%=buttonValue%>></i>'+
-						'<p value=<%=buttonValue%> style="text-align: center;"><%=buttonLabel%></p>'+
-		 				// '<span class="object_title_span" value=<%=buttonValue%> > <%=buttonLabel%></span>'+
-	 				'</div>' +
-				'</div>' +
-				'<div id=<%=objhisid%> style="float: left; width: 60%; height: 100%;" num=<%=eleNum%> ></div>' +				
-			'</div>'
+
+			//get the suggested name
+			if(g_VisDecoder.getSemanticMap(buttonLabel) != undefined)
+				buttonLabel = g_VisDecoder.getSemanticMap(buttonLabel);
+
+			// if(buttonSuggestLabel != undefined){
+			// 	//exist
+			// 	suggestButtonHTML = '<span class="<%=objclass%> object_button_span object_title_span <%=buttonType%>" value=<%=buttonValue%> style="float: right; padding: 0px 2px;">'+ 
+			// 						'<div style="position:relative">' +		
+			// 							'<i class="fa fa-times delete_icon hidden" groupid=<%=buttonValue%>></i>'+
+			// 							'<p value=<%=buttonValue%> style="text-align: center;"><%=suggestbuttonLabel%></p>'+
+			// 								// '<span class="object_title_span" value=<%=buttonValue%> > <%=buttonLabel%></span>'+
+			// 							'</div>' +
+			// 						'</span>';
+
+			// 	buttonhtml = '<div style="width: 100%; height: 30px;" class="<%=objdivclass%> object_button_div" id=<%=ID%> value=<%=buttonValue%> >'+
+			// 					'<div style="float: left; width: 63%; height: 100%; padding: 3px">'+
+			// 							'<span>' +
+			// 								// '<div style="position:relative">' +
+			// 								'<i class="fa fa-times delete_icon" groupid=<%=buttonValue%>></i>'+
+			// 								'<span class="<%=objclass%> object_button_span object_title_span <%=buttonType%>" value=<%=buttonValue%> style="float: left; padding: 0px 2px;">'+ 
+			// 									'<div style="position:relative">' +		
+			// 										'<i class="fa fa-times delete_icon hidden" groupid=<%=buttonValue%>></i>'+
+			// 										'<p value=<%=buttonValue%> style="text-align: center;"><%=buttonLabel%></p>'+
+			// 											// '<span class="object_title_span" value=<%=buttonValue%> > <%=buttonLabel%></span>'+
+			// 									'</div>' +
+			// 								'</span>' +
+			// 								suggestButtonHTML + 
+			// 								// '</div>' +
+			// 							'</span>' +
+			// 					'</div>' +
+			// 				'<div id=<%=objhisid%> style="float: left; width: 20%; height: 100%;" num=<%=eleNum%> ></div>' +				
+			// 				'</div>'
+			// }else{
+			var buttonhtml = '<div style="width: 100%; height: 30px;" class="<%=objdivclass%> object_button_div" id=<%=ID%> value=<%=buttonValue%> >'+
+					'<div style="float: left; width: 50%; height: 100%; padding: 3px">'+
+							'<span class="<%=objclass%> object_button_span object_title_span <%=buttonType%>" value=<%=buttonValue%> style="width:100%">'+ 
+							'<div style="position:relative">' +		
+							'<i class="fa fa-times delete_icon hidden" groupid=<%=buttonValue%>></i>'+
+							'<p value=<%=buttonValue%> style="text-align: center;"><%=buttonLabel%></p>'+
+								// '<span class="object_title_span" value=<%=buttonValue%> > <%=buttonLabel%></span>'+
+							'</div>' +
+							'</span>' +
+					'</div>' +
+				'<div id=<%=objhisid%> style="float: left; width: 50%; height: 100%;" num=<%=eleNum%> ></div>' +				
+				'</div>'
+			// }
+			
+
 			// '<div style="height:30px">'+
 			// 	'<div style="width: 30%;position:relative;float: left;">'+
 			// 		'<span class="<%=objclass%> object_button_span <%=buttonType%>" id=<%=ID%> value=<%=buttonValue%> >'+
@@ -297,6 +333,7 @@ function ObjectPanelRender(iId, inObj, objectGroupManager){
 				// objhisclass: 'object_his' + self.m_iId,
 				objhisid: 'object_his_' + self.m_iId + '_'+ iGroupId,
 				buttonLabel: buttonLabel,
+				// suggestbuttonLabel: buttonSuggestLabel,
 				ID: 'p_' + self.m_iId + '_object_span_' + iGroupId,
 				buttonValue: iGroupId,
 				buttonType: buttonType,
@@ -353,6 +390,7 @@ function ObjectPanelRender(iId, inObj, objectGroupManager){
 			//console.log(" mouse over object ", value);
 		});
 
+
 		//click event
 		// $('.object_span' + self.m_iId).click(function(){		
 		// 	var value = parseInt(this.getAttribute('value'));
@@ -372,11 +410,25 @@ function ObjectPanelRender(iId, inObj, objectGroupManager){
 			$(this).find('.delete_icon').addClass('hidden');
 		});
 
+		// $('.suggest_object_span' + self.m_iId)
+		// .mouseover(function(event){
+		// 	$(this).find('.delete_suggest_icon').removeClass('hidden');
+		// })
+		// .mouseout(function(event){
+		// 	$(this).find(".delete_suggest_icon").addClass('hidden');
+		// })
+
 		$('.delete_icon').click(function(event){
 			// //console.log('DELETE button click ');
 			event.stopPropagation();
 			var iGroupId = parseInt(this.getAttribute('groupid'));
 			self.deleteGroup(iGroupId);
+		});
+
+		$('.delete_suggest_icon').click(function(event){
+			event.stopPropagation();
+			var iGroupId = parseInt(this.getAttribute('groupid'));
+			console.log(' delete suggest name ');
 		});
 
 		$('.object_title_span').bind('dblclick', function() {
@@ -998,7 +1050,11 @@ function drawObjectButtons(){
 		g_ObjectGroupManager.getEleIdsbyGroupId(iGroupId);
 		var buttonLabel = attrs['name'] + ':' + liEles.length;
 	
-		var buttonhtml = '<span class="object_span object_button_span <%=buttonType%>" id=<%=ID%> value=<%=buttonValue%> ><div style="position:relative"><i class="fa fa-times delete_icon hidden" groupid=<%=buttonValue%>></i><span class="object_title_span" value=<%=buttonValue%> > <%=buttonLabel%></span></div></span>'; //
+		var buttonhtml = '<span class="object_span object_button_span <%=buttonType%>" id=<%=ID%> value=<%=buttonValue%> >'+
+		'<div style="position:relative">'+
+		'<i class="fa fa-times delete_icon hidden" groupid=<%=buttonValue%>></i>'+
+		'<span class="object_title_span" value=<%=buttonValue%> > <%=buttonLabel%></span>'+
+		'</div></span>'; //
 		var compiled = _.template(buttonhtml);	
 
 		// //console.log(' button html ', compiled({

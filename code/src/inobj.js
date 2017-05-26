@@ -100,9 +100,13 @@ function InObj(iId, bMask, maskType){
 	    this.m_FilterRender.addFilterPanel();  
 	    //console.log(" init [2] ");
 
-		this.m_DialogRender = new InObjDialogRender(this.m_iId, this.m_ObjectGroupManager, this.m_PropertyManager);
+	    //filter setting info
+	    this.m_FilterSettingInfo = new FilterSettingInfo(this.m_iId, this.m_ObjectGroupManager, this.m_PropertyManager);
+		
+		this.m_DialogRender = new InObjDialogRender(this.m_iId, this.m_ObjectGroupManager, this.m_PropertyManager, this.m_FilterSettingInfo);
 		this.m_DialogRender.addProReNameDialog();
 		this.m_DialogRender.addObjReNameDialog();
+		this.m_DialogRender.addSubmitDialog();
 		
 		//logic composition
 		this.m_LogicCompositionManager = new LogicCompositionManager(this.m_iId, this, this.m_ObjectGroupManager);

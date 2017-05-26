@@ -26,7 +26,7 @@ function ToolBarRender(){
 		})
 		.addClass('background_panel');
 
-		var show_explore_str = "Show Explorations", hide_explore_str = 'Hide Explorations';
+		var show_explore_str = "Show Annotation", hide_explore_str = 'Hide Annotation';
 
 		//keep "show exploration"
 		// var buttonpanelhtml = '<div class="container-fluid"><div class="row"><div class="col-md-12"><span class="label label-default">Filter+</span><span class="label label-default" style="float:right">Welcome! <%=userName%></span><div class="btn-group" style="margin-top:5px"><button class="btn btn-warning btn-xs function_button" type="button" id="show_manual_button"> Manual</button><button class="btn btn-warning btn-xs function_button" type="button" id="feedback_button"> Feedback</button><button class="btn btn-warning btn-xs function_button" type="button" id="exit_2_button"> Exit</button></div></div></div></div>';	
@@ -56,6 +56,7 @@ function ToolBarRender(){
 				//'</div>' + 
 				// '</div>' + 
 				 '<div class="btn-group" style="margin:5px; display: inline-block; float: right;">' + 
+					'<button class="btn btn-warning btn-xs function_button" type="button" id="show_other_button" showhide="show"><img class="btn_img" src=<%=networksrc%>></img> Show Annotation</button>' + 
 					'<button class="btn btn-warning btn-xs function_button" type="button" id="show_manual_button"><img class="btn_img" src=<%=manualimgsrc%>></img> Manual</button>' + 
 					'<button class="btn btn-warning btn-xs function_button" type="button" id="feedback_button"><img class="btn_img" src=<%=feedbackimgsrc%>></img> Feedback</button>' + 
 					'<button class="btn btn-warning btn-xs function_button" type="button" id="exit_2_button"><img class="btn_img" src=<%=exitimgsrc%>></img> Exit</button>' + 
@@ -80,6 +81,7 @@ function ToolBarRender(){
 			radialimgsrc: serverIp + "rc/radial.png",
 			vparallelimgsrc: serverIp + "rc/vparallel.png",
 			hparallelimgsrc: serverIp + "rc/hparallel.png",
+			networksrc: serverIp + 'rc/network.png',
 			manualimgsrc: serverIp + "rc/manual.png",
 			feedbackimgsrc: serverIp + "rc/feedback.png",
 			exitimgsrc: serverIp + "rc/exit.png",
@@ -96,17 +98,31 @@ function ToolBarRender(){
 		});
 
 		//bind event
-		$('#show_other_button').on('click', function(){
-			//
+		$('#show_other_button').on('click', function(){			
 			var buttontext = $(this).text();
-			var show = true;
-			if(buttontext == show_explore_str){
-				$(this).text(hide_explore_str);
+			var showhide = $(this).attr('showhide');
+			var newbuttontext = "";
+			var show = true;			
+			// if(buttontext == show_explore_str){
+			if(showhide == 'show'){
+				newbuttontext = hide_explore_str;
+				$(this).attr('showhide', 'hide');
+				// $(this).text(hide_explore_str);
 			}else{
+				newbuttontext = show_explore_str;
+				$(this).attr('showhide', 'show');
 				show = false;
-				$(this).text(show_explore_str);
 			}
-			addFlagPanel(show);
+
+			console.log(' new button ', showhide, newbuttontext);
+			var buttonstring = '<img class="btn_img" src=<%=networksrc%>></img> <%=buttonstring%>';
+			var compiled = _.template(buttonstring);
+			$(this).html(
+				compiled({
+					networksrc: serverIp + 'rc/network.png',
+					buttonstring: newbuttontext,
+			}));
+			g_SharePanelManager.addFlagPanel(show);
 		});
 
 		$('#feedback_button').on('click', function(){

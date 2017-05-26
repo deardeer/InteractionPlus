@@ -47,6 +47,27 @@
     transform: scale(0.8);
 }
 
+.delete_icon_right{
+    position: absolute;
+    left: 50%;
+    top: 0px;
+    background: white;
+    border-radius: 3px;
+    border: solid 1px;
+    transform: scale(0.8);
+}
+
+
+/*.delete_suggest_icon{
+    position: absolute;
+    right: -5px;
+    top: -5px;
+    background: white;
+    border-radius: 3px;
+    border: solid 1px;
+    transform: scale(0.8);
+}*/
+
 .delete_property_icon{
     position: absolute;
     right: -5px;
@@ -204,7 +225,7 @@
     border-radius: 3px;
     cursor: pointer;
     height: 100%;
-    width: 100%;
+    /*width: 100%;*/
 }
 
 .object_button_span_compose{	
@@ -385,6 +406,13 @@
 	/*float: right;*/
 }
 
+.sharerecord{
+	border: solid 1px black;
+	background: white;
+	/*margin-bottom: 2px;*/
+	/*padding: 3px 1px 3px 1px;*/
+	cursor: pointer;
+}
 
 
 #object_p{
@@ -478,7 +506,6 @@
 	stroke: #000000; /*E0E0E0;*/
 	stroke-width: 2px;
 }
-
 
 .not_possible {
   fill:rgb(200,200,200);

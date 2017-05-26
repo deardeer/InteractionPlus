@@ -4,9 +4,11 @@
 	1) object/property rename dialog
 */
 
-function InObjDialogRender(iId, objectGroupManager, propertyManager){
+function InObjDialogRender(iId, objectGroupManager, propertyManager, filterSetting){
+
 	var Info = {};
-	Info.__init__ = function(iId, objectGroupManager, propertyManager){
+
+	Info.__init__ = function(iId, objectGroupManager, propertyManager, filterSetting){
 		this.m_iId = iId;
 		this.m_ObjectGroupManager = objectGroupManager;
 		this.m_PropertyManager = propertyManager;
@@ -19,7 +21,13 @@ function InObjDialogRender(iId, objectGroupManager, propertyManager){
 		this.m_RenameObjectDialogId = "rename_object_dialog" + this.m_iId;
 		this.m_RenameObjectInputId = "objectname_input" + this.m_iId;
 
+		this.m_SubmitCommentDivId = 'comment_submit_dialog_' + this.m_iId;
+		this.m_SubCommentInputId = 'submit_comment_input_' + this.m_iId;
+		this.m_SubDesCommentInputId = "submit_description_input_" + this.m_iId;
+
 		this.m_RenameProperty = {};
+
+		this.m_FilterSetting = filterSetting;
 	}
 
 	Info.setRenameProperty = function(renameProperty){
@@ -106,6 +114,215 @@ function InObjDialogRender(iId, objectGroupManager, propertyManager){
 	    	}
 		});
 	}
+
+
+	Info.addSubmitDialog = function(){
+
+		var self = this;
+
+		if($('#' + self.m_SubmitCommentDivId).length != 0)
+			return;
+
+		var dialoghtml = '<div id=<%=dialogId%> title="Submission" hidden="hidden">'+
+							'<div>'+
+								'<label class="font_dialog">Name</label>'+
+								'<br>'+
+								'<input id=<%=commitInput%> ></input>'+
+							'</div>'+
+							 '<div>'+
+							 	'<label class="font_dialog">Detail Description</label>'+
+							 	'<br>'+
+							 	'<textarea id=<%=commitDesInput%> style="font-size:10px; width:100%; height: 100px"></textarea>'+
+						 	'</div>'+
+						 '</div>';
+		var compiled = _.template(dialoghtml);
+
+		testDiv = document.getElementById(self.m_ObjectDivId);
+		
+		testDiv.innerHTML = testDiv.innerHTML + compiled({
+			dialogId: self.m_SubmitCommentDivId,
+			commitInput: self.m_SubCommentInputId, 
+			commitDesInput: self.m_SubDesCommentInputId, 
+		});	
+
+		$("#" + self.m_SubmitCommentDivId).dialog({
+			autoOpen: false,
+			dialogClass: 'dialog_panel',
+		    buttons: {
+		        "Ok": function(){	        	
+		        	// self.submitExploration();
+		        	// self.renameObject();
+	    			// self.submitExploration();	    				  	
+				  	var caseurl = window.location.href;
+					if(isUrlSpecial(caseurl))
+						caseurl = getFakeUrlbyRealUrl(caseurl);
+					// console.log(" case url ", caseurl);
+					var time = self.getFormattedDate();
+					var exporeinfo = self.getExploreInfo();
+					var annotation = $('#' + self.m_SubDesCommentInputId).val();
+					var exploreinfo = self.getExploreInfo();
+				  	var data = {  	
+					  	caseurl: caseurl, //g_FilterSetting,
+					  	time: time,
+					  	annotation: annotation,
+					  	exploreinfo: exploreinfo,
+					};
+
+	    			g_ShareRecordComm.submitShareRecord(data, self, self.feedbackOfShareRecordSubmission);	    		
+		            $(this).dialog("close");
+		       	 },
+		       	"Cancel": function(){
+		       		$(this).dialog('close');
+		       	}
+	    	}
+		});
+	}
+
+	Info.getFormattedDate = function() {
+	    var date = new Date();
+	    var hour = date.getHours();
+	    var min = date.getMinutes();
+	    var sec = date.getSeconds();
+	    var str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " ";
+	    str += (hour<10? "0:":"") + hour + (min<10?"0:":":") + min + (sec<10?"0:":":") + sec; 
+	    // date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+	    return str;
+	}
+
+	Info.getExploreInfo = function(){
+		
+		var ExploreInfo = {};
+
+		//get the explored rect
+		var defineRegionInfo = {
+			left: Number($('#define_region_rect' + this.m_iId).attr('x')),
+			top: Number($('#define_region_rect' + this.m_iId).attr('y')),
+			height: Number($('#define_region_rect' + this.m_iId).attr('height')),
+			width: Number($('#define_region_rect' + this.m_iId).attr('width')),
+		};
+
+		ExploreInfo['rect'] = defineRegionInfo;
+
+		//select elements		
+
+		return ExploreInfo;
+	}
+
+	// Info.submitShareRecord = function(shareRecord, client, callback){
+
+	// 	var self = this;
+	//   	var url = 'http://vis.pku.edu.cn/addonfilter_server/submitShareRecord';
+	  	
+	//   	var caseurl = window.location.href;
+	// 	if(isUrlSpecial(caseurl))
+	// 		caseurl = getFakeUrlbyRealUrl(caseurl);
+	// 	// console.log(" case url ", caseurl);
+	// 	var time = self.getFormattedDate();
+	// 	var annotation = $('#' + self.m_SubDesCommentInputId).val();
+	// 	var exploreinfo = self.getExploreInfo();
+
+	//   	var data = {  	
+	// 	  	caseurl: caseurl, //g_FilterSetting,
+	// 	  	time: time,
+	// 	  	annotation: annotation,
+	// 	};
+
+	// 	$.ajax({
+	// 		url:url, 
+	// 		data:JSON.stringify(data), 
+	// 		type:"POST", 
+	// 		dataType: "jsonp",
+	// 		success: function(response){
+	// 			callback(client, response);
+	// 			// self.feedbackOfShareRecordSubmission(response);
+	// 			//update the left panel
+
+	// 		},
+	// 		"crossDomain":true
+	// 	});
+	// }
+
+	Info.feedbackOfShareRecordSubmission = function(self, response){
+		console.log('share record submission success');
+	}
+	
+	//submit the exploration
+	Info.submitExploration = function(){
+
+	  var self = this;
+
+	  //console.log(' submit exploration ');
+
+	  // var OffSet = $('#submit_button').offset();   
+	  
+	 var g_FilterSetting = {};
+	 var g_CurrentParentFlagId = -1;
+
+	  //generate the filter setting
+	  g_FilterSetting = self.m_FilterSetting.generateFilterSetting();
+	  // var filterSetting = {};
+
+	  //add the flag button, pos
+	  // //console.log(' comment text ', commentText);
+
+	  //upload to db in server
+	  var url = 'http://vis.pku.edu.cn/addonfilter_server/submitFS';
+	  // var url = 'http://vis.pku.edu.cn/addonfilter_server/submitShareRecord';
+	  
+	  // var url = 'localhost:1124/submitFS';
+
+	  g_FilterSetting['commentText'] = $('#' + self.m_SubCommentInputId).val();
+	  g_FilterSetting['detailText'] = $('#' + self.m_SubDesCommentInputId).val();
+
+	  if(g_CurrentParentFlagId != -1){
+	  	//console.log(" g_FilterSetting.parentid ", g_FilterSetting.parentid, ' , ', g_CurrentParentFlagId);
+	  	g_FilterSetting.parentid = g_CurrentParentFlagId;
+	  }
+  	  // filterSetting['parentid'] = -1;
+
+	  var data = {  	
+	  	filtersetting: g_FilterSetting, //g_FilterSetting,
+	  };
+
+	  $.ajax({
+	  	url:url, 
+	  	data:JSON.stringify(data), 
+	  	type:"POST", 
+	  	success: function(response){
+	  		//console.log(' success !', response);
+	  	},
+	  	// contentType: "application/json",
+	  	dataType: "jsonp",
+	    success: function(response){
+	    	self.feedbackOfFSSubmission(response);
+	    },//"feedbackOfFSSubmission",
+	    // contentType: "application/json;charset=utf-8",
+	  	"crossDomain":true
+	  });
+
+	}
+
+	Info.feedbackOfFSSubmission = function(response){
+		var self = this;
+		console.log(' response success ', response, response.flagId, self.m_iId);
+		// var flagId = response.flagId;
+		// console.log(' return flagId = ', flagId, self.m_iId);
+
+	//to be deleted
+	// var flagButtonPos = {
+	// 	x: d3.transform(d3.select('#submit_button' + self.m_iId).attr('transform')).translate[0],// + OffSet.left, 
+	// 	y: d3.transform(d3.select('#submit_button' + self.m_iId).attr('transform')).translate[1],// + OffSet.top,
+	// };
+
+	// var commentText = $('#submit_comment_input').val();
+
+	//update inter
+	// g_InteractionRecorder.addShareExploreCount();
+	}
+
+
+
+
 
 	Info.renameProperty = function(){
 		var self = this;
@@ -245,7 +462,7 @@ function InObjDialogRender(iId, objectGroupManager, propertyManager){
 	}
 
 
-	Info.__init__(iId, objectGroupManager, propertyManager);
+	Info.__init__(iId, objectGroupManager, propertyManager, filterSetting);
 	return Info;
 }
 

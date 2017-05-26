@@ -63,6 +63,7 @@ function InObjRender(iId, inObj){
 
     // var liButtonCircle = ['delete_circlebutton', 'shrink_button', 'share_button', 'submit_button', 'exit_button'];
     var liButtonCircle = ['delete_circlebutton', 'shrink_button',  'submit_button'];
+    var liButtonVisible = ['visible', 'visible', 'visible'];
 
     var place = 'left';
     if(g_ToolBarManager.isHMaskEnable())
@@ -72,6 +73,7 @@ function InObjRender(iId, inObj){
 
     for (var i = 0; i < liButtonCircle.length; i++) {
         var sButtonClass = liButtonCircle[i];
+        var visible = liButtonVisible[i];
         self.m_ToolButtonId[sButtonClass] = sButtonClass + self.m_iId;
         
         var translate_x, translate_y;
@@ -92,16 +94,10 @@ function InObjRender(iId, inObj){
         .attr('stroke', 'black')
         .attr("transform", function(){return "translate(" + translate_x + "," + translate_y + ")";})
         // .attr("transform", function(){return "translate(" + (x - circle_r) + "," + (y +  (circle_r * 2 + 2) * i)+ ")";})
-        .attr("r", circle_r); 
-
+        .attr("r", circle_r)
+        .style('visibility', visible);
         
     };
-
-    self.m_RectRegionGroup.select(".submit_button")
-    .style('visibility', 'hidden');
-
-    self.m_RectRegionGroup.select('.shrink_button')
-    .style('visibility', 'hidden');
 
     //close
     self.m_RectRegionGroup.append('text')
@@ -149,13 +145,14 @@ function InObjRender(iId, inObj){
       .attr('data-toggle', "tooltip")
       .attr('data-placement', "left")
       .attr('title', 'Shrink defined region')
-      .style('visibility', 'hidden')
+      .style('visibility', 'visible')
       // .attr("dx", "-.3em")
       .style('z-index', 100)
       .style('cursor', 'pointer')
       .style("text-anchor", "middle")
       .attr('font-size', function(d) { return '15px'; })
-      .attr('transform', function(){return "translate(" + (x - circle_r)+ "," + (y  + (circle_r * 2 + 2) )+ ")";})
+      .attr('transform', function(){return "translate(" + liTransXY[1][0]+ "," + liTransXY[1][1] + ")";})   
+      // .attr('transform', function(){return "translate(" + (x - circle_r)+ "," + (y  + (circle_r * 2 + 2) )+ ")";})
       .text(function(d){ return '\uf068'; })
       .on('mouseover', function(){    //highlight circle      
           self.m_RectRegionGroup.select('.shrink_button')
@@ -169,39 +166,38 @@ function InObjRender(iId, inObj){
           self.shrink();  
       });
 
-    /*
-    //share
-    gDefineRegion.append('text')
-    .attr('font-family', 'FontAwesome')  
-    .attr("dy", ".3em") 
-    .attr('data-toggle', "tooltip")
-    .attr('data-placement', "left")
-    .attr('title', 'Share exploration')
-    // .attr("dx", "-.3em")
-    .style("text-anchor", "middle")
-    .attr('font-size', function(d) { return '15px'; })
-    .style('cursor', 'pointer')
-    .attr('transform', function(){return "translate(" + (mouseBegin['x'] - circle_r)+ "," + (mouseBegin['y'] + (circle_r * 2 + 2) * 2 ) + ")";})
-    .text(function(d){ return '\uf1e0'; })  
-    .on("mouseover", function(){
-    // alert("delete");
-    d3.select('#share_button')
-    .attr('stroke-width', '2px');    
-    //triggle the 
-    // $(this).tooltip();
-    })
-    .on('mouseout', function(){
-    d3.select('#share_button')
-    .attr('stroke-width', '1px');
-    // d3.select(this)
-    // .attr('stroke', 'none');
-    })
-    .on('click', function(){
-    //console.log("Share!");
-    self.share();
-    });
-    */
-
+    
+    // //share
+    // gDefineRegion.append('text')
+    // .attr('font-family', 'FontAwesome')  
+    // .attr("dy", ".3em") 
+    // .attr('data-toggle', "tooltip")
+    // .attr('data-placement', "left")
+    // .attr('title', 'Share exploration')
+    // // .attr("dx", "-.3em")
+    // .style("text-anchor", "middle")
+    // .attr('font-size', function(d) { return '15px'; })
+    // .style('cursor', 'pointer')
+    // .attr('transform', function(){return "translate(" + (mouseBegin['x'] - circle_r)+ "," + (mouseBegin['y'] + (circle_r * 2 + 2) * 2 ) + ")";})
+    // .text(function(d){ return '\uf1e0'; })  
+    // .on("mouseover", function(){
+    // // alert("delete");
+    // d3.select('#share_button')
+    // .attr('stroke-width', '2px');    
+    // //triggle the 
+    // // $(this).tooltip();
+    // })
+    // .on('mouseout', function(){
+    // d3.select('#share_button')
+    // .attr('stroke-width', '1px');
+    // // d3.select(this)
+    // // .attr('stroke', 'none');
+    // })
+    // .on('click', function(){
+    // //console.log("Share!");
+    // self.share();
+    // });
+    
     //submit
     self.m_RectRegionGroup.append('text')
       .attr('font-family', 'FontAwesome')  
@@ -209,12 +205,13 @@ function InObjRender(iId, inObj){
       .attr('data-toggle', "tooltip")
       .attr('data-placement', "left")
       .attr('title', 'Submit exploration')
-      .style('visibility', 'hidden')
+      .style('visibility', 'visible')
       // .attr("dx", "-.3em")
       .style("text-anchor", "middle")
       .attr('font-size', function(d) { return '15px'; })
       .style('cursor', 'pointer')
-      .attr('transform', function(){return "translate(" + (x - circle_r)+ "," + (y + (circle_r * 2 + 2) * 2 ) + ")";})
+      .attr('transform', function(){return "translate(" + liTransXY[2][0]+ "," + liTransXY[2][1] + ")";})
+      // .attr('transform', function(){return "translate(" + (x - circle_r)+ "," + (y + (circle_r * 2 + 2) * 2 ) + ")";})
       .text(function(d){ return '\uf005'; })  
       .on("mouseover", function(){
           // alert("delete");
@@ -230,7 +227,9 @@ function InObjRender(iId, inObj){
           // .attr('stroke', 'none');
       })
       .on('click', function(){    
-          $('#comment_submit_dialog').dialog('open');  
+          console.log(" click submit ");
+         $('#comment_submit_dialog_' + self.m_iId).dialog('open');
+          // $('#comment_submit_dialog').dialog('open');  
       })
   }
 

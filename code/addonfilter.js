@@ -32,7 +32,6 @@ iScript.type = "text/javascript";
 iScript.src = serverIp + "library/numeric.js";//"https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js";
 document.getElementsByTagName("head")[0].appendChild(iScript); 
 
-
 iScript = document.createElement("script");
 iScript.type="text/javascript";
 iScript.src= serverIp + "library/jquery-1.11.3.min.js";
@@ -90,12 +89,22 @@ document.getElementsByTagName("head")[0].appendChild(iScript);
 
 iScript = document.createElement("script");
 iScript.type="text/javascript";
+iScript.src= serverIp + "src/decodevis.js";
+document.getElementsByTagName("head")[0].appendChild(iScript); 
+
+iScript = document.createElement("script");
+iScript.type="text/javascript";
 iScript.src= serverIp + "src/render/namerender.js";
 document.getElementsByTagName("head")[0].appendChild(iScript); 
 
 iScript = document.createElement("script");
 iScript.type="text/javascript";
 iScript.src= serverIp + "src/render/toolbarrender.js";
+document.getElementsByTagName("head")[0].appendChild(iScript); 
+
+iScript = document.createElement("script");
+iScript.type="text/javascript";
+iScript.src= serverIp + "src/render/sharepanelrender.js";
 document.getElementsByTagName("head")[0].appendChild(iScript); 
 
 iScript = document.createElement("script");
@@ -228,6 +237,12 @@ iScript.type="text/javascript";
 iScript.src= serverIp + "src/render/inobjfilterrender.js";
 document.getElementsByTagName("head")[0].appendChild(iScript); 
 
+
+iScript = document.createElement("script");
+iScript.type="text/javascript";
+iScript.src= serverIp + "src/comm/sharerecordcomm.js";
+document.getElementsByTagName("head")[0].appendChild(iScript); 
+
 iScript = document.createElement("script");
 iScript.type="text/javascript";
 iScript.src= serverIp + "src/inobj.js";
@@ -339,13 +354,19 @@ var g_FeedbackFilled = false;
 var g_StartTime, g_EndTime;
 var g_ToolBarManager;
 
+var g_VisDecoder;
+
 function exec(){
 
 	g_StartTime = new Date().getTime();
 
 	//check for first time user
 	g_ToolBarManager = new ToolBarManager();
+	g_SharePanelManager = new SharePanelManager();
+	g_ShareRecordComm = new ShareRecordComm();
 	g_NameRender = new NameRender();
+
+	g_VisDecoder = new VisDecoder();
 	
 	// USER = "Guest";
 	welcome();
@@ -442,14 +463,12 @@ function enterAddOn(){
 	});
 
 	$('#addondiv').on('mousedown', function (e) {
-	  // //console.log('mousedown', e.pageX, ', ', e.pageY); 
 	  var pos = getPosInAddonSvg(e);
 	  handleMouseDown(pos, addOnSvg);
 	}).on('mouseup', function(e) {
 	  handleMouseUp(); //e
 	}).on('mousemove', function(e) {
 	  var pos = getPosInAddonSvg(e);	
-	  // //console.log('mousemove', e.pageX, ', ', e.pageY);    
 	  handleMouseMove(pos, addOnSvg);
 	});
 
@@ -468,7 +487,6 @@ function enterAddOn(){
     '</defs>';
 
 	testDiv.innerHTML = testDiv.innerHTML + blurdefhtml;
-
 }
 
 function showOnlyManual(){
@@ -551,5 +569,6 @@ function exitAddOn(){
 		g_InObjManager.clear();
 	$('#addondiv').remove();
 	$('#floatpaneldiv').remove();
+	$("#flagpaneldiv").remove();
 
 }

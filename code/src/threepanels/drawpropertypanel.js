@@ -1550,6 +1550,8 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		var propertyNumeric = propertyBag.isPropertyNumber(iPId);
 		var propertyName = propertyBag.getPropertyNamebyId(iPId);
 
+		//suggested by decode vis
+		var suggestSemanticName = g_VisDecoder.getSemanticMap(propertyName);
 
 		//check the name
 		var changeName = ['fill', 'cx', 'cy', 'r'];
@@ -1565,6 +1567,12 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 			propertyName = propertyName.slice(0, 4);
 			propertyName += '.';
 		}
+
+		//add suggested name
+		if(suggestSemanticName != undefined)
+			propertyName += " - " + suggestSemanticName;
+
+		console.log(" suggestSemanticName ", propertyName, suggestSemanticName);
 
 		// if(prodiv.length == 0){
 		// 	//if parent div not exist
