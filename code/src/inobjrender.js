@@ -453,7 +453,7 @@ function InObjRender(iId, inObj){
   Info.addAnnotation = function(bAnnotation, annotationText, annotationId, annotationHighlight){
 
     var self = this;
-    console.log(' add annotation 44');
+    console.log(' add annotation 44 ?? ', self.m_mouseHoverCurrentEleId);
     
     self.m_Annotation = false;
 

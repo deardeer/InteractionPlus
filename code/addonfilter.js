@@ -114,6 +114,11 @@ document.getElementsByTagName("head")[0].appendChild(iScript);
 
 iScript = document.createElement("script");
 iScript.type="text/javascript";
+iScript.src= serverIp + "src/manager/elementidmanager.js";
+document.getElementsByTagName("head")[0].appendChild(iScript); 
+
+iScript = document.createElement("script");
+iScript.type="text/javascript";
 iScript.src= serverIp + "src/basic/basicdraw.js";
 document.getElementsByTagName("head")[0].appendChild(iScript); 
 
@@ -365,9 +370,10 @@ function exec(){
 	g_SharePanelManager = new SharePanelManager();
 	g_ShareRecordComm = new ShareRecordComm();
 	g_NameRender = new NameRender();
-
+	g_GlobalElementIdManager = new ElementIdManager();
 	g_VisDecoder = new VisDecoder();
 	
+
 	// USER = "Guest";
 	welcome();
 
@@ -486,7 +492,7 @@ function enterAddOn(){
 	    '</filter>' +        
     '</defs>';
 
-	testDiv.innerHTML = testDiv.innerHTML + blurdefhtml;
+	testDiv.innerHTML = testDiv.innerHTML + blurdefhtml;	
 }
 
 function showOnlyManual(){

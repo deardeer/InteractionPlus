@@ -4,14 +4,15 @@
 	1) object/property rename dialog
 */
 
-function InObjDialogRender(iId, objectGroupManager, propertyManager, filterSetting){
+function InObjDialogRender(iId, objectGroupManager, propertyManager, crossFilter, filterSetting){
 
 	var Info = {};
 
-	Info.__init__ = function(iId, objectGroupManager, propertyManager, filterSetting){
+	Info.__init__ = function(iId, objectGroupManager, propertyManager, crossFilter, filterSetting){
 		this.m_iId = iId;
 		this.m_ObjectGroupManager = objectGroupManager;
 		this.m_PropertyManager = propertyManager;
+		this.m_crossFilter = crossFilter;
 
 		this.m_PropertyDivId = 'property_p_' + this.m_iId;
 		this.m_RenamePropertyDialogId = "rename_property_dialog_" + this.m_iId; 
@@ -159,11 +160,13 @@ function InObjDialogRender(iId, objectGroupManager, propertyManager, filterSetti
 					// console.log(" case url ", caseurl);
 					var time = self.getFormattedDate();
 					var exporeinfo = self.getExploreInfo();
+					var titleinfo = $('#' + self.m_SubCommentInputId).val();
 					var annotation = $('#' + self.m_SubDesCommentInputId).val();
 					var exploreinfo = self.getExploreInfo();
 				  	var data = {  	
 					  	caseurl: caseurl, //g_FilterSetting,
 					  	time: time,
+					  	title: titleinfo,
 					  	annotation: annotation,
 					  	exploreinfo: exploreinfo,
 					};
@@ -203,7 +206,9 @@ function InObjDialogRender(iId, objectGroupManager, propertyManager, filterSetti
 
 		ExploreInfo['rect'] = defineRegionInfo;
 
-		//select elements		
+		//select elements	
+		var liFilterEleid = this.m_crossFilter.m_CrossFilterInfo.getFilteredElement();
+		ExploreInfo['eleids']  = liFilterEleid;
 
 		return ExploreInfo;
 	}
@@ -462,7 +467,7 @@ function InObjDialogRender(iId, objectGroupManager, propertyManager, filterSetti
 	}
 
 
-	Info.__init__(iId, objectGroupManager, propertyManager, filterSetting);
+	Info.__init__(iId, objectGroupManager, propertyManager, crossFilter, filterSetting);
 	return Info;
 }
 

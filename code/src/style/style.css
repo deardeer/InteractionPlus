@@ -253,6 +253,11 @@
    /* #f768a1;*/
 }
 
+.share-annotation-rect{
+	fill: none;
+	stroke-width: 2px;
+	stroke: black;
+}
 
 .logic_group_span{
     background: #fb6a4a; 

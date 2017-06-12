@@ -8,6 +8,8 @@ function initSpecialUrlMap(){
 	g_specialUrlMap = {
 		"http://www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html": 
 		"http://www.1nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html",
+		"http://www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html?_r=1&":
+		'2',
 		"http://www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html?_r=2&":
 		"1",		
 	}

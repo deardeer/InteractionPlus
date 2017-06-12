@@ -7,16 +7,20 @@ function ElementDetetor(iId){
 	Info.__init__ = function(iId){
 		this.m_iId = iId;
 		this.m_ElementProperties = new ElementPropoerties();
+
+
 		//console.log(" ElementDetetor ", this.m_iId);
 	}
 
 	//detect the elements: is the define region a circle
 	Info.detectElement = function(detectRect, circleBool){
 		//clear 
-		this.m_ElementProperties.clear();
-		//detect
-		this.updateInsideElements(detectRect, circleBool);
+		this.m_ElementProperties.clear();		
 
+		if(g_GlobalElementIdManager.isEleIdBuild() == false)
+			g_GlobalElementIdManager.buildupEleIdMap();
+		//detect
+		this.updateInsideElements2(detectRect, circleBool);
 	}
 
 	// Info.updateInsideElementsInCircle = function(definedCircle){
@@ -37,15 +41,92 @@ function ElementDetetor(iId){
 	// 	return selectElement;
 	// }
 
-	//detect and update the elements inside the rect in the elepro-object
+	Info.updateInsideElements2 = function(definedRect, circleBool){
+
+		var self = this;
+
+		var liElementIds = g_GlobalElementIdManager.getCandiateElementIds();
+		var liSelectElement = [];
+		var liSelectEleId = [];
+
+		var center_circle = {}; 
+		var center_radius = 0; 
+		if(circleBool != undefined){
+			center_circle = {
+				'x': (definedRect['x1'] + definedRect['x2']) * 0.5,
+				'y': (definedRect['y1'] + definedRect['y2']) * 0.5
+			};
+			center_radius = (definedRect['x2'] - definedRect['x1'])/2.;	
+		}
+
+		for (var i = liElementIds.length - 1; i >= 0; i--) {
+
+			var EleId = liElementIds[i];		
+			var Ele = g_GlobalElementIdManager.getElebyId(EleId);
+			var tempFrame = g_GlobalElementIdManager.getIFramebyEleId(EleId);
+					
+			tempRect = g_GlobalElementIdManager.getGlobalRectbyEleId(EleId);
+
+			if(circleBool != undefined){
+				//circle
+				var center_temp = {
+					'x': tempRect['g_x'],
+					'y': tempRect['g_y'],
+				};
+				if(Math.sqrt( (center_temp.x - center_circle.x) * (center_temp.x - center_circle.x) + (center_temp.y - center_circle.y) * (center_temp.y - center_circle.y)) <= center_radius){
+					liSelectEleId.push(EleId);
+					liSelectElement.push(Ele);
+				}
+			}else{
+				//rect
+				var bIntersect = isIntersect(definedRect, tempRect);
+				var bIntersect2 = isIntersect(tempRect, definedRect);	
+				if(bIntersect || bIntersect2){	
+					liSelectEleId.push(EleId);
+					liSelectElement.push(Ele);
+				}
+			}
+		};
+
+		console.log(" New Detect ", liSelectEleId.length);
+
+		for (var i = liSelectEleId.length - 1; i >= 0; i--) {
+			var selEleId = liSelectEleId[i];
+			var selEle = liSelectElement[i];
+			var iframe = g_GlobalElementIdManager.getIFramebyEleId(EleId);
+	
+
+			//get the global rect
+			var tempRect = g_GlobalElementIdManager.getGlobalRectbyEleId(selEleId);
+			
+			var globalCenPos = {
+				'x': (tempRect['x1'] + tempRect['x2']) * 0.5, 
+				'y': (tempRect['y1'] + tempRect['y2']) * 0.5
+			};
+
+			// var globalCenPos = //selGlobalCenPos[i];
+
+			var properties = getAttributesofElement(selEle);
+			var style = getOriginStyleofElement(selEle);
+			// var iframe = mapEleIFrame[selEle];
+			properties['g_x'] = tempRect['g_x'];
+			properties['g_y'] = tempRect['g_y'];
+			properties['g_box'] = {
+				'x1': tempRect['x1'],'x2': tempRect['x2'],
+				'y1': tempRect['y1'],'y2': tempRect['y2'],
+			}
+			// console.log('globalCenPos 333 ', selEle, globalCenPos);
+			self.m_ElementProperties.addElemenet(selEle, selEleId, properties, style, iframe);
+		};
+	}
+
+	//detect and update the elements inside the rect/circle in the elepro-object
 	Info.updateInsideElements = function(definedRect, circleBool){
 
 		var self = this;
 
 		//clear
 		var selectElement = [];
-		// var selGlobalCenPos = [];
-		var selGlobalRect = [];
 		// var selectElementGlobalRect = [];
 		var mapEleIFrame = {};
 
@@ -209,7 +290,7 @@ function ElementDetetor(iId){
 			properties['g_box'] = tempRect;
 
 			// console.log('globalCenPos 333 ', selEle, globalCenPos);
-			self.m_ElementProperties.addElemenet(selEle, properties, style, iframe);
+			self.m_ElementProperties.addElemenet(selEle, undefined, properties, style, iframe);
 		};
 
 		// $(selectElement).each(function(){
@@ -492,8 +573,12 @@ function ElementPropoerties(){
 		this.m_mapGroupEleIdEleIds = {};
 	}
 
-	Info.addElemenet = function(element, properties, originStyle, iframe){//m_mapIdcssText
+	Info.addElemenet = function(element, elementId, properties, originStyle, iframe){//m_mapIdcssText
 		var iId = this.m_liId.length + 1;
+		if(elementId != undefined)
+			iId = elementId;
+		// var iId = g_GlobalElementIdManager.getElementbyId(element);//this.m_liId.length + 1;
+		// console.log('[test] element ', element.tagName, iId);
 		this.m_liId.push(iId);
 		this.m_liElements.push(element);
 		this.m_mapIdElement[iId] = element;
@@ -693,334 +778,3 @@ function getInsideElements(definedRect){
 }
 
 
-
-//check for the within elements: given the children and defined rect, return the within ele and the frameeles
-function getWithinEles(children, definedRect, shiftpos){
-	
-	var withinResult = {};
-	var selectElement = [];
-	var iframeEle = [];
-	var selectElementGlobalRect = [];
-
-	var childParentMap = {};
-
-	while(children.length > 0){
-
-		// //console.log(" PPPP [0] ", children);
-
-		//get the children intersecting with define rect
-		var childrenGlobalRect = {};
-		var children_selected = $(children).filter(function(i){
-
-			//check the class is 'addonsvg'
-			var class_temp = $(this).attr('class');
-
-			// //console.log(" PPPP [0.1] ", class_temp);
-
-			if(class_temp == 'pku-vis-add-on'){
-				// //console.log(" PPPP [0.1] ", class_temp);
-				// //console.log('1');
-				return false;
-			}
-			//check the tag
-			if($(this).hasClass('ui-widget')){
-				// //console.log(" PPPP [0.2] ", class_temp);
-				// //console.log('2');
-				return false;
-			}
-			//get the rect of ele
-			var tempRect = getRectofElement(this);
-			tempRect['x1'] += shiftpos['x']; tempRect['x2'] += shiftpos['x'];
-			tempRect['y1'] += shiftpos['y']; tempRect['y2'] += shiftpos['y'];
-
-			var tag_temp = $(this).prop('tagName');	
-				
-			//skip [div] without width or height
-			if(tempRect['x2'] - tempRect['x1'] == 0 || tempRect['y2'] - tempRect['y1'] == 0){
-				if(tag_temp.toLowerCase() == 'div' || tag_temp.toLowerCase() == 'g'){
-					childrenGlobalRect[this] = tempRect;
-					return true;
-				}
-			}
-			//iframe
-			if(tag_temp.toLowerCase() == 'iframe'){		
-				//console.log('3');
-				// //console.log('iframe');
-				iframeEle.push(this);
-				return false;
-			}
-
-			var bIntersect = isIntersect(definedRect, tempRect);
-			var bIntersect2 = isIntersect(tempRect, definedRect);	
-			if(bIntersect || bIntersect2){
-				childrenGlobalRect[this] = tempRect;
-				return true;		
-			}
-
-			// //console.log(" PPPP [0.3] ", bIntersect, bIntersect2, definedRect, tempRect);
-			return false;		
-		});	
-
-
-		//update the children
-		children = [];
-		for (var i = children_selected.length - 1; i >= 0; i--){
-
-			var element_temp = children_selected[i];
-
-			// //console.log(" PPP [1] ", i , element_temp);
-
-			var subchild = $(element_temp).children();
-			var subNEChild = $(subchild).filter(function(){
-				return !checkforNETag(this);
-			});
-
-			// //console.log(" PPPP [2] ", element_temp, subNEChild.length);
-
-			if(subNEChild.length > 0){
-				//if there are children of this element
-				for (var j = subchild.length - 1; j >= 0; j--){
-					children.push(subchild[j]);
-
-					//update the parent node
-					// var iParentIndex = g_EleTree.insertEle(element_temp);
-					// childParentMap[children.length - 1] = iParentIndex;
-				};
-			}else{
-				if(!checkforNETag($(element_temp))){					
-					selectElement.push(element_temp);
-					selectElementGlobalRect.push(childrenGlobalRect[element_temp]);
-				}
-			}
-		};		
-	}	
-
-	withinResult['withinele'] = selectElement;
-	withinResult['iframeele'] = iframeEle;	
-	withinResult['globalrect'] = selectElementGlobalRect;
-
-	// g_EleTree.printTree();
-
-	return withinResult;
-}
-
-//check for the tag which is not ele
-function checkforNETag(element){
-	var NETagList = ['script', 'title', 'style', 'audio', 'image']; //
-	var tagname = $(element).prop('tagName').toLowerCase();
-	if(NETagList.indexOf(tagname) >= 0)
-		return true;
-
-	// var NETagList_2 = ['section', 'style', 'div'];
-	// if(NETagList_2.indexOf(tagname) >= 0 && $(element).inne)
-	return false;
-}
-
-
-//get the boundingbox rect of ele locally, note add the iframe offset if in iframe
-function getRectofElement(element, text){
-	var rect;	
-	var offset_t = {};
-	var offsetWidth_t = 0, offsetHeight_t = 0;	
-
-	// console.log(" svg ", element, element.tagName);
-	var isSVG = $(element)[0] instanceof SVGElement;
-	var error = element.tagName;
-	// var isSVG2 = false;
-	// if(error != undefined)
-	try {
-    	var isSVG2 = $(element.tagName.toLowerCase())[0] instanceof SVGElement; 
-	}catch(err) {
-		console.log("EOE", text, element);
-		// return element;
-	}
-
-	// if(isSVG){
-	if(isSVG || isSVG2){
-		// if(this.getBBox == undefined){
-		// 	rect = {
-		// 		'x1': 0,
-		// 		'x2': 0,
-		// 		'y1': 0,
-		// 		'y2': 0
-		// 	};
-		// 	return rect;
-		// }
-		//is an svg element
-
-		// var bbox;
-		$(element).each(function(){			
-			bbox = this.getBBox();
-			// console.log(this);
-		    offsetWidth_t += this.getBBox().width;
-		    offsetHeight_t += this.getBBox().height;	
-		});
-
-		var tag = element.tagName;
-		// if(tag == 'svg'){
-		if(false){
-			offset_t['left'] = bbox.x;	
-			offset_t['top'] = bbox.y;					
-		}else{
-			offset_t['left'] = $(element).offset().left;
-			offset_t['top'] = $(element).offset().top;
-		}
-	}else{
-		//is a html element
-		offset_t['left'] = $(element).offset().left;
-		offset_t['top'] = $(element).offset().top;
-		offsetWidth_t = parseInt($(element).width()); offsetHeight_t = parseInt($(element).height());
-		// //console.log("Not SVG", offsetWidth_t, ', ', offsetHeight_t);
-	}
-	// //console.log('bbox ', element, 'isSVG ', isSVG, ' width ', offsetWidth_t, 'height ', offsetHeight_t);
-	var x1_t = offset_t['left'], x2_t = x1_t + offsetWidth_t;
-	var y1_t = offset_t['top'], y2_t = y1_t + offsetHeight_t;
-	rect = {
-		'x1': x1_t,
-		'x2': x2_t,
-		'y1': y1_t,
-		'y2': y2_t
-	};
-	// //console.log(' rect ', rect);
-	return rect;
-}
-
-function getCentroidOfEle(element){
-	var centroidpos = {};
-	var rect = getRectofElement(element);
-	centroidpos['x'] = (rect['x1'] + rect['x2']) * 0.5;
-	centroidpos['y'] = (rect['y1'] + rect['y2']) * 0.5;
-	return centroidpos;
-}
-
-//get the attributes of ele
-function getAttributesofElement(element){
-	var attris = {};
-	var tag = element.tagName.toLowerCase();
-	//type
-	attris['type'] = tag;
-	//value
-	var EleValueList = ['text', 'span'];
-	if(EleValueList.indexOf(attris['type']) >= 0){
-		attris['value'] = element.textContent;
-	}
-	//visual property
-	// //console.log('ele 1', element);
-	var visualattri = getAttrisofElement(element);
-	for (var key in visualattri){
-		attris[key] = visualattri[key];
-	}
-	// attris['visual'] = visualattri;
-	// //console.log(' attris ', attris);
-	return attris;
-}
-
-//get the origin style 
-function getOriginStyleofElement(element){
-	return element.style.cssText;
-}
-
-//get the visual attris of ele
-function getAttrisofElement(element){
-	// var isSVG = element instanceof SVGElement;
-	// var tag = element.tagName.toLowerCase();
-	var visualattri = {};
-
-	//attri		
-	for (var i = element.attributes.length - 1; i >= 0; i--){
-		var namevalue = element.attributes[i];
-		
-		var name = namevalue.name, value = namevalue.value;
-		// //console.log(' here ', namevalue);
-		if(name == 'class'){
-			name += '_obj';
-		}
-
-		if(name != 'style'){
-			var numbervalue = parseFloat(value);
-			if(isNaN(numbervalue))
-				visualattri[name] = value;
-			else
-				visualattri[name] = numbervalue;
-		}
-	}
-	//style
-	$.each(element.style, function(i, attr){
-		var value = element.style[attr]
-		visualattri[attr] = value;
-	})
-
-	return visualattri;
-}
-
-//expand the rect 
-function expandRect(Rect, expandPixle){
-	Rect['x1'] -= expandPixle;
-	Rect['x2'] += expandPixle;
-	Rect['y1'] -= expandPixle;
-	Rect['y2'] += expandPixle;
-	return Rect;
-}
-
-//two rects intersect or not 
-function isIntersect(Rect1, Rect2){
-    if(Rect1['x1'] > Rect2['x2'] || Rect1['x2'] < Rect2['x1'] || Rect1['y1'] > Rect2['y2'] || Rect1['y2'] < Rect2['y1'])
-    	return false;
-    return true;
-}
-
-function isInFan(Pos, Fan){
-	var centerPos = Fan.centerPos;
-	var radius = Fan.radius;
-	// if((centerPos.x - Pos.x) * (centerPos.x - Pos.x) + (centerPos.y - Pos.y) * (centerPos.y - Pos.x) > radius * radius){
-	// 	console.log(" XXXX ", centerPos, Pos, (centerPos.x - Pos.x) * (centerPos.x - Pos.x) + (centerPos.y - Pos.y) * (centerPos.y - Pos.x), " RRRR ", radius * radius);
-	// 	return false;
-	// }
-	var arc;
-	if(centerPos.y == Pos.y){
-		if(Pos.x <= centerPos.x){
-			//270
-			arc = Math.PI * 3/2;
-		}else
-			arc = Math.PI * 1/2;
-	}else{
-		if(centerPos.y < Pos.y){
-			//2/3
-			if(centerPos.x > Pos.x){
-				//3:180~270
-				arc = Math.atan((centerPos.x - Pos.x)/(Pos.y - centerPos.y)) + Math.PI;
-			}else{
-				//2: 90~180
-				if(Pos.x == centerPos.x)
-					arc = Math.PI;
-				else
-					arc = Math.atan((Pos.y - centerPos.y)/(Pos.x - centerPos.x)) + Math.PI/2.;
-			}
-		}else{
-			//1/4
-			if(centerPos.x > Pos.x){
-				//4: 270~360
-				if(Pos.x == centerPos.x)
-					arc = Math.PI * 2;
-				else
-					arc = Math.atan((centerPos.y - Pos.y)/(centerPos.x - Pos.x)) + Math.PI * 3/2;
-			}else{
-				//1: 0~90
-				arc = Math.atan((Pos.x - centerPos.x)/(centerPos.y - Pos.y));
-			}
-		}
-	}
-
-	var beginArc = Fan.beginArc, endArc = Fan.endArc;
-	console.log(" Fan Number ", arc);
-	if(arc >= beginArc && arc < endArc)
-		return true;
-	return false;
-}
-
-function isWithinRect(Rect, X, Y){
-	var isIn = false;
-	if(X <= Rect['x2'] && X >= Rect['x1'] && Y <= Rect['y2'] && Y >= Rect['y1'])
-		isIn = true;
-	return isIn;
-}

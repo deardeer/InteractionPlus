@@ -7,6 +7,7 @@ function SharePanelManager(){
 
 	Info.__init__ = function(){		
 		Info.m_liShareRecordInfo = {};
+		Info.m_iCurrentPreviewRecordId = -1;
 	}
 
 	Info.addFlagPanel = function(show){
@@ -101,7 +102,7 @@ function SharePanelManager(){
 			var record = liRecordInfo[i];
 			var html = '<div class="sharerecord" id=<%=shareId%> recordid=<%=recordid%> style="position:relative">' +							
 							'<i class="fa fa-times delete_icon_right hidden" divid=<%=shareId%> recordid=<%=recordid%>></i>'+				
-							'<p style="margin:2px"><%=desp%></p>' +
+							'<p style="margin:2px"><b><%=title%></b> <%=desp%></p>' +
 							'<p style="font-size: 8px;margin: 2px;"><%=time%></p>' +
 					   '</div>';
 			// var html = '<p><%=desp%></p>' +
@@ -110,6 +111,7 @@ function SharePanelManager(){
 			sharePanelDiv.innerHTML += compiled({
 				recordid: record['id'],
 				shareId: 'sharerecord_' + i,
+				title: record['title'],
 				desp: record['des'],
 				time: record['time'],
 			});
@@ -129,7 +131,7 @@ function SharePanelManager(){
 		})
 		.on('click', function(){
 			console.log('click record ', d3.select(this).attr('recordid'), 
-				self.m_liShareRecordInfo[d3.select(this).attr('recordid')]);
+				self.m_liShareRecordInfo[d3.select(this).attr('recordid')]);			
 			self.previewShareRecord(d3.select(this).attr('recordid'));
 		});
 
@@ -140,7 +142,12 @@ function SharePanelManager(){
 			console.log(' delete ', recordid, parentdivid);
 			//remove the record
 			g_ShareRecordComm.deleteShareRecord(recordid, self, self.deleteShareRecord);
-			d3.select('#' + parentdivid).remove();
+			d3.select('#' + parentdivid).remove();		
+			if(self.m_iCurrentPreviewRecordId == recordid){
+				//remove the preview 
+				self.annotationElesbyRecordId(self.m_iCurrentPreviewRecordId, false);
+			}	
+			d3.event.stopPropagation();
 		})
 	}
 
@@ -155,7 +162,7 @@ function SharePanelManager(){
 		var previewDOM = d3.select('#preview_rect');
 
 		var rect = self.m_liShareRecordInfo[recordId]['rect'];
-
+	
 		if(previewDOM.empty() == true){
 			console.log(" add share rect ");
 			//add
@@ -169,21 +176,75 @@ function SharePanelManager(){
 	        .style('opacity', '0.7')
 	        .attr("x", rect.left)
 	        .attr("y", rect.top); 
+
+    		window.scrollTo(rect.left - 100, rect.top - 100);
 	        
-			// $('body')[0].appendChild(flagpanelDiv);
+	        self.annotationElesbyRecordId(recordId, true);	 
+			// $('body')[0].appendChild(flagpanelDiv);			
 		}else{
 			//false
-			if(previewDOM.attr('previewid') == recordId)
-				previewDOM.remove();
-			else{
+			if(previewDOM.attr('previewid') == recordId){
+				previewDOM.remove();				
+	        	self.annotationElesbyRecordId(recordId, false);
+
+    			// window.scrollTo(0, 0);
+			}else{				
 				previewDOM
 				.attr('previewid', recordId)
 		        .attr("width", rect.width)
 		        .attr("height", rect.height)
 		        .attr("x", rect.left)
 		        .attr("y", rect.top); 
-		        window.scrollBy(0, rect.top - 20);
+
+    			window.scrollTo(rect.left - 100, rect.top - 100);
+
+		        self.annotationElesbyRecordId(recordId, true);
 			}
+		}
+	}
+
+	Info.annotationElesbyRecordId = function(recordId, highlight){
+
+		console.log(" annotation element ids ", liEleId);
+		
+		var self = this;
+		var liEleId = self.m_liShareRecordInfo[recordId]['eleids'];
+
+		if(highlight == false){
+			console.log('remove share group ');
+			//remove
+			d3.select('.share-annotation-group')
+			.remove();
+
+	        self.m_iCurrentPreviewRecordId = -1;
+		}else{
+			if(self.m_iCurrentPreviewRecordId == recordId)
+				return;
+			else{
+				d3.select('.share-annotation-group')
+				.remove();
+			}
+			console.log('add share group ');
+			//add the border 	
+			var sharegroup = d3.select('#addondiv svg')
+			.append('g')
+			.attr('class', 'share-annotation-group');
+
+			for (var i = liEleId.length - 1; i >= 0; i--) {
+				var iEleId = liEleId[i];
+				var Rect = g_GlobalElementIdManager.getGlobalRectbyEleId(iEleId);
+				console.log(" rect = ", i, Rect);
+			    sharegroup
+			    .append('rect')    
+			    .attr('class', 'share-annotation-rect')
+			    // .attr("filter", "url(#glow)")
+			    .attr('id', 'share-annotation-rect-' + iEleId)
+			    .attr('x', Rect['x1'])
+			    .attr('y', Rect['y1'])
+			    .attr('width', Rect['x2'] - Rect['x1'])
+			    .attr('height', Rect['y2'] - Rect['y1']);
+			}
+		    self.m_iCurrentPreviewRecordId = recordId;
 		}
 	}
 

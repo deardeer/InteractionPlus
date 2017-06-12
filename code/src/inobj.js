@@ -103,7 +103,8 @@ function InObj(iId, bMask, maskType){
 	    //filter setting info
 	    this.m_FilterSettingInfo = new FilterSettingInfo(this.m_iId, this.m_ObjectGroupManager, this.m_PropertyManager);
 		
-		this.m_DialogRender = new InObjDialogRender(this.m_iId, this.m_ObjectGroupManager, this.m_PropertyManager, this.m_FilterSettingInfo);
+		this.m_DialogRender = new InObjDialogRender(this.m_iId, this.m_ObjectGroupManager, this.m_PropertyManager, 
+			this.m_CrossFilter, this.m_FilterSettingInfo);
 		this.m_DialogRender.addProReNameDialog();
 		this.m_DialogRender.addObjReNameDialog();
 		this.m_DialogRender.addSubmitDialog();
