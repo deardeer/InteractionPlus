@@ -31,6 +31,10 @@ function InObjManager(){
 		return this.m_CurrentObjId;
 	}
 
+	Info.getCurrentObj = function(){
+		return this.getInObj(this.m_CurrentObjId);
+	}
+
 
 //~~~~~~~~~~ Obj List ~~~~~~~~~~~~//
 	Info.clear = function(){
@@ -80,7 +84,6 @@ function InObjManager(){
 	return Info;
 }
 
-g_InObjManager = new InObjManager();
 
 
 

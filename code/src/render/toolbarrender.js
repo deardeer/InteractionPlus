@@ -49,7 +49,10 @@ function ToolBarRender(){
 				    '<button class="btn btn-warning btn-xs function_button" type="button" id="textselect_button"><img class="btn_img" src=<%=renameimgsrc%>></img> Rename</button>' + 
 				    '<button class="btn btn-warning btn-xs function_button" type="button" id="vlineup_button"><img class="btn_img" src=<%=vlineupimgsrc%>></img> V-Line</button>' + 
 				    '<button class="btn btn-warning btn-xs function_button" type="button" id="hlineup_button"><img class="btn_img" src=<%=hlineupimgsrc%>></img> H-Line</button>' + 
-				'</div>' + 			
+				'</div>' + 		
+				'<div class="btn-group" style="margin:5px; float: left;">' + 
+				    '<button class="btn btn-warning btn-xs function_button" type="button" id="annotate_button"><img class="btn_img" src=<%=annotateimgsrc%>></img> Annotate</button>' + 				
+				'</div>' +
 				//'<div class="btn-group" style="margin:5px; float: left;">' + 
 					// '<button class="btn btn-warning btn-xs function_button" type="button" id="tablemask_button"><img class="btn_img" src=<%=tabularimgsrc%>></img> Tabluar Mask</button>' + 
 					//'<button class="btn btn-warning btn-xs function_button" type="button" id="networkmask_button"><img class="btn_img" src=<%=networkimgsrc%>></img> Network</button>' + 
@@ -74,6 +77,7 @@ function ToolBarRender(){
 			showtext: show_explore_str,
 			imgsrc: serverIp + "rc/logo2.png",
 			renameimgsrc: serverIp + 'rc/rename.png',
+			annotateimgsrc: serverIp + 'rc/brush-note.png',
 			vlineupimgsrc: serverIp + 'rc/v_lineup.png',
 			hlineupimgsrc: serverIp + 'rc/h_lineup.png',
 			selectimgsrc: serverIp + "rc/rect_select.png",
@@ -187,6 +191,63 @@ function ToolBarRender(){
 				    // alert("Got selected text " + selectedText);	
 				    // var relative=document.body.parentNode.getBoundingClientRect();
 					g_NameRender.selectText(selectedText);
+				}
+				// else{
+				// 	//clear
+				// 	//console.log('SEESE2');
+				// 	g_NameRender.clearSelectText();
+				// }
+			}
+
+			//set the svg mouse function disable
+			$('#addondiv').css("pointer-events", "none"); 
+
+			document.onmouseup = doSomethingWithSelectedText;
+			document.onkeyup = doSomethingWithSelectedText;
+		});
+
+		$('#annotate_button').on('click', function(){
+			//TODO if no inobj
+			//check it clicked or not
+			var classList = $(this)[0].classList;
+			if(classList.contains("function_button-clicked") == true){
+				//clicked
+				$('.function_button-clicked').removeClass('function_button-clicked');
+				//set unclick
+				$('#addondiv').css('pointer-events', 'all');
+
+				// g_NameRender.clearSelectText();
+				document.onmouseup = "";
+				document.onkeyup = "";
+				return ;
+			}else{
+				$('.function_button-clicked').removeClass('function_button-clicked');
+				$(this).addClass('function_button-clicked');
+			}
+			
+			//console.log(" name button clicked ");
+
+			function getSelectedText() {
+				var text = "";
+				if (typeof window.getSelection != "undefined") {
+				    text = window.getSelection().toString();
+				} else if (typeof document.selection != "undefined" && document.selection.type == "Text") {
+				    text = document.selection.createRange().text;
+				}
+				return text;
+			}
+
+			function doSomethingWithSelectedText() {
+				var selectedText = getSelectedText();
+
+				// //console.log(" SESE ", selectedText, selectedText==undefined);
+				
+				if (selectedText) {
+				    // alert("Got selected text " + selectedText);	
+				    // var relative=document.body.parentNode.getBoundingClientRect();
+				    console.log(" annotate text ", selectedText);
+				    g_SharePanelManager.selectText(selectedText);
+					// g_NameRender.selectText(selectedText);
 				}
 				// else{
 				// 	//clear

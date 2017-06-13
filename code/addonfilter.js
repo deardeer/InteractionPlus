@@ -368,6 +368,7 @@ function exec(){
 	//check for first time user
 	g_ToolBarManager = new ToolBarManager();
 	g_SharePanelManager = new SharePanelManager();
+	g_InObjManager = new InObjManager();
 	g_ShareRecordComm = new ShareRecordComm();
 	g_NameRender = new NameRender();
 	g_GlobalElementIdManager = new ElementIdManager();

@@ -158,17 +158,20 @@ function InObjDialogRender(iId, objectGroupManager, propertyManager, crossFilter
 					if(isUrlSpecial(caseurl))
 						caseurl = getFakeUrlbyRealUrl(caseurl);
 					// console.log(" case url ", caseurl);
-					var time = self.getFormattedDate();
-					var exporeinfo = self.getExploreInfo();
+					var time = getFormattedDate();
+					var exporeinfo = self.m_crossFilter.getExploreInfo();
 					var titleinfo = $('#' + self.m_SubCommentInputId).val();
 					var annotation = $('#' + self.m_SubDesCommentInputId).val();
-					var exploreinfo = self.getExploreInfo();
+					// var exploreinfo = self.getExploreInfo();
 				  	var data = {  	
+				  		type: "dialog",
 					  	caseurl: caseurl, //g_FilterSetting,
 					  	time: time,
+					  	exploreinfo: exporeinfo,
 					  	title: titleinfo,
 					  	annotation: annotation,
-					  	exploreinfo: exploreinfo,
+					  	textrect: {},
+					  	contexttext: "",
 					};
 
 	    			g_ShareRecordComm.submitShareRecord(data, self, self.feedbackOfShareRecordSubmission);	    		
@@ -181,37 +184,8 @@ function InObjDialogRender(iId, objectGroupManager, propertyManager, crossFilter
 		});
 	}
 
-	Info.getFormattedDate = function() {
-	    var date = new Date();
-	    var hour = date.getHours();
-	    var min = date.getMinutes();
-	    var sec = date.getSeconds();
-	    var str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " ";
-	    str += (hour<10? "0:":"") + hour + (min<10?"0:":":") + min + (sec<10?"0:":":") + sec; 
-	    // date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-	    return str;
-	}
 
-	Info.getExploreInfo = function(){
-		
-		var ExploreInfo = {};
-
-		//get the explored rect
-		var defineRegionInfo = {
-			left: Number($('#define_region_rect' + this.m_iId).attr('x')),
-			top: Number($('#define_region_rect' + this.m_iId).attr('y')),
-			height: Number($('#define_region_rect' + this.m_iId).attr('height')),
-			width: Number($('#define_region_rect' + this.m_iId).attr('width')),
-		};
-
-		ExploreInfo['rect'] = defineRegionInfo;
-
-		//select elements	
-		var liFilterEleid = this.m_crossFilter.m_CrossFilterInfo.getFilteredElement();
-		ExploreInfo['eleids']  = liFilterEleid;
-
-		return ExploreInfo;
-	}
+	
 
 	// Info.submitShareRecord = function(shareRecord, client, callback){
 
@@ -469,5 +443,17 @@ function InObjDialogRender(iId, objectGroupManager, propertyManager, crossFilter
 
 	Info.__init__(iId, objectGroupManager, propertyManager, crossFilter, filterSetting);
 	return Info;
+}
+
+
+var getFormattedDate = function() {
+	var date = new Date();
+	var hour = date.getHours();
+	var min = date.getMinutes();
+	var sec = date.getSeconds();
+	var str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " ";
+	str += (hour<10? "0:":"") + hour + (min<10?"0:":":") + min + (sec<10?"0:":":") + sec; 
+	// date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+	return str;
 }
 

@@ -6,8 +6,205 @@ function SharePanelManager(){
 	var Info = {};
 
 	Info.__init__ = function(){		
-		Info.m_liShareRecordInfo = {};
+		Info.m_mapShareRecordInfo = {};
 		Info.m_iCurrentPreviewRecordId = -1;
+
+		// self.m_SelectText = "";
+		// self.m_SelectRectonAddDiv = {};
+		self.m_hoverRecordId = -1;
+		self.m_hoverText = "";
+		self.m_hoverTextRect = {};
+	}
+
+	Info.getShareRecordInfobyId = function(iShareRecord){
+		return this.m_mapShareRecordInfo[iShareRecord];
+	}
+
+	//draw the annotation render
+	Info.selectText = function(selectText){
+		var self = this;
+
+		var r =window.getSelection().getRangeAt(0).getBoundingClientRect();
+		var relative = $('#addondiv')[0].getBoundingClientRect();
+
+		var selectRectonAddDiv = {
+			'x': r.left - relative.left - HIGHLIGHTPAD,
+			'y': r.top - relative.top - HIGHLIGHTPAD,
+			'width': r.right - r.left + HIGHLIGHTPAD * 2,
+			'height': r.bottom - r.top + HIGHLIGHTPAD * 2, 
+		};		
+		
+		self.drawAnnotationRect('share-annotation-frame-temp', selectText, selectRectonAddDiv, -1);		
+	}
+
+
+	Info.drawAnnotationRectbyRecordId = function(iSharedRecordId){
+
+		var recordInfo = g_SharePanelManager.getShareRecordInfobyId(iSharedRecordId);
+		var textRect = recordInfo.textrect;
+		var text = recordInfo.text;
+		if(textRect == undefined)
+			return;
+		var DomId = 'share-annotation-frame-' + iSharedRecordId;
+		this.drawAnnotationRect(DomId, text, textRect, iSharedRecordId);		
+	}
+
+	Info.drawAnnotationRect = function(DomId, ShareText, Rect, ShareReocrdId){	
+
+		var self = this;
+
+		if(d3.select('#' + DomId).empty() == false)
+			d3.select('#' + DomId).remove();
+
+		var annotateGroup = d3.select('#addondiv svg')
+		.append('g')
+		.attr('id', DomId)
+		.attr('recordId', ShareReocrdId);
+		
+		var textAnnotateRect = annotateGroup
+		.append('rect')
+		.attr("class", 'share-rect')
+		.attr('recordText', ShareText)
+		.attr('x', Rect['x'])
+		.attr('y', Rect['y'])
+		.attr('width', Rect['width'])
+		.attr('height', Rect['height'])
+		.style('stroke', '#4CAF50')
+		.style('stroke-width', '1px')
+		.style('pointer-events', 'all')
+		.style('fill', 'rgba(205, 220, 57, 0.31)')
+		.on('mouseover', function(){
+			var iShareRecordId = d3.select(this.parentNode).attr('recordId');
+			d3.select(this).style('stroke-width', '3px');
+
+			var Pos = {
+				'x': Rect['x'] + Rect['width'],
+				'y': Rect['y'],
+			};
+			console.log('mouse over 111 ', iShareRecordId, Pos);
+
+			self.m_hoverRecordId = iShareRecordId;
+			self.m_hoverText = d3.select(this).attr('recordText');
+			self.m_hoverTextRect = Rect;
+
+			//add the panel		
+			self.drawAnnotationPanel(Pos, 'visible');				
+		})
+		.on('mouseout', function(){
+			var iShareRecordId = d3.select(this.parentNode).attr('recordId');
+			console.log(' mouse out 111 ', iShareRecordId);
+			d3.select(this).style('stroke-width', '1px');
+			var Pos = {
+				'x': Rect['x'] + Rect['width'],
+				'y': Rect['y'],
+			};
+			self.drawAnnotationPanel(Pos, 'hidden');		
+		});	
+
+	}
+
+	Info.drawAnnotationPanel = function(pos, hidden){
+
+		var self = this;
+		var annotationPanelDomId = "share-annotation-button-panel";
+		var annotationPanel = {};
+
+		if(d3.select('#' + annotationPanelDomId).empty() == true){
+			console.log(' not exist ');
+			//not exist
+			annotationPanel = d3.select('#addondiv')
+				.append('div')
+				.attr('id', annotationPanelDomId)
+				.style('position', 'absolute')
+				.style('pointer-events', 'visiblePainted')
+				.style('left', pos['x'] + 'px')
+				.style('top', pos['y'] + 'px')
+				.style('visibility', hidden)
+				.on('mouseover', function(){
+					d3.select(this)
+					.style('visibility', 'visible');
+				})
+				.on('mouseout', function(){
+					d3.select(this)
+					.style('visibility', 'hidden');					
+				});
+			//add buttons
+			var buttonhtml = 
+			// '<div style="float: left; width: 30%; height: 100%; padding: 3px">'+
+				'<button class="btn btn-warning btn-xs function_button" id="share-note">Share</button>' +
+				'<button class="btn btn-warning btn-xs function_button" id="delete-note">Delete</button>';
+
+			var object_div = document.getElementById(annotationPanelDomId);
+			var compiled = _.template(buttonhtml);	
+			object_div.innerHTML = object_div.innerHTML + compiled({});
+
+			//share the note
+			d3.select('#share-note')
+			.on('click', function(){
+				console.log(" click jump button ");
+
+				var caseurl = window.location.href;
+				if(isUrlSpecial(caseurl))
+					caseurl = getFakeUrlbyRealUrl(caseurl);
+				// console.log(" case url ", caseurl);
+				var time = getFormattedDate();
+				var exploreinfo = g_InObjManager.getCurrentObj().m_CrossFilter.getExploreInfo();
+				var data = {  	
+			  		type: 'context',
+				  	caseurl: caseurl, //g_FilterSetting,
+				  	time: time,
+				  	exploreinfo: exploreinfo,
+				  	title: "",
+				  	annotation: "",
+				  	textrect: self.m_hoverTextRect,
+				  	contexttext: self.m_hoverText,			
+				};
+
+    			g_ShareRecordComm.submitShareRecord(data, self, self.FBofsubmitShareRecordfromNote);	    		
+	          
+			});
+
+			d3.select('#delete-note')
+			.on('click', function(){
+				console.log(" click delete note button ");
+				if(self.m_hoverRecordId == -1){
+					//not submit 
+					d3.select('#share-annotation-frame-temp').remove();
+					self.drawAnnotationPanel({'x': 0, 'y': 0}, 'hidden');	
+				}else
+					g_ShareRecordComm.deleteShareRecord(self.m_hoverRecordId, self, self.FBofdeleteShareRecordfromNote);
+				// self.deleteShareRecord(self.m_iCurrentPreviewRecord);
+			})
+		}
+
+		d3.select('#' + annotationPanelDomId)
+		.style('left', pos['x'] + 'px')
+		.style('top', pos['y'] + 'px')
+		.style('visibility', hidden);
+	}
+
+	Info.FBofsubmitShareRecordfromNote = function(self, response){
+		console.log(' success submit context record ', self.m_hoverRecordId, response.id, JSON.parse(response.textrect), response.contexttext);
+		if(self.m_hoverRecordId == -1){
+			//remove 
+			d3.select('#share-annotation-frame-temp')
+			.remove();
+			//add new
+			var DomId = 'share-annotation-frame-' + response.id;
+			self.drawAnnotationRect(DomId, response.contexttext, JSON.parse(response.textrect), response.id);
+
+			self.m_hoverRecordId = response.id;
+			console.log(' hover record !! ', self.m_hoverRecordId);
+		}
+	}
+
+	Info.FBofdeleteShareRecordfromNote = function(self){
+		//remove the rect
+		console.log(' delete note ', self.m_hoverRecordId);
+		d3.select('#share-annotation-frame-' + self.m_hoverRecordId).remove();
+		//hide the panel
+		self.drawAnnotationPanel({'x': 0, 'y': 0}, 'hidden');	
+		//drawAnnotationPanel
 	}
 
 	Info.addFlagPanel = function(show){
@@ -97,25 +294,30 @@ function SharePanelManager(){
 		var sharePanelDiv = document.getElementById("flagpaneldiv");
 
 		//add shared records
-		this.m_liShareRecordInfo = {};
+		this.m_mapShareRecordInfo = {};
 		for (var i = liRecordInfo.length - 1; i >= 0; i--) {
 			var record = liRecordInfo[i];
-			var html = '<div class="sharerecord" id=<%=shareId%> recordid=<%=recordid%> style="position:relative">' +							
+			self.m_mapShareRecordInfo[record.id] = record;
+			if(record.type == 'dialog'){
+				console.log(' draw dialog ', record.id);
+				var html = '<div class="sharerecord" id=<%=shareId%> recordid=<%=recordid%> style="position:relative">' +							
 							'<i class="fa fa-times delete_icon_right hidden" divid=<%=shareId%> recordid=<%=recordid%>></i>'+				
 							'<p style="margin:2px"><b><%=title%></b> <%=desp%></p>' +
 							'<p style="font-size: 8px;margin: 2px;"><%=time%></p>' +
 					   '</div>';
-			// var html = '<p><%=desp%></p>' +
-			// 		   '<p><small><%=time%></small></p>';
-			var compiled = _.template(html);
-			sharePanelDiv.innerHTML += compiled({
-				recordid: record['id'],
-				shareId: 'sharerecord_' + i,
-				title: record['title'],
-				desp: record['des'],
-				time: record['time'],
-			});
-			self.m_liShareRecordInfo[record.id] = record;
+				// var html = '<p><%=desp%></p>' +
+				// 		   '<p><small><%=time%></small></p>';
+				var compiled = _.template(html);
+				sharePanelDiv.innerHTML += compiled({
+					recordid: record['id'],
+					shareId: 'sharerecord_' + i,
+					title: record['title'],
+					desp: record['des'],
+					time: record['time'],
+				});
+			}else if(record.type == 'context'){
+				self.drawAnnotationRectbyRecordId(record.id);
+			}			
 		};
 
 		d3.selectAll('.sharerecord')
@@ -131,7 +333,7 @@ function SharePanelManager(){
 		})
 		.on('click', function(){
 			console.log('click record ', d3.select(this).attr('recordid'), 
-				self.m_liShareRecordInfo[d3.select(this).attr('recordid')]);			
+				self.m_mapShareRecordInfo[d3.select(this).attr('recordid')]);			
 			self.previewShareRecord(d3.select(this).attr('recordid'));
 		});
 
@@ -161,7 +363,7 @@ function SharePanelManager(){
 		var self = this;
 		var previewDOM = d3.select('#preview_rect');
 
-		var rect = self.m_liShareRecordInfo[recordId]['rect'];
+		var rect = self.m_mapShareRecordInfo[recordId]['rect'];
 	
 		if(previewDOM.empty() == true){
 			console.log(" add share rect ");
@@ -186,7 +388,6 @@ function SharePanelManager(){
 			if(previewDOM.attr('previewid') == recordId){
 				previewDOM.remove();				
 	        	self.annotationElesbyRecordId(recordId, false);
-
     			// window.scrollTo(0, 0);
 			}else{				
 				previewDOM
@@ -208,7 +409,7 @@ function SharePanelManager(){
 		console.log(" annotation element ids ", liEleId);
 		
 		var self = this;
-		var liEleId = self.m_liShareRecordInfo[recordId]['eleids'];
+		var liEleId = self.m_mapShareRecordInfo[recordId]['eleids'];
 
 		if(highlight == false){
 			console.log('remove share group ');

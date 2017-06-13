@@ -31,6 +31,27 @@ function CrossFilter(iId, InObj, ObjectGroupManager, propertyManager){
         });
     }
 
+    Info.getExploreInfo = function(){
+            
+        var ExploreInfo = {};
+
+        //get the explored rect
+        var defineRegionInfo = {
+            left: Number($('#define_region_rect' + this.m_iId).attr('x')),
+            top: Number($('#define_region_rect' + this.m_iId).attr('y')),
+            height: Number($('#define_region_rect' + this.m_iId).attr('height')),
+            width: Number($('#define_region_rect' + this.m_iId).attr('width')),
+        };
+
+        ExploreInfo['rect'] = defineRegionInfo;
+
+        //select elements   
+        var liFilterEleid = this.m_CrossFilterInfo.getFilteredElement();
+        ExploreInfo['eleids']  = liFilterEleid;
+
+        return ExploreInfo;
+    }
+
 
     Info.resetCrossFilter = function(){
         this.m_CrossFilterInfo.reset();
