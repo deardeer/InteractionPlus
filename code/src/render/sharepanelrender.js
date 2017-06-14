@@ -59,6 +59,7 @@ function SharePanelManager(){
 		var annotateGroup = d3.select('#addondiv svg')
 		.append('g')
 		.attr('id', DomId)
+		.attr('class', 'annotation-g')
 		.attr('recordId', ShareReocrdId);
 		
 		var textAnnotateRect = annotateGroup
@@ -93,12 +94,23 @@ function SharePanelManager(){
 		.on('mouseout', function(){
 			var iShareRecordId = d3.select(this.parentNode).attr('recordId');
 			console.log(' mouse out 111 ', iShareRecordId);
-			d3.select(this).style('stroke-width', '1px');
+			if(d3.select(this).style('stroke') != 'black')
+				d3.select(this).style('stroke-width', '1px');
 			var Pos = {
 				'x': Rect['x'] + Rect['width'],
 				'y': Rect['y'],
 			};
 			self.drawAnnotationPanel(Pos, 'hidden');		
+		})
+		.on('click', function(){
+			var iShareRecordId = d3.select(this.parentNode).attr('recordId');
+			console.log(' click share note ', iShareRecordId);
+			if(self.m_iCurrentPreviewRecordId == iShareRecordId){
+				d3.select(this).style('stroke', '#4CAF50');
+			}else{
+				d3.select(this).style('stroke', 'black');
+			}
+			self.previewShareRecord(iShareRecordId, {'x': Rect['x'] + Rect['width'] * 0.5, 'y': Rect['y']});
 		});	
 
 	}
@@ -171,8 +183,10 @@ function SharePanelManager(){
 					//not submit 
 					d3.select('#share-annotation-frame-temp').remove();
 					self.drawAnnotationPanel({'x': 0, 'y': 0}, 'hidden');	
-				}else
+				}else{
 					g_ShareRecordComm.deleteShareRecord(self.m_hoverRecordId, self, self.FBofdeleteShareRecordfromNote);
+					self.deletePreviewShareRecord(self.m_hoverRecordId);
+				}
 				// self.deleteShareRecord(self.m_iCurrentPreviewRecord);
 			})
 		}
@@ -210,7 +224,9 @@ function SharePanelManager(){
 	Info.addFlagPanel = function(show){
 
 		if(!show){
+			this.deletePreviewShareRecord(this.m_iCurrentPreviewRecordId);
 			$("#flagpaneldiv").remove();
+			d3.selectAll('.annotation-g').remove();
 			return;
 		}
 		//show
@@ -236,6 +252,29 @@ function SharePanelManager(){
 			'z-index': g_FrontZIndex + 3,
 		})
 		.addClass('background_panel');
+
+		//add the connect div
+		var connectpanelDiv = document.createElement('div');
+		connectpanelDiv.id = 'shareconnectdiv';		
+		connectpanelDiv.setAttribute("ignore_class", 'detect_ignore');
+		$('body')[0].appendChild(connectpanelDiv);
+		$('#shareconnectdiv').css({
+			left: '0',
+			top: '0',
+			width: '100%',
+			height: '100%',
+			position: 'fixed',
+			'padding': '0px',
+			// 'margin-top' : '2px',
+			'overflow': 'auto',
+			'pointer-events': 'none',
+			'z-index': g_FrontZIndex + 3,
+		});
+
+		d3.select('#shareconnectdiv')
+		.append('svg')
+		.style('width', '100%')
+		.style('height', '100%');
 
 		//fetch the annotations
 		this.addSharedRecords();
@@ -333,8 +372,11 @@ function SharePanelManager(){
 		})
 		.on('click', function(){
 			console.log('click record ', d3.select(this).attr('recordid'), 
-				self.m_mapShareRecordInfo[d3.select(this).attr('recordid')]);			
-			self.previewShareRecord(d3.select(this).attr('recordid'));
+			self.m_mapShareRecordInfo[d3.select(this).attr('recordid')]);
+			var rect = d3.select(this).node().getBoundingClientRect();
+			var x = rect.left;
+			var y = rect.top + rect.height * 0.5;		
+			self.previewShareRecord(d3.select(this).attr('recordid'), {'x': x, 'y': y});
 		});
 
 		d3.selectAll('.delete_icon_right')
@@ -344,11 +386,8 @@ function SharePanelManager(){
 			console.log(' delete ', recordid, parentdivid);
 			//remove the record
 			g_ShareRecordComm.deleteShareRecord(recordid, self, self.deleteShareRecord);
-			d3.select('#' + parentdivid).remove();		
-			if(self.m_iCurrentPreviewRecordId == recordid){
-				//remove the preview 
-				self.annotationElesbyRecordId(self.m_iCurrentPreviewRecordId, false);
-			}	
+			d3.select('#' + parentdivid).remove();
+			self.deletePreviewShareRecord(recordid);			
 			d3.event.stopPropagation();
 		})
 	}
@@ -357,8 +396,18 @@ function SharePanelManager(){
 		console.log(' delete share record ');
 	}
 
+	Info.deletePreviewShareRecord = function(recordId){
+		var self = this;
+		if(self.m_iCurrentPreviewRecordId == recordId){
+			//remove the preview 
+			d3.select('#preview_rect').remove();
+			self.annotationElesbyRecordId(self.m_iCurrentPreviewRecordId, false);
+			self.m_iCurrentPreviewRecordId = -1;
+		}	
+	}
+
 	//preview the shared record
-	Info.previewShareRecord = function(recordId){
+	Info.previewShareRecord = function(recordId, pos){
 		
 		var self = this;
 		var previewDOM = d3.select('#preview_rect');
@@ -381,7 +430,7 @@ function SharePanelManager(){
 
     		window.scrollTo(rect.left - 100, rect.top - 100);
 	        
-	        self.annotationElesbyRecordId(recordId, true);	 
+	        self.annotationElesbyRecordId(recordId, true, pos);	 
 			// $('body')[0].appendChild(flagpanelDiv);			
 		}else{
 			//false
@@ -399,30 +448,36 @@ function SharePanelManager(){
 
     			window.scrollTo(rect.left - 100, rect.top - 100);
 
-		        self.annotationElesbyRecordId(recordId, true);
+		        self.annotationElesbyRecordId(recordId, true, pos);
 			}
 		}
 	}
 
-	Info.annotationElesbyRecordId = function(recordId, highlight){
+	Info.annotationElesbyRecordId = function(recordId, highlight, connectPos){
 
-		console.log(" annotation element ids ", liEleId);
 		
 		var self = this;
 		var liEleId = self.m_mapShareRecordInfo[recordId]['eleids'];
+		var type = self.m_mapShareRecordInfo[recordId]['type'];
+		console.log(" annotation element ids ", liEleId);
 
 		if(highlight == false){
 			console.log('remove share group ');
 			//remove
-			d3.select('.share-annotation-group')
+			d3.selectAll('.share-annotation-group')
 			.remove();
 
 	        self.m_iCurrentPreviewRecordId = -1;
+
+	        //set the scroll event to none
+	        window.onscroll = function(){};
+
 		}else{
+
 			if(self.m_iCurrentPreviewRecordId == recordId)
 				return;
 			else{
-				d3.select('.share-annotation-group')
+				d3.selectAll('.share-annotation-group')
 				.remove();
 			}
 			console.log('add share group ');
@@ -445,7 +500,103 @@ function SharePanelManager(){
 			    .attr('width', Rect['x2'] - Rect['x1'])
 			    .attr('height', Rect['y2'] - Rect['y1']);
 			}
+
+			//get the preview_rect
+			var wholeRect = d3.select('#preview_rect').node().getBoundingClientRect();
+			var r = $('#addondiv')[0].getBoundingClientRect();
+
+			wholeRect = {
+				'left': wholeRect.left - r.left,
+				'right': wholeRect.right - r.left,
+				'top': wholeRect.top - r.top,
+				'bottom': wholeRect.bottom - r.top,
+				'width': wholeRect.width,
+				'height': wholeRect.height,
+			};
+			
+			var connectsharegroup = {};			
+
+			//add the connector line
+			var otherConnectorPos = {};
+			var postype = 'relative';
+			if(type == 'dialog'){
+				postype = 'fixed';
+				connectsharegroup = d3.select('#shareconnectdiv svg')
+				.append('g')
+				.attr('class', 'share-annotation-group');
+				otherConnectorPos = {'x': wholeRect.right, 'y': 0.5 * (wholeRect.top + wholeRect.bottom)};
+			}else{				
+				connectsharegroup = d3.select('#addondiv svg')
+				.append('g')
+				.attr('class', 'share-annotation-group');
+				otherConnectorPos = {'x': 0.5 * (wholeRect.left + wholeRect.right), 'y': wholeRect.bottom};
+			}
+			
+			var radius = 3;
+
+			connectsharegroup
+			.append('line')
+			.attr('id', 'share-connect-line')
+			.attr('x1', connectPos['x'])
+			.attr('y1', connectPos['y'])
+			.attr('x2', otherConnectorPos['x'])
+			.attr('y2', otherConnectorPos['y'])
+			.style('stroke', '#9E9E9E')
+			.style('stroke-dasharray', '3px 3px')
+			.style('stroke-width', '3px');
+
+			connectsharegroup
+			.append('circle')
+			.style('cx', connectPos['x'])
+			.style('cy', connectPos['y'])
+			.style('r', radius + 'px')
+			.style('position', postype)
+			.style('stroke', '#0277BD')
+			.style('stroke-width', '2px')
+			.style('fill', 'black');//'#0288D1');
+
+			connectsharegroup
+			.append('circle')
+			.attr('id', 'share-circle-previewrect')
+			.style('cx', otherConnectorPos['x'])
+			.style('cy', otherConnectorPos['y'])//self.m_NamePanelDiv['y'] + self.m_NamePanelDiv['height']/2.)
+			.style('r', radius + 'px')
+			.style('stroke', '#0277BD')
+			.style('stroke-width', '2px')
+			.style('fill', 'black');//'#0288D1');
+
 		    self.m_iCurrentPreviewRecordId = recordId;
+
+		    if(type == 'dialog'){
+		    	window.onscroll = function(){
+
+		    		console.log(' window scroll ');
+
+		    		var wholeRect = d3.select('#preview_rect').node().getBoundingClientRect();
+					var r = $('#addondiv')[0].getBoundingClientRect();
+					wholeRect = {
+						'left': wholeRect.left,
+						'right': wholeRect.right,
+						'top': wholeRect.top,
+						'bottom': wholeRect.bottom,
+						'width': wholeRect.width,
+						'height': wholeRect.height,
+					};
+
+					var otherConnectorPos = {'x': wholeRect.right, 'y': 0.5 * (wholeRect.top + wholeRect.bottom)};
+					//line
+					d3.select('#share-connect-line')
+					.attr('x2', otherConnectorPos['x'])
+					.attr('y2', otherConnectorPos['y']);
+
+					//circle on preview rect
+					d3.select("#share-circle-previewrect")
+					.style('cx', otherConnectorPos['x'])
+					.style('cy', otherConnectorPos['y']);//self.m_NamePanelDiv['y'] + self.m_NamePanelDiv['height']/2.)
+				}
+		    }else{
+		    	window.onscroll = function(){};
+		    }
 		}
 	}
 
