@@ -45,8 +45,13 @@ function CrossFilter(iId, InObj, ObjectGroupManager, propertyManager){
 
         ExploreInfo['rect'] = defineRegionInfo;
 
+        //all elements
+        var liAllEleId = this.m_ElementProperties.getElementIds();
+        ExploreInfo['alleleids'] = liAllEleId;
+        
         //select elements   
         var liFilterEleid = this.m_CrossFilterInfo.getFilteredElement();
+
         ExploreInfo['eleids']  = liFilterEleid;
 
         return ExploreInfo;

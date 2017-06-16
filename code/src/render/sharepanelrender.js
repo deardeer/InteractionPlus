@@ -9,6 +9,8 @@ function SharePanelManager(){
 		Info.m_mapShareRecordInfo = {};
 		Info.m_iCurrentPreviewRecordId = -1;
 
+		Info.m_mapEleIdCloneEleStyle = {};
+
 		// self.m_SelectText = "";
 		// self.m_SelectRectonAddDiv = {};
 		self.m_hoverRecordId = -1;
@@ -61,7 +63,18 @@ function SharePanelManager(){
 		.attr('id', DomId)
 		.attr('class', 'annotation-g')
 		.attr('recordId', ShareReocrdId);
-		
+
+		annotateGroup
+		.append('line')
+		.attr('id', 'aline-' + ShareReocrdId)
+		.attr('x1', Rect['x'])
+		.attr('y1', Rect['y'] + Rect['height'])		
+		.attr('x2', Rect['x'] + Rect['width'])
+		.attr('y2', Rect['y'] + Rect['height'])
+		.style('visibility', 'hidden')
+		.style('stroke-dasharray', '3px 3px')
+		.style('stroke', '#9E9E9E');
+
 		var textAnnotateRect = annotateGroup
 		.append('rect')
 		.attr("class", 'share-rect')
@@ -70,13 +83,17 @@ function SharePanelManager(){
 		.attr('y', Rect['y'])
 		.attr('width', Rect['width'])
 		.attr('height', Rect['height'])
-		.style('stroke', '#4CAF50')
+		// .style('stroke', '#4CAF50')
 		.style('stroke-width', '1px')
 		.style('pointer-events', 'all')
-		.style('fill', 'rgba(205, 220, 57, 0.31)')
+		.style('fill', 'rgba(205, 220, 57, 0.21)')
 		.on('mouseover', function(){
 			var iShareRecordId = d3.select(this.parentNode).attr('recordId');
-			d3.select(this).style('stroke-width', '3px');
+
+			d3.select(this).style('fill', 'rgba(139, 195, 74, 0.31)');
+
+			// d3.select(this).style('stroke-width', '3px')
+			// .style('stroke', 'black');
 
 			var Pos = {
 				'x': Rect['x'] + Rect['width'],
@@ -92,10 +109,12 @@ function SharePanelManager(){
 			self.drawAnnotationPanel(Pos, 'visible');				
 		})
 		.on('mouseout', function(){
+
+			d3.select(this).style('fill', 'rgba(205, 220, 57, 0.21)');
+
 			var iShareRecordId = d3.select(this.parentNode).attr('recordId');
 			console.log(' mouse out 111 ', iShareRecordId);
-			if(d3.select(this).style('stroke') != 'black')
-				d3.select(this).style('stroke-width', '1px');
+
 			var Pos = {
 				'x': Rect['x'] + Rect['width'],
 				'y': Rect['y'],
@@ -104,13 +123,21 @@ function SharePanelManager(){
 		})
 		.on('click', function(){
 			var iShareRecordId = d3.select(this.parentNode).attr('recordId');
+
 			console.log(' click share note ', iShareRecordId);
 			if(self.m_iCurrentPreviewRecordId == iShareRecordId){
-				d3.select(this).style('stroke', '#4CAF50');
+				// d3.select(this).class('stroke-2', false);
+				d3.select(this).style('stroke', 'none');
+				d3.select('#aline-' + iShareRecordId).style('visibility', 'hidden');
 			}else{
-				d3.select(this).style('stroke', 'black');
+				d3.select('#aline-' + iShareRecordId).style('visibility', 'visible');
+				// d3.select(this)
+				// .style('stroke-dasharray', '3px 3px')
+				// .style('stroke', '#9E9E9E');
 			}
-			self.previewShareRecord(iShareRecordId, {'x': Rect['x'] + Rect['width'] * 0.5, 'y': Rect['y']});
+			Rect['left'] = Rect['x'];
+			Rect['top'] = Rect['y'];
+			self.previewShareRecord(iShareRecordId, Rect);//{'x': Rect['x'] + Rect['width'] * 0.5, 'y': Rect['y']});
 		});	
 
 	}
@@ -171,7 +198,6 @@ function SharePanelManager(){
 				  	textrect: self.m_hoverTextRect,
 				  	contexttext: self.m_hoverText,			
 				};
-
     			g_ShareRecordComm.submitShareRecord(data, self, self.FBofsubmitShareRecordfromNote);	    		
 	          
 			});
@@ -198,7 +224,9 @@ function SharePanelManager(){
 	}
 
 	Info.FBofsubmitShareRecordfromNote = function(self, response){
-		console.log(' success submit context record ', self.m_hoverRecordId, response.id, JSON.parse(response.textrect), response.contexttext);
+		console.log(' success submit context record ', self.m_hoverRecordId, self.m_hoverRecordId, response.id, response.textrect, response);//JSON.parse(response.textrect), response.contexttext);
+		self.m_mapShareRecordInfo[response.id] = response;
+		
 		if(self.m_hoverRecordId == -1){
 			//remove 
 			d3.select('#share-annotation-frame-temp')
@@ -246,6 +274,7 @@ function SharePanelManager(){
 			width: '200px',
 			bottom: '2px',
 			position: 'fixed',
+			'visibility' : 'hidden',
 			'padding': '0px',
 			'margin-top' : '2px',
 			'overflow': 'auto',
@@ -339,7 +368,7 @@ function SharePanelManager(){
 			self.m_mapShareRecordInfo[record.id] = record;
 			if(record.type == 'dialog'){
 				console.log(' draw dialog ', record.id);
-				var html = '<div class="sharerecord" id=<%=shareId%> recordid=<%=recordid%> style="position:relative">' +							
+				var html = '<div class="sharerecord" id=<%=shareId%> recordid=<%=recordid%> style="position:relative; visibility:hidden">' +							
 							'<i class="fa fa-times delete_icon_right hidden" divid=<%=shareId%> recordid=<%=recordid%>></i>'+				
 							'<p style="margin:2px"><b><%=title%></b> <%=desp%></p>' +
 							'<p style="font-size: 8px;margin: 2px;"><%=time%></p>' +
@@ -376,7 +405,7 @@ function SharePanelManager(){
 			var rect = d3.select(this).node().getBoundingClientRect();
 			var x = rect.left;
 			var y = rect.top + rect.height * 0.5;		
-			self.previewShareRecord(d3.select(this).attr('recordid'), {'x': x, 'y': y});
+			self.previewShareRecord(d3.select(this).attr('recordid'), rect);//{'x': x, 'y': y});
 		});
 
 		d3.selectAll('.delete_icon_right')
@@ -407,14 +436,17 @@ function SharePanelManager(){
 	}
 
 	//preview the shared record
-	Info.previewShareRecord = function(recordId, pos){
+	Info.previewShareRecord = function(recordId, connectRect){
 		
 		var self = this;
 		var previewDOM = d3.select('#preview_rect');
 
+		console.log(' preview share record ', recordId);
+
 		var rect = self.m_mapShareRecordInfo[recordId]['rect'];
 	
 		if(previewDOM.empty() == true){
+
 			console.log(" add share rect ");
 			//add
 			d3.select('#addonsvg_here')
@@ -430,9 +462,10 @@ function SharePanelManager(){
 
     		window.scrollTo(rect.left - 100, rect.top - 100);
 	        
-	        self.annotationElesbyRecordId(recordId, true, pos);	 
-			// $('body')[0].appendChild(flagpanelDiv);			
+	        self.annotationElesbyRecordId(recordId, true, connectRect);	 
+			// $('body')[0].appendChild(flagpanelDiv);	
 		}else{
+
 			//false
 			if(previewDOM.attr('previewid') == recordId){
 				previewDOM.remove();				
@@ -448,21 +481,39 @@ function SharePanelManager(){
 
     			window.scrollTo(rect.left - 100, rect.top - 100);
 
-		        self.annotationElesbyRecordId(recordId, true, pos);
+		        self.annotationElesbyRecordId(recordId, true, connectRect);
 			}
 		}
 	}
 
-	Info.annotationElesbyRecordId = function(recordId, highlight, connectPos){
-
+	Info.annotationElesbyRecordId = function(recordId, highlight, connectRect){
 		
 		var self = this;
+
+
+		if(self.m_mapShareRecordInfo[recordId] == undefined)
+			return;
+
 		var liEleId = self.m_mapShareRecordInfo[recordId]['eleids'];
+		var liAllEleId = self.m_mapShareRecordInfo[recordId]['alleleids'];
 		var type = self.m_mapShareRecordInfo[recordId]['type'];
-		console.log(" annotation element ids ", liEleId);
+		
+		console.log(" annotation element ids ", liEleId, liAllEleId);
 
 		if(highlight == false){
+
 			console.log('remove share group ');
+
+			//recover the elements: opacity from 0.3
+			for(var i = liAllEleId.length - 1; i >= 0; i--){
+				var iEleId = liAllEleId[i];
+				var eleStyle = self.m_mapEleIdCloneEleStyle[iEleId];
+				var ele = g_GlobalElementIdManager.getElebyId(iEleId);
+				ele.style.opacity = eleStyle.opacity;
+				ele.style.stroke = eleStyle.stroke;				
+				// ele.style['stroke-width'] = eleStyle['stroke-width'];
+			}
+
 			//remove
 			d3.selectAll('.share-annotation-group')
 			.remove();
@@ -474,31 +525,59 @@ function SharePanelManager(){
 
 		}else{
 
+			var connectPos = {'x': connectRect.left, 'y': connectRect.top + connectRect.height * 0.5};
+
 			if(self.m_iCurrentPreviewRecordId == recordId)
 				return;
 			else{
 				d3.selectAll('.share-annotation-group')
 				.remove();
 			}
+
 			console.log('add share group ');
 			//add the border 	
 			var sharegroup = d3.select('#addondiv svg')
 			.append('g')
 			.attr('class', 'share-annotation-group');
 
-			for (var i = liEleId.length - 1; i >= 0; i--) {
-				var iEleId = liEleId[i];
-				var Rect = g_GlobalElementIdManager.getGlobalRectbyEleId(iEleId);
-				console.log(" rect = ", i, Rect);
-			    sharegroup
-			    .append('rect')    
-			    .attr('class', 'share-annotation-rect')
-			    // .attr("filter", "url(#glow)")
-			    .attr('id', 'share-annotation-rect-' + iEleId)
-			    .attr('x', Rect['x1'])
-			    .attr('y', Rect['y1'])
-			    .attr('width', Rect['x2'] - Rect['x1'])
-			    .attr('height', Rect['y2'] - Rect['y1']);
+
+			for(var i = liAllEleId.length - 1; i >= 0; i--){
+
+				var iEleId = liAllEleId[i];
+				var ele = g_GlobalElementIdManager.getElebyId(iEleId);
+				//save to ele
+				if(self.m_mapEleIdCloneEleStyle[iEleId] == undefined){
+					// var strokewidth = (ele.style['stroke-width'] == undefined)?'1px':ele.style.stroke;
+					var opacity = (ele.style.opacity == undefined)?1:ele.style.opacity;
+					var stroke = (ele.style.stroke == undefined)?'none': ele.style.stroke;
+					self.m_mapEleIdCloneEleStyle[iEleId] = {
+						'stroke': stroke,
+						// 'stroke-width': strokewidth,
+						'opacity': opacity,
+					}
+					console.log(' eee style ', stroke, opacity);
+				}
+
+				if(liEleId.indexOf(iEleId) == -1){
+					//set the element
+					ele.style.opacity = 0.3;
+					continue;
+				}else{
+					// ele.style['stroke-width'] = '2px';
+					ele.style['stroke'] = 'black';	
+				}
+				//add the rect frame
+				// var Rect = g_GlobalElementIdManager.getGlobalRectbyEleId(iEleId);
+				// console.log(" rect = ", i, Rect);
+			 //    sharegroup
+			 //    .append('rect')    
+			 //    .attr('class', 'share-annotation-rect')
+			 //    // .attr("filter", "url(#glow)")
+			 //    .attr('id', 'share-annotation-rect-' + iEleId)
+			 //    .attr('x', Rect['x1'])
+			 //    .attr('y', Rect['y1'])
+			 //    .attr('width', Rect['x2'] - Rect['x1'])
+			 //    .attr('height', Rect['y2'] - Rect['y1']);
 			}
 
 			//get the preview_rect
@@ -529,7 +608,19 @@ function SharePanelManager(){
 				connectsharegroup = d3.select('#addondiv svg')
 				.append('g')
 				.attr('class', 'share-annotation-group');
-				otherConnectorPos = {'x': 0.5 * (wholeRect.left + wholeRect.right), 'y': wholeRect.bottom};
+
+				connectRect.right = connectRect.left + connectRect.width;				
+				// console.log(' ?? ', connectRect.right, wholeRect.left);
+
+				if(connectRect.right < wholeRect.left){
+					// console.log(' ?? 1 ');
+					connectPos = {'x': connectRect.right, 'y': connectRect.top + connectRect.height * 0.5};
+					otherConnectorPos = {'x': wholeRect.left, 'y': wholeRect.top + wholeRect.height * 0.5};
+				}else{
+					// console.log(' ?? 2 ');
+					connectPos = {'x': connectRect.left + connectRect.width * 0.5, 'y': connectRect.top};
+					otherConnectorPos = {'x': 0.5 * (wholeRect.left + wholeRect.right), 'y': wholeRect.bottom};
+				}
 			}
 			
 			var radius = 3;
@@ -551,7 +642,7 @@ function SharePanelManager(){
 			.style('cy', connectPos['y'])
 			.style('r', radius + 'px')
 			.style('position', postype)
-			.style('stroke', '#0277BD')
+			// .style('stroke', '#0277BD')
 			.style('stroke-width', '2px')
 			.style('fill', 'black');//'#0288D1');
 
@@ -561,7 +652,7 @@ function SharePanelManager(){
 			.style('cx', otherConnectorPos['x'])
 			.style('cy', otherConnectorPos['y'])//self.m_NamePanelDiv['y'] + self.m_NamePanelDiv['height']/2.)
 			.style('r', radius + 'px')
-			.style('stroke', '#0277BD')
+			// .style('stroke', '#0277BD')
 			.style('stroke-width', '2px')
 			.style('fill', 'black');//'#0288D1');
 

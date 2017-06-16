@@ -206,8 +206,11 @@ function ToolBarRender(){
 			document.onkeyup = doSomethingWithSelectedText;
 		});
 
-		$('#annotate_button').on('click', function(){
+		d3.select('#annotate_button').on('click', function(){
 			//TODO if no inobj
+
+			d3.event.stopPropagation();
+
 			//check it clicked or not
 			var classList = $(this)[0].classList;
 			if(classList.contains("function_button-clicked") == true){
@@ -241,12 +244,15 @@ function ToolBarRender(){
 				var selectedText = getSelectedText();
 
 				// //console.log(" SESE ", selectedText, selectedText==undefined);
-				
 				if (selectedText) {
 				    // alert("Got selected text " + selectedText);	
 				    // var relative=document.body.parentNode.getBoundingClientRect();
 				    console.log(" annotate text ", selectedText);
 				    g_SharePanelManager.selectText(selectedText);
+
+					if(typeof window.getSelection != "undefined"){
+						window.getSelection().removeAllRanges();
+					} 
 					// g_NameRender.selectText(selectedText);
 				}
 				// else{
@@ -261,6 +267,9 @@ function ToolBarRender(){
 
 			document.onmouseup = doSomethingWithSelectedText;
 			document.onkeyup = doSomethingWithSelectedText;
+
+
+			console.log(' stop propagate');
 		});
 
 		$('#vlineup_button').on('click', function(){
