@@ -1483,6 +1483,9 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		//get the filter eleid
 		var iGroupId = self.m_ObjectGroupManager.getSelectedGroupId();
 		var propertyBag = self.m_PropertyManager.getPropertyBag(iGroupId);
+		
+		// console.log(' select %%%%% top ', iPropertyId, propertyBag.getPropertyInfo(iPropertyId), propertyBag.isPropertyNumber(iPropertyId), leftB, rightB);
+
 		if(propertyBag.isPropertyNumber(iPropertyId) == true){
 
 			var selectInfo = propertyBag.getEleIdsbyTopRange(iPropertyId, {'left': leftB, 'right': rightB});
@@ -1496,7 +1499,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 			//update the object_create_button
 			var liFilterEleId = self.m_CrossFilterInfo.getFilterEleIds();
 
-			//console.log(' lifilter %%%% ', liFilterEleId);
+			// console.log(' lifilter %%%% ', liFilterEleId);
 
 			var eleNum = liFilterEleId.length;
 
@@ -1632,7 +1635,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		var labelTextSize = getTextSize(propertyName, font);
 		var gapWidth = 15;
 		var labelDisGap = 5;
-		var boxplotDivWidth = 30;
+		var boxplotDivWidth = 50;
 		
 		if(set_labelDivWidth == undefined || set_disDivWidth == undefined){
 			labelDivWidth = 40;//labelTextSize['w'] + gapWidth;
@@ -1739,7 +1742,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		boxplotSvg.append('rect')		
 		.attr('width', boxplotDivWidth + 'px')
 		.attr('height', disDivHeight + 'px')
-		.attr('fill', '#B2EBF2')
+		.attr('fill', '#B2EBF2')	
 		.on('click', function(){
 			//console.log(" boxplot click ");
 			var id_temp = '#' + preFix + 'p_' + self.m_iId + 'top_' + iPId;
@@ -1765,6 +1768,15 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 			
 			$(id_temp).toggleClass('hidden');
 		});
+
+		boxplotSvg.append('rect')
+		.attr('width', '10px')
+		.attr('height', '10px')
+		.style('fill', 'red')
+		// .attr('src', 'rc/brush-note.png')
+		.attr('x', boxplotDivWidth - 10)
+		.attr('y', disDivHeight - 10);
+	
 
 		boxplotSvg
 		// .append('img')

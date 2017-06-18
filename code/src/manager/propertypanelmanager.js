@@ -342,6 +342,11 @@ function PropertyBag(iGroupId, bOrigin, objectGroupManager){
 	Info.addPro = function(iEleId, PropertyType, PropertyValue, CompoundIndex, iPropertyId){
 		// var iPropertyId = undefined;
 
+		if(isNaN(PropertyValue) == false){
+			// console.log(' Not PropertyValue ', PropertyValue);
+			PropertyValue = Number(PropertyValue);
+		}
+
 		if(CompoundIndex != -1){
 			//compound 
 			var liProType = this.m_mapCompoundIndexPropertyTypes[CompoundIndex];
@@ -373,9 +378,10 @@ function PropertyBag(iGroupId, bOrigin, objectGroupManager){
 			if(this.m_defaultInvisiblePropertyList.indexOf(PropertyType) == -1){
 				this.m_liVisiblePropertyId.push(iPropertyId);
 			}
-			if(PropertyType == 'value'){
-				//console.log('Text Value ', PropertyValue);
-			}
+
+			// if(PropertyType == 'value'){
+			// 	//console.log('Text Value ', PropertyValue);
+			// }
 
 			if(this.m_mapPropertyPropertyIds[PropertyType] == undefined)
 				this.m_mapPropertyPropertyIds[PropertyType] = [iPropertyId];
