@@ -56,9 +56,14 @@ function drawFilter(){
 }
 
 //draw the draggble button
-function drawDragButton(parentpanelid, DrawLTPos){
+function drawDragButton(parentpanelid, DrawLTPos, margin_left, margin_top){
 
     var expandWidth = g_CircleButtonRadius * 2.5;
+
+    if(margin_left == undefined)
+    	margin_left = "0px";
+    if(margin_top == undefined)
+    	margin_top = "0px";
 	
 	// var DrawLTPos = getDefaultDrawLTPoint();
 	
@@ -73,8 +78,8 @@ function drawDragButton(parentpanelid, DrawLTPos){
  // .attr("x", )
     // .attr("y", DrawLTPos['y'])
     .style("position", "absolute")
-    .style("margin-left", '-15px')
-    .style('margin-top', '3px');
+    .style("margin-left", margin_left)//'-15px')
+    .style('margin-top', margin_top)//'3px');
 
     var drawButton = expandSvg.append('g')
     .attr('id', parentpanelid + '_drag_button');
@@ -116,12 +121,12 @@ function drawDragButton(parentpanelid, DrawLTPos){
 	});
 
 	drag.on("dragstart", function() {
-		// //console.log(' drag start ', d);
+		console.log(' drag start ', d);
  		d3.event.sourceEvent.stopPropagation(); // silence other listeners
 	});
 
 	drag.on("drag", function() {
-		// //console.log(' draging ', d3.event.x, ', ', d3.event.y);
+		console.log(' draging ', d3.event.x, ', ', d3.event.y);
 	 	var offset = $('#' + parentpanelid+ '_drag_svg').offset();
 	 	var newPos = {left: offset.left + d3.event.x,
 	 	              top: offset.top + d3.event.y};

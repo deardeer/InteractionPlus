@@ -39,7 +39,7 @@ function InObjFilterRender(iId, inObj, objectGroupManager){
 		});
 
 		//add the drag button
-		this.drawDragButton(this.m_FilterDivId, DrawLTPos);
+		this.drawDragButton(this.m_FilterDivId, DrawLTPos, '-15px', '3px');
 
 		//add subdiv
 		var SubDivTitle = ['Object', 'Attribute'];//, 'Logic Composition'];//, 'Filter'];

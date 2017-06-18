@@ -102,9 +102,9 @@
 .background_panel{
 	/*height:500px;*/
 	border: solid 1px #2196F3;
-	box-shadow: 1px 1px 10px #29B6F6;	
+	/*box-shadow: 1px 1px 10px #29B6F6;	*/
 	/*background: white;*/
-	background: rgba(0, 220, 255, 0.11);
+	/*background: rgba(0, 220, 255, 0.11);*/
 }
 
 .dialog_panel{

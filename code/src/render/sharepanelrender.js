@@ -149,6 +149,7 @@ function SharePanelManager(){
 		var annotationPanel = {};
 
 		if(d3.select('#' + annotationPanelDomId).empty() == true){
+
 			console.log(' not exist ');
 			//not exist
 			annotationPanel = d3.select('#addondiv')
@@ -255,6 +256,7 @@ function SharePanelManager(){
 			this.deletePreviewShareRecord(this.m_iCurrentPreviewRecordId);
 			$("#flagpaneldiv").remove();
 			d3.selectAll('.annotation-g').remove();
+			$('#shareconnectdiv').remove();
 			return;
 		}
 		//show
@@ -277,10 +279,29 @@ function SharePanelManager(){
 			'visibility' : 'hidden',
 			'padding': '0px',
 			'margin-top' : '2px',
+			'pointer-events': 'all',
 			'overflow': 'auto',
 			'z-index': g_FrontZIndex + 3,
+		});
+		// .addClass('background_panel');
+
+		// //draw drag button
+		// var DrawLTPos = {'x': $('#flagpaneldiv').offset().left,
+		// 				 'y': $('#flagpaneldiv').offset().bottom
+		// 				};
+
+		// //add the drag button
+		// flagpanelDiv.innerHTML += '<div id="flagdragdiv"></div>';
+		// drawDragButton('flagdragdiv', DrawLTPos);
+
+		d3.select('#flagdragdiv')
+		.on('mouseover', function(){
+			console.log(' mouse over flag div');
 		})
-		.addClass('background_panel');
+		.on('click', function(){
+			console.log(' mouse click ');
+		})
+
 
 		//add the connect div
 		var connectpanelDiv = document.createElement('div');
@@ -363,16 +384,18 @@ function SharePanelManager(){
 
 		//add shared records
 		this.m_mapShareRecordInfo = {};
+
 		for (var i = liRecordInfo.length - 1; i >= 0; i--) {
 			var record = liRecordInfo[i];
 			self.m_mapShareRecordInfo[record.id] = record;
 			if(record.type == 'dialog'){
 				console.log(' draw dialog ', record.id);
-				var html = '<div class="sharerecord" id=<%=shareId%> recordid=<%=recordid%> style="position:relative; visibility:hidden">' +							
+				var html = '<div class="sharerecord" id=<%=shareId%> recordid=<%=recordid%> style="position:relative; visibility: hidden">' +							
 							'<i class="fa fa-times delete_icon_right hidden" divid=<%=shareId%> recordid=<%=recordid%>></i>'+				
 							'<p style="margin:2px"><b><%=title%></b> <%=desp%></p>' +
 							'<p style="font-size: 8px;margin: 2px;"><%=time%></p>' +
-					   '</div>';
+					   	   '</div>';
+
 				// var html = '<p><%=desp%></p>' +
 				// 		   '<p><small><%=time%></small></p>';
 				var compiled = _.template(html);
@@ -419,6 +442,7 @@ function SharePanelManager(){
 			self.deletePreviewShareRecord(recordid);			
 			d3.event.stopPropagation();
 		})
+
 	}
 
 	Info.deleteShareRecord = function(self){
