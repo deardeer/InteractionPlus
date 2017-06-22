@@ -4,12 +4,13 @@
 	1) object/property rename dialog
 */
 
-function InObjDialogRender(iId, objectGroupManager, propertyManager, crossFilter, filterSetting){
+function InObjDialogRender(InObj, iId, objectGroupManager, propertyManager, crossFilter, filterSetting){
 
 	var Info = {};
 
-	Info.__init__ = function(iId, objectGroupManager, propertyManager, crossFilter, filterSetting){
+	Info.__init__ = function(InObj, iId, objectGroupManager, propertyManager, crossFilter, filterSetting){
 		this.m_iId = iId;
+		this.m_InObj = InObj;
 		this.m_ObjectGroupManager = objectGroupManager;
 		this.m_PropertyManager = propertyManager;
 		this.m_crossFilter = crossFilter;
@@ -25,6 +26,15 @@ function InObjDialogRender(iId, objectGroupManager, propertyManager, crossFilter
 		this.m_SubmitCommentDivId = 'comment_submit_dialog_' + this.m_iId;
 		this.m_SubCommentInputId = 'submit_comment_input_' + this.m_iId;
 		this.m_SubDesCommentInputId = "submit_description_input_" + this.m_iId;
+
+		//decode data
+		this.m_DecodeDataDialogId_Step1 = 'decodepos_data_dialog_step1_' + this.m_iId;
+		// this.m_DecodeDataDialogId_Step2 = 'decodepos_data_dialog_step2';
+		
+		this.m_DecodeDataDialogId_Pos = 'decodepos_data_dialog_' + this.m_iId;
+		this.m_DecodeDataDialogId_SizeRule = 'decodesizerule_data_dialog_' + this.m_iId;
+		this.m_DecodeDataDialogId_SizeBoundary = 'decodebound_data_dialog_' + this.m_iId;
+		this.m_DecodeDataDialogId_Legend = 'decodelegend_data_dialog_' + this.m_iId;
 
 		this.m_RenameProperty = {};
 
@@ -42,6 +52,277 @@ function InObjDialogRender(iId, objectGroupManager, propertyManager, crossFilter
 		this.m_RenameObject = renameObject;
 	}
 
+	//add the decode data dialog, default hide
+	Info.addDecodeDialog_Bound = function(){
+		var self = this;
+
+		if($('#' + self.m_DecodeDataDialogId_SizeBoundary).length != 0)
+			return;
+
+		var dialoghtml = 
+		'<div id=<%=dialogId%> title="Size Boundary Decode" hidden="hidden">'+			  			    
+		'</div>';
+
+		var compiled = _.template(dialoghtml);
+
+		testDiv = document.getElementById(self.m_ObjectDivId);
+		
+		testDiv.innerHTML = testDiv.innerHTML + compiled({
+			dialogId: self.m_DecodeDataDialogId_SizeBoundary,
+			maximg: serverIp + "rc/rect_select.png",
+		});	
+
+		$("#" + self.m_DecodeDataDialogId_SizeBoundary).dialog({
+			autoOpen: false,
+			dialogClass: 'dialog_panel',
+		    buttons: {
+				"Previous": function(){
+		    		console.log(" change page ");
+
+		            $(this).dialog("close");
+		    		$('#' + self.m_DecodeDataDialogId_Step1).dialog('open');
+		    		
+					// $(this).value('ok');
+		    	},		    	
+		        "Ok": function(){		       		
+		        	self.decodeData_SizeBound();
+		            $(this).dialog("close");
+		       		g_VisDecoder.exitDecodeMode();
+		       	 },
+		       	"Cancel": function(){
+		       		$(this).dialog('close');
+		       		g_VisDecoder.exitDecodeMode();
+		       	}
+	    	}
+		});
+
+		$('#decode_legend_define')
+		.on('click', function(){
+			console.log(" click the decode legend button ");
+			//enable the grabbing rect
+
+		});
+	}
+
+	Info.addDecodeDialog_Legend = function(){
+		var self = this;
+
+		if($('#' + self.m_DecodeDataDialogId_Legend).length != 0)
+			return;
+
+		var dialoghtml = 
+		'<div id=<%=dialogId%> title="Decode by Legend" hidden="hidden">'+			  			    
+		'</div>';
+
+		var compiled = _.template(dialoghtml);
+
+		testDiv = document.getElementById(self.m_ObjectDivId);
+		
+		testDiv.innerHTML = testDiv.innerHTML + compiled({
+			dialogId: self.m_DecodeDataDialogId_Legend,
+			maximg: serverIp + "rc/rect_select.png",
+		});	
+
+		$("#" + self.m_DecodeDataDialogId_Legend).dialog({
+			autoOpen: false,
+			dialogClass: 'dialog_panel',
+		    buttons: {
+				"Previous": function(){
+		    		console.log(" change page ");
+
+		            $(this).dialog("close");
+		    		$('#' + self.m_DecodeDataDialogId_Step1).dialog('open');
+		    		
+					// $(this).value('ok');
+		    	},		    	
+		        "Ok": function(){		       		
+		        	// self.decodeData_SizeBound();
+		            $(this).dialog("close");
+		       		g_VisDecoder.exitDecodeMode();
+		       	 },
+		       	"Cancel": function(){
+		       		$(this).dialog('close');
+		       		g_VisDecoder.exitDecodeMode();
+		       	}
+	    	}
+		});
+
+		$('#decode_legend_define')
+		.on('click', function(){
+			console.log(" click the decode legend button ");
+			//enable the grabbing rect
+
+		});
+	}
+
+
+	Info.addDecodeDialog_step1 = function(){
+		var self = this;
+		
+		if($('#' + self.m_DecodeDataDialogId_Step1).length != 0)
+			return;
+
+		var dialoghtml = 
+		'<div id=<%=dialogId%> title="Decode Method" hidden="hidden">'+
+		  	  '<label class="decodetype">' +
+			      '<input type="radio" id="posradio" name="decodemethod">Position ' +
+			   '</label>' +
+			   '<br>' +
+			   '<label class="decodetype">' +
+			      '<input type="radio" id="ruleradio" name="decodemethod">Rule' +
+			   '</label>' +	
+			   '<br>' +
+		      '<label class="decodetype">' +
+			      '<input type="radio" id="boundradio" name="decodemethod">Boundary' +
+			   '</label>' +	  
+			   '<br>' +
+		      '<label class="decodetype">' +
+			      '<input type="radio" id="legendradio" name="decodemethod">Legend' +
+			   '</label>' +	   
+		'</div>'
+
+		var compiled = _.template(dialoghtml);
+
+		testDiv = document.getElementById(self.m_ObjectDivId);
+		
+		testDiv.innerHTML = testDiv.innerHTML + compiled({
+			dialogId: self.m_DecodeDataDialogId_Step1,
+		});	
+
+		$("#" + self.m_DecodeDataDialogId_Step1).dialog({
+			autoOpen: false,
+			dialogClass: 'dialog_panel',
+		    buttons: {
+		    	"Next": function(){
+
+		    		console.log(" change page ");
+
+		            $(this).dialog("close");
+		        
+		            if($('#posradio')[0].checked){
+		            	console.log('pos radio');
+		            	$('#' + self.m_DecodeDataDialogId_Pos).dialog('open');
+		            	g_VisDecoder.setDecodeMethod('decode_pos');
+		            }
+		            if($('#ruleradio')[0].checked){
+		            	$('#' + self.m_DecodeDataDialogId_SizeRule).dialog('open');
+		            	g_VisDecoder.setDecodeMethod('decode_rule');
+		            }
+		            if(("#boundradio")[0].checked){
+						$('#' + self.m_DecodeDataDialogId_SizeBoundary).dialog('open');
+		            	g_VisDecoder.setDecodeMethod('decode_bound');
+		            }
+		            if(('#legendradio')[0].checked){
+		            	$('#' + self.m_DecodeDataDialogId_Legend).dialog('open');
+		            	g_VisDecoder.setDecodeMethod('decode_legend');
+		            }
+		    	},
+		       	"Cancel": function(){
+		       		$(this).dialog('close');
+		       		g_VisDecoder.exitDecodeMode();
+		       	}
+	    	}
+		});
+	}
+
+	Info.addDecodeDialog_Pos = function(){
+
+		var self = this;
+		if($('#' + self.m_DecodeDataDialogId_Pos).length != 0)
+			return;
+
+		var dialoghtml = 
+		'<div id=<%=dialogId%> title="Position Decode" hidden="hidden">'+
+			  	'<p id="decode_pos_p1" style="font-size: 12px"><b>Step 1:</b> Pick an object and position line<img class="decode_buttonimg" src=<%=pos_1%> style="width:10px;"/></p>' +
+				'<p id="decode_pos_p2" style="font-size: 12px"><b>Step 2:</b> Identify reading reference</p><img class="decode_buttonimg" src=<%=pos_1%> style="width:10px;"/>' +
+		'</div>'
+
+		var compiled = _.template(dialoghtml);
+
+		testDiv = document.getElementById(self.m_ObjectDivId);
+		
+		testDiv.innerHTML = testDiv.innerHTML + compiled({
+			dialogId: self.m_DecodeDataDialogId_Pos,
+			pos_1: serverIp + "rc/rect_select.png",
+		});	
+
+		$("#" + self.m_DecodeDataDialogId_Pos).dialog({
+			autoOpen: false,
+			dialogClass: 'dialog_panel',
+		    buttons: {
+		    	"Previous": function(){
+		    		console.log(" change page ");
+
+		            $(this).dialog("close");
+		    		$('#' + self.m_DecodeDataDialogId_Step1).dialog('open');
+		    		
+					// $(this).value('ok');
+		    	},
+		        "Ok": function(){
+		        	var maxValue = $('#decode_max_value_input').val();
+		        	var minValue = $('#decode_min_value_input').val();
+		        	self.decodeData_Pos(minValue, maxValue);
+		            $(this).dialog("close");
+		       		g_VisDecoder.exitDecodeMode();
+		       	 },
+		       	"Cancel": function(){
+		       		$(this).dialog('close');
+		       		g_VisDecoder.exitDecodeMode();
+		       	}
+	    	}
+		});
+
+		$('#decode_pos_p1 img').on('click', function(){
+			console.log("click pos step 1");
+		});
+	}
+
+	Info.addDecodeDialog_SizeRule = function(){
+
+		var self = this;
+		if($('#' + self.m_DecodeDataDialogId_SizeRule).length != 0)
+			return;
+
+		var dialoghtml = 
+		'<div id=<%=dialogId%> title="Rule Decode" hidden="hidden">'+			  			    
+		'</div>';
+
+		var compiled = _.template(dialoghtml);
+
+		testDiv = document.getElementById(self.m_ObjectDivId);
+		
+		testDiv.innerHTML = testDiv.innerHTML + compiled({
+			dialogId: self.m_DecodeDataDialogId_SizeRule,
+			maximg: serverIp + "rc/rect_select.png",
+		});	
+
+		$("#" + self.m_DecodeDataDialogId_SizeRule).dialog({
+			autoOpen: false,
+			dialogClass: 'dialog_panel',
+		    buttons: {
+		    	"Previous": function(){
+		    		$(this).dialog('close');
+		    		$('#' + self.m_DecodeDataDialogId_Step1).dialog('open');
+		    	},
+		        "Ok": function(){		       		
+		        	self.decodeData_SizeRule();
+		            $(this).dialog("close");
+		       		g_VisDecoder.exitDecodeMode();
+		       	 },
+		       	"Cancel": function(){
+		       		$(this).dialog('close');
+		       		g_VisDecoder.exitDecodeMode();
+		       	}
+	    	}
+		});
+
+		$('#decode_legend_define')
+		.on('click', function(){
+			console.log(" click the decode legend button ");
+			//enable the grabbing rect
+
+		});
+	}
 
 
 	//add a rename dialog, default hide
@@ -392,6 +673,33 @@ function InObjDialogRender(iId, objectGroupManager, propertyManager, crossFilter
 		.attr('width', function(){
 			return barWidth * barRatio;
 		});
+	}	
+
+	Info.decodeData_SizeRule = function(){
+		//todo
+	}
+
+	Info.decodeData_SizeBound = function(){
+		//todo
+	}
+
+	Info.decodeData_Pos = function(minValue, maxValue){
+		var self = this;
+		var iGroupId = self.m_InObj.m_CurrentSelectGroupId, iPId = self.m_InObj.m_CurrentDecodePropertyId;
+		console.log(" decode data ", minValue, maxValue, iGroupId, iPId);
+		
+		var propertyBag = self.m_PropertyManager.getPropertyBag(iGroupId);
+		var propertyInfo = propertyBag.getPropertyInfo(iPId);
+		var propertyType = propertyBag.getPropertyTypebyId(iPId);
+		var propertyName = propertyBag.getPropertyNamebyId(iPId);
+		var isNa = propertyBag.isPropertyNumber(iPId);
+		var isColor = propertyBag.isPropertyColor(iPId);
+
+		propertyBag.decodeProperty(iPId, Number(minValue), Number(maxValue));
+		// g_VisDecoder.decode(minValue, maxValue, )
+		console.log(' decode property ', propertyBag, propertyInfo, 
+			propertyType, propertyName, isNa, isColor);
+		// g_VisDecoder.decode(minValue, maxValue);
 	}
 
 	Info.renameObject = function(){
@@ -441,7 +749,7 @@ function InObjDialogRender(iId, objectGroupManager, propertyManager, crossFilter
 	}
 
 
-	Info.__init__(iId, objectGroupManager, propertyManager, crossFilter, filterSetting);
+	Info.__init__(InObj, iId, objectGroupManager, propertyManager, crossFilter, filterSetting);
 	return Info;
 }
 

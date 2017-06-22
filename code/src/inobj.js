@@ -19,6 +19,7 @@ function InObj(iId, bMask, maskType){
 		this.m_Mask = new InObjMask(this.m_iId, maskType, this);
 
 		this.m_CurrentSelectGroupId = -1;
+		this.m_CurrentDecodePropertyId = -1;
 
  		this.m_TempElementDetector = new ElementDetetor(-1);
 
@@ -103,8 +104,13 @@ function InObj(iId, bMask, maskType){
 	    //filter setting info
 	    this.m_FilterSettingInfo = new FilterSettingInfo(this.m_iId, this.m_ObjectGroupManager, this.m_PropertyManager);
 		
-		this.m_DialogRender = new InObjDialogRender(this.m_iId, this.m_ObjectGroupManager, this.m_PropertyManager, 
+		this.m_DialogRender = new InObjDialogRender(this, this.m_iId, this.m_ObjectGroupManager, this.m_PropertyManager, 
 			this.m_CrossFilter, this.m_FilterSettingInfo);
+		this.m_DialogRender.addDecodeDialog_step1();
+		this.m_DialogRender.addDecodeDialog_Pos();
+		this.m_DialogRender.addDecodeDialog_SizeRule();
+		this.m_DialogRender.addDecodeDialog_Bound();
+		this.m_DialogRender.addDecodeDialog_Legend();
 		this.m_DialogRender.addProReNameDialog();
 		this.m_DialogRender.addObjReNameDialog();
 		this.m_DialogRender.addSubmitDialog();

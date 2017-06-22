@@ -55,7 +55,11 @@ function handleMouseUp() {
        };
        iInObj.m_ElementDetector.m_ElementProperties.setStrokeMap(tempEleStroke);
        // iInObj.m_ElementDetector.m_ElementProperties.storeStrokeMap();
-   } 
+   }else{
+    if(g_VisDecoder.isInDecodeMode()){
+      g_VisDecoder.handleMouseUp();
+    }
+   }
 }
 
 function handleMouseMove(pos, addOnSvg){
@@ -63,6 +67,10 @@ function handleMouseMove(pos, addOnSvg){
       g_MouseEnd['x'] = pos.x;
       g_MouseEnd['y'] = pos.y;
       mouseMoveToDefineRegion(addOnSvg);
+  }else{
+    if(g_VisDecoder.isInDecodeMode()){
+      g_VisDecoder.handleMouseMove(pos);
+    }
   }
 }
 
@@ -83,8 +91,14 @@ function handleMouseDown(pos, addOnSvg){
       f_Timer = window.setInterval(myTimer, 200);
       g_StaticRectCount = 0;
       g_PreviousDragRect = {};
+  }else{
+    //if decode mode
+    if(g_VisDecoder.isInDecodeMode()){
+      g_VisDecoder.handleMouseDown(pos);
+    }
   }
 }
+
 
 function myTimer() {
 

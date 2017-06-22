@@ -1554,12 +1554,11 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		var propertyName = propertyBag.getPropertyNamebyId(iPId);
 
 		//suggested by decode vis
-		var suggestSemanticName = g_VisDecoder.getSemanticMap(propertyName);
+		// var suggestSemanticName = g_VisDecoder.getSemanticMap(propertyName);
 
 		//check the name
 		var changeName = ['fill', 'cx', 'cy', 'r'];
 		var okName = ['color', 'cen-x', 'cen-y', 'radius'];
-
 
 		if(changeName.indexOf(propertyName) != -1){
 			propertyName = okName[changeName.indexOf(propertyName)];
@@ -1572,10 +1571,10 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		}
 
 		//add suggested name
-		if(suggestSemanticName != undefined)
-			propertyName += " - " + suggestSemanticName;
+		// if(suggestSemanticName != undefined)
+		// 	propertyName += " - " + suggestSemanticName;
 
-		console.log(" suggestSemanticName ", propertyName, suggestSemanticName);
+		// console.log(" suggestSemanticName ", propertyName, suggestSemanticName);
 
 		// if(prodiv.length == 0){
 		// 	//if parent div not exist
@@ -1718,13 +1717,16 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 
 		//input div	
 		var topDivHtml = 
-		'<div class="sub_panel hidden" id=<%=topDivId%> style="position:absolute; width: 150px; height: <%=topdivheight%>; left: <%=topleft%>;" >'+
-			'<p style="display: inline-block; width:40%; float:left">Top: </p>' +
+		'<div class="sub_panel hidden" id=<%=topDivId%> style="position:absolute; height: <%=topdivheight%>; left: <%=topleft%>;" >'+
+			'<p style="display: inline-block; float:left">Top: </p>' +
 			'<input type="text" class="top_topdiv" style="font-size: 14px; float: left; width:40%; height: 80%; margin: 3px">' + 
+			'<button class="top-ok btn btn-warning btn-xs function_button">Ok</button>'+
+			'<button class="top-cancel btn btn-warning btn-xs function_button">Cancel</button>'+
 			// '<input type="text" class="left_topdiv" style="font-size: 14px; float: left; width:40%; height: 80%; margin: 3px">' + 
 			// '<p style="display: inline-block; width:10%; float:left">~</p>' +
 			// '<input type="text" class="right_topdiv" style="font-size: 14px; float: left; width:40%; height: 80%; margin: 3px">' + 
 		'</div>';
+
 
 		var compile_labelhtml = _.template(topDivHtml);
 	    topDivHtml = compile_labelhtml({
@@ -1733,51 +1735,76 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 			topleft: prodiv.width() + maginwidth * 3 + 'px',
 		});
 		prodiv.html(prodiv.html() + topDivHtml);
-	
-		// prodiv.append(inputTopDiv);
 
+
+
+	
 		var boxplotSvg = d3.select('#' + boxplotDivId)
 		.append('svg');
 
 		boxplotSvg.append('rect')		
 		.attr('width', boxplotDivWidth + 'px')
 		.attr('height', disDivHeight + 'px')
-		.attr('fill', '#B2EBF2')	
-		.on('click', function(){
-			//console.log(" boxplot click ");
-			var id_temp = '#' + preFix + 'p_' + self.m_iId + 'top_' + iPId;
-			var cl = $(id_temp)[0].classList;
-			if(cl.contains('hidden') == false){
-				//check if visible
-				var top = Number($(id_temp + ' .top_topdiv').val());
-				//console.log(' top *** ', top, $(id_temp + ' .top_topdiv').val());
-				if(isNaN(top) == false && top != 0){
-					var iSelectGroupId = self.m_ObjectGroupManager.getSelectedGroupId();
-					var liSelectedEleId = self.m_ObjectGroupManager.getEleIdsbyGroupId(iSelectGroupId);
-					if(top > liSelectedEleId.length)
-						top = liSelectedEleId.length;
-					self.selectTopRange(iPId, liSelectedEleId.length - top, liSelectedEleId.length - 1);
-				}
-				/*
-				var left = Number($('#p_1top_0 .left_topdiv').val());
-				var right = Number($('#p_1top_0 .right_topdiv').val());
-				if(isNaN(left) == false && isNaN(right) == false){
-					self.selectTopRange(iPId, left, right);					
-				}*/
-			}
-			
-			$(id_temp).toggleClass('hidden');
-		});
+		.attr('fill', '#B2EBF2');
 
+		//DECODE
+		boxplotSvg.append('rect')
+		.attr('width', '10px')
+		.attr('height', disDivHeight)
+		.attr('x', boxplotDivWidth - 25 )
+		.attr('y', disDivHeight * 0.5 - disDivHeight * 0.5)
+		.style('fill', 'green')
+		.on('click', function(){
+			var whichproperty = getDecodePropertyType(propertyType);
+			console.log(' data decode ', propertyType, propertyName, whichproperty);			
+			g_VisDecoder.enterDecodeMode();
+			$('#decodepos_data_dialog_step1_' + self.m_iId).dialog('open');
+			// switch(whichproperty){
+			// 	case 'pos':
+			// 		$('#decode_data_dialog_' + self.m_iId).dialog('open');
+			// }
+			self.m_InObj.m_CurrentDecodePropertyId = iPId;
+		});
+	
+
+		//TOP
 		boxplotSvg.append('rect')
 		.attr('width', '10px')
 		.attr('height', '10px')
 		.style('fill', 'red')
 		// .attr('src', 'rc/brush-note.png')
 		.attr('x', boxplotDivWidth - 10)
-		.attr('y', disDivHeight - 10);
-	
+		.attr('y', disDivHeight - 10)
+		.on('click', function(){
+			//console.log(" boxplot click ");
+			var id_temp = '#' + preFix + 'p_' + self.m_iId + 'top_' + iPId;			
+			$(id_temp).toggleClass('hidden');
+		});
 
+		d3.select('#' + preFix + 'p_' + self.m_iId + 'top_' + iPId + ' .top-ok')
+		.on('click', function(){
+			console.log(' click top ok ');
+			var id_temp = '#' + preFix + 'p_' + self.m_iId + 'top_' + iPId;
+			var top = Number($(id_temp + ' .top_topdiv').val());
+			//console.log(' top *** ', top, $(id_temp + ' .top_topdiv').val());
+			if(isNaN(top) == false && top != 0){
+				var iSelectGroupId = self.m_ObjectGroupManager.getSelectedGroupId();
+				var liSelectedEleId = self.m_ObjectGroupManager.getEleIdsbyGroupId(iSelectGroupId);
+				if(top > liSelectedEleId.length)
+					top = liSelectedEleId.length;
+				self.selectTopRange(iPId, liSelectedEleId.length - top, liSelectedEleId.length - 1);
+			}				
+			$(id_temp).addClass('hidden');
+		});
+
+		d3.select('#' + preFix + 'p_' + self.m_iId + 'top_' + iPId + ' .top-cancel')
+		.on('click', function(){
+			console.log(" click top Cancel");	
+			var id_temp = '#' + preFix + 'p_' + self.m_iId + 'top_' + iPId;		
+			$(id_temp).addClass('hidden');
+		})
+
+		//EXPAND
 		boxplotSvg
 		// .append('img')
 		.append('rect')

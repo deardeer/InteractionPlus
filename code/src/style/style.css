@@ -176,6 +176,7 @@
  	background: black !important;
     border: white 1px solid !important;
     margin-right: 2px;   
+    color: white;
 }
 
 .function_button-clicked{	
@@ -197,6 +198,10 @@
 	height: 20px; 
 	margin-right: 5px; 
 	float: left;
+}
+
+.decode_buttonimg:hover{
+	opacity: 0.4;
 }
 
 .object_button_div:hover{

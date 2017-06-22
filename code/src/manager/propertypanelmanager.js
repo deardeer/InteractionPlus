@@ -1501,6 +1501,45 @@ function PropertyBag(iGroupId, bOrigin, objectGroupManager){
 			return false;
 	}
 
+	Info.decodeProperty = function(iPropertyId, minValue, maxValue){
+		var self = this;
+		var liEleId = self.m_ObjectGroupManager.getEleIdsbyGroupId(iGroupId);
+		var minPropertyValue, maxPropertyValue;
+		var mapEleIdProperty = {};
+		var mapEleIdDecodeProperty = {};
+		//fetch the propertyvalue
+		for (var i = liEleId.length - 1; i >= 0; i--) {		
+			var iEleId = liEleId[i];
+			var propertyValue = self.getPropertyValue(iPropertyId, iEleId);
+			if(i == liEleId.length - 1){
+				minPropertyValue = propertyValue;
+				maxPropertyValue = propertyValue;
+			}else{
+				if(minPropertyValue > propertyValue)
+					minPropertyValue = propertyValue;
+				if(maxPropertyValue < propertyValue)
+					maxPropertyValue = propertyValue;
+			}
+			mapEleIdProperty[iEleId] = propertyValue;
+		};
+		var delateValue = maxValue - minValue;
+		var delatePropertyValue = maxPropertyValue - minPropertyValue;
+		var delateRatio = delateValue/delatePropertyValue;
+
+		// console.log(' max/minPropertyValue ', maxPropertyValue, minPropertyValue,
+			// ' max/minValue ', maxValue, minValue, delateValue);
+
+		for (var i = liEleId.length - 1; i >= 0; i--) {		
+			var iEleId = liEleId[i];
+			var propertyValue = mapEleIdProperty[iEleId];
+			var decodeValue = minValue + delateRatio * (propertyValue - minPropertyValue);
+			mapEleIdDecodeProperty[iEleId] = decodeValue;
+		}
+
+		self.getPropertyValue(iPropertyId, iEleId);
+
+	}
+
 	Info.__init__(objectGroupManager);
 	
 	return Info;

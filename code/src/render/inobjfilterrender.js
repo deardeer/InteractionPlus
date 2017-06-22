@@ -13,6 +13,11 @@ function InObjFilterRender(iId, inObj, objectGroupManager){
 		//console.log(" init inobjfilter render", this.m_iId);
 	}
 
+	Info.setFilterPanelVisible = function(visible){
+		d3.select('#filter_panel' + this.m_iId)
+		.style('visibility', visible);
+	}
+
 	Info.addFilterPanel = function(){	
 
 		var self = this;

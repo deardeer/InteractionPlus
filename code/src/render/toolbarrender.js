@@ -53,6 +53,10 @@ function ToolBarRender(){
 				'<div class="btn-group" style="margin:5px; float: left;">' + 
 				    '<button class="btn btn-warning btn-xs function_button" type="button" id="annotate_button"><img class="btn_img" src=<%=annotateimgsrc%>></img> Annotate</button>' + 				
 				'</div>' +
+
+				'<div class="btn-group" style="margin:5px; float: left;">' + 
+				    '<button class="btn btn-warning btn-xs function_button" type="button" id="panel_visible_button" showhide="show"><img class="btn_img" src=<%=eyeimgsrc%>></img> Invisible</button>' + 				
+				'</div>' +
 				//'<div class="btn-group" style="margin:5px; float: left;">' + 
 					// '<button class="btn btn-warning btn-xs function_button" type="button" id="tablemask_button"><img class="btn_img" src=<%=tabularimgsrc%>></img> Tabluar Mask</button>' + 
 					//'<button class="btn btn-warning btn-xs function_button" type="button" id="networkmask_button"><img class="btn_img" src=<%=networkimgsrc%>></img> Network</button>' + 
@@ -89,6 +93,7 @@ function ToolBarRender(){
 			manualimgsrc: serverIp + "rc/manual.png",
 			feedbackimgsrc: serverIp + "rc/feedback.png",
 			exitimgsrc: serverIp + "rc/exit.png",
+			eyeimgsrc: serverIp + 'rc/eye-close-up.png',
 			networkimgsrc: serverIp + 'rc/network.png',
 		}));
 
@@ -204,6 +209,62 @@ function ToolBarRender(){
 
 			document.onmouseup = doSomethingWithSelectedText;
 			document.onkeyup = doSomethingWithSelectedText;
+		});
+
+		d3.select('#panel_visible_button').on('click', function(){
+
+			var buttontext = $(this).text();
+			var showhide = $(this).attr('showhide');
+			var newbuttontext = "";
+			var show = true;			
+			// if(buttontext == show_explore_str){
+			if(showhide == 'show'){
+				newbuttontext = 'Visible';//hide_explore_str;
+				$(this).attr('showhide', 'hide');
+
+				var iObjId = g_InObjManager.getCurrentObjId();
+
+				d3.select('#filter_panel' + iObjId + ' svg')
+				.style('visibility', 'hidden');
+
+				d3.selectAll('#filter_panel' + iObjId + ' div')
+				.style('visibility', 'hidden');
+
+				d3.selectAll('#g_defined_region' + iObjId + ' text')
+				.style('visibility', 'hidden');
+
+				d3.selectAll('#g_defined_region' + iObjId + ' circle')
+				.style('visibility', 'hidden');
+
+				// $(this).text(hide_explore_str);
+			}else{
+				newbuttontext = "Invisible";//show_explore_str;
+				$(this).attr('showhide', 'show');
+				show = false;
+				var iObjId = g_InObjManager.getCurrentObjId();
+
+				d3.select('#filter_panel' + iObjId + ' svg')
+				.style('visibility', 'visible');
+
+				d3.selectAll('#filter_panel' + iObjId + ' div')
+				.style('visibility', 'visible');
+
+
+				d3.selectAll('#g_defined_region' + iObjId + ' text')
+				.style('visibility', 'visible');
+
+				d3.selectAll('#g_defined_region' + iObjId + ' circle')
+				.style('visibility', 'visible');
+			}
+
+			console.log(' new button ', showhide, newbuttontext);
+			var buttonstring = '<img class="btn_img" src=<%=networksrc%>></img> <%=buttonstring%>';
+			var compiled = _.template(buttonstring);
+			$(this).html(
+				compiled({
+					networksrc: serverIp + 'rc/eye-close-up.png',
+					buttonstring: newbuttontext,
+			}));
 		});
 
 		d3.select('#annotate_button').on('click', function(){
@@ -382,6 +443,21 @@ function ToolBarRender(){
 	Info.clickRadialMaskButton = function(){
 		//console.log( " radial-parallel button pressed ! ");
 		g_ToolBarManager.setRadialMaskEnable(true);
+	}
+
+	//clear the line up butotn 
+	Info.resetVLineUpButton = function(){
+		var classList = $('#vlineup_button')[0].classList;
+		if(classList.contains("function_button-clicked") == true){
+			$('#vlineup_button').click();
+		}
+	}
+
+	Info.resetHLineUpButton = function(){
+		var classList = $('#hlineup_button')[0].classList;
+		if(classList.contains("function_button-clicked") == true){
+			$('#hlineup_button').click();
+		}
 	}
 
 	return Info;

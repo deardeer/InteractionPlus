@@ -330,26 +330,6 @@ function InObjRender(iId, inObj){
               }
             }       
 
-            // console.log('d3 evnet pagexy', d3.event.pageX, d3.event.pageY, coverLine);
-
-            // if(self.m_mouseHoverCurrentEleId != -1 && g_ToolBarManager.isLineUpEnable() == true){
-            //   //check current hover function
-
-            //   if(self.m_ElementDetector.isGivenElementInRect(self.m_mouseHoverCurrentEleId, coverRect)){
-
-            //       var newEle = self.m_ElementProperties.getElebyId(self.m_mouseHoverCurrentEleId);
-                 
-            //       var posinAddonDiv = {
-            //         'x': d3.event.pageX - absAddonDivPos.left,
-            //         'y': d3.event.pageY - absAddonDivPos.top, 
-            //       } 
-
-            //       //todo
-            //       self.addLineUp(posinAddonDiv, absAddonDivPos, [);          
-            //       return;
-            //    }
-            // }
-
             // var liHoverEleId = self.m_ElementDetector.detectGivenElementsInRect(self.m_liFilterEleId, coverRect);
             var liFilteredEleId = self.m_CrossFilterInfo.getFilterEleIds();
             var hoverResult = self.m_ElementDetector.detectGivenElementsInRectLine(liFilteredEleId, coverPos, coverDir, coverLine);
@@ -408,27 +388,33 @@ function InObjRender(iId, inObj){
               }
 
               self.m_mouseHoverCurrentEleId = Number(iNewHoverEleId);
-              var newEle = self.m_ElementProperties.getElebyId(self.m_mouseHoverCurrentEleId);
-              self.m_mouseHoverEleOriginStyle['stroke'] = newEle.style.stroke;   
-              self.m_mouseHoverEleOriginStyle['stroke-width'] = newEle.style['stroke-width'];
-              // //console.log(" new style ! ", self.m_mouseHoverEleOriginSxtyle, newEle.style);           
-              newEle.style.stroke = 'black';
-              newEle.style['stroke-width'] = "2px";
-            
-              ////add the new line-up
-              if(g_ToolBarManager.isLineUpEnable() == true){
 
-                // //console.log(" line up 1 ", self.m_mouseHoverCurrentEleId);
-                var posinAddonDiv = {
-                  'x': d3.event.pageX +  - absAddonDivPos.left,
-                  'y': d3.event.pageY - absAddonDivPos.top, 
-                } 
-                //console.log(" licompareAbsEleInfo  [0] ", licompareAbsEleInfo);
-                self.addLineUp(posinAddonDiv, absAddonDivPos, hoverEleRect, licompareAbsEleInfo);
+
+              if(g_VisDecoder.isTargetEleSelected() == false){
+                var newEle = self.m_ElementProperties.getElebyId(self.m_mouseHoverCurrentEleId);
+                self.m_mouseHoverEleOriginStyle['stroke'] = newEle.style.stroke;   
+                self.m_mouseHoverEleOriginStyle['stroke-width'] = newEle.style['stroke-width'];
+                newEle.style.stroke = 'black';
+                newEle.style['stroke-width'] = "2px";
+              
+                ////add the new line-up
+                if(g_ToolBarManager.isLineUpEnable() == true){
+                    // //console.log(" line up 1 ", self.m_mouseHoverCurrentEleId);
+                    var posinAddonDiv = {
+                      'x': d3.event.pageX +  - absAddonDivPos.left,
+                      'y': d3.event.pageY - absAddonDivPos.top, 
+                    } 
+                    //console.log(" licompareAbsEleInfo  [0] ", licompareAbsEleInfo);
+                    self.addLineUp(posinAddonDiv, absAddonDivPos, hoverEleRect, licompareAbsEleInfo);
+                }
+
+                //notify the info 
+                  self.m_InObj.hoverEleId(self.m_mouseHoverCurrentEleId); 
               }
 
-              //notify the info 
-              self.m_InObj.hoverEleId(self.m_mouseHoverCurrentEleId); 
+              if(g_VisDecoder.isInDecodeMode() == true){
+                g_VisDecoder.hoverTargetObj(self.m_mouseHoverCurrentEleId);
+              }
 
             }else{
               //remove
@@ -445,10 +431,23 @@ function InObjRender(iId, inObj){
               }
               self.m_mouseHoverCurrentEleId = -1;
               self.m_mouseHoverEleOriginStyle = {};
+
+              if(g_VisDecoder.isInDecodeMode() == true){
+                g_VisDecoder.hoverTargetObj(self.m_mouseHoverCurrentEleId);
+              }
             } 
+
+        })
+        .on('mouseout', function(){
+          console.log(' mouse out ! ');
+          if(g_VisDecoder.isInDecodeMode())
+            g_VisDecoder.clearTemp();
         });
-    
-  }
+        // .on('click', function(){
+        //     // console.log(" current click ele id ", self.m_mouseHoverCurrentEleId);
+        //     // g_VisDecoder.handleMouseDown(self.m_mouseHoverCurrentEleId);
+        // });
+    }
 
   Info.addAnnotation = function(bAnnotation, annotationText, annotationId, annotationHighlight){
 

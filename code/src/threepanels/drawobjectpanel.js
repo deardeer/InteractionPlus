@@ -259,8 +259,8 @@ function ObjectPanelRender(iId, inObj, objectGroupManager){
 			var buttonLabel = attrs['name']; //+ ':' + liEles.length;
 
 			//get the suggested name
-			if(g_VisDecoder.getSemanticMap(buttonLabel) != undefined)
-				buttonLabel = g_VisDecoder.getSemanticMap(buttonLabel);
+			// if(g_VisDecoder.getSemanticMap(buttonLabel) != undefined)
+			// 	buttonLabel = g_VisDecoder.getSemanticMap(buttonLabel);
 
 			// if(buttonSuggestLabel != undefined){
 			// 	//exist
