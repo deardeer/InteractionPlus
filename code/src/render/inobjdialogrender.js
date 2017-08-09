@@ -79,6 +79,8 @@ function InObjDialogRender(InObj, iId, objectGroupManager, propertyManager, cros
 				"Previous": function(){
 		    		console.log(" change page ");
 
+		    		g_VisDecoder.resetDecodeMode();
+
 		            $(this).dialog("close");
 		    		$('#' + self.m_DecodeDataDialogId_Step1).dialog('open');
 		    		
@@ -132,6 +134,8 @@ function InObjDialogRender(InObj, iId, objectGroupManager, propertyManager, cros
 
 		            $(this).dialog("close");
 		    		$('#' + self.m_DecodeDataDialogId_Step1).dialog('open');
+
+		    		g_VisDecoder.resetDecodeMode();
 		    		
 					// $(this).value('ok');
 		    	},		    	
@@ -255,6 +259,8 @@ function InObjDialogRender(InObj, iId, objectGroupManager, propertyManager, cros
 
 		            $(this).dialog("close");
 		    		$('#' + self.m_DecodeDataDialogId_Step1).dialog('open');
+
+		    		g_VisDecoder.resetDecodeMode();
 		    		
 					// $(this).value('ok');
 		    	},
@@ -284,7 +290,7 @@ function InObjDialogRender(InObj, iId, objectGroupManager, propertyManager, cros
 			return;
 
 		var dialoghtml = 
-		'<div id=<%=dialogId%> title="Rule Decode" hidden="hidden">'+			  			    
+		'<div id=<%=dialogId%> title="Rule Decode" hidden="hidden">'+				  			    
 		'</div>';
 
 		var compiled = _.template(dialoghtml);
@@ -303,6 +309,8 @@ function InObjDialogRender(InObj, iId, objectGroupManager, propertyManager, cros
 		    	"Previous": function(){
 		    		$(this).dialog('close');
 		    		$('#' + self.m_DecodeDataDialogId_Step1).dialog('open');
+
+		    		g_VisDecoder.resetDecodeMode();
 		    	},
 		        "Ok": function(){		       		
 		        	self.decodeData_SizeRule();

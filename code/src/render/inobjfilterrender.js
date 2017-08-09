@@ -47,8 +47,8 @@ function InObjFilterRender(iId, inObj, objectGroupManager){
 		this.drawDragButton(this.m_FilterDivId, DrawLTPos, '-15px', '3px');
 
 		//add subdiv
-		var SubDivTitle = ['Object', 'Attribute'];//, 'Logic Composition'];//, 'Filter'];
-		var SubDivId = ['object_p', 'property_p'];//, 'logic_p'];//, 'filter_p'];
+		var SubDivTitle = ['Object', 'Legend', 'Attribute'];//, 'Logic Composition'];//, 'Filter'];
+		var SubDivId = ['object_p', 'legend_p', 'property_p'];//, 'logic_p'];//, 'filter_p'];
 
 		for (var i = 0; i < SubDivId.length; i++){
 			// var SubDiv = document.createElement('div');
@@ -65,8 +65,11 @@ function InObjFilterRender(iId, inObj, objectGroupManager){
 			var tplhtml = '';
 			if(SubDivId[i] == 'object_p') 
 				tplhtml = '<div class="row sub_panel" style="width: 230px" id=<%=subpaneldiv%> ><div class="span12 titlebar margin-bottom-7"><span><%= subpaneltitle %></span></div><div class="span12" id=<%=subpanelid%> ></div></div>';
+			if(SubDivId[i] == 'legend_p') 
+				tplhtml = '<div class="row sub_panel" style="width: 230px; visibility: hidden;" id=<%=subpaneldiv%> ><div class="span12 titlebar margin-bottom-7"><span><%= subpaneltitle %></span></div><div class="span12" style="border: solid 1px black; background-color: white"id=<%=subpanelid%> ></div></div>';
 			if(SubDivId[i] == 'property_p')
 				tplhtml = '<div class="row sub_panel" style="margin-top: 10px; visibility: hidden;" id=<%=subpaneldiv%> ><div class="span12 titlebar margin-bottom-7"><span><%= subpaneltitle %></span></div><div class="span12" id=<%=subpanelid%> ></div><div class="span12" id=<%=spid%> ></div></div>';
+			
 			//left: 250px; top: 0px; position: absolute; 
 			var compiled = _.template(tplhtml);
 			
@@ -79,9 +82,14 @@ function InObjFilterRender(iId, inObj, objectGroupManager){
 				subpaneltitle: SubDivTitle[i]
 			});		
 		}
+
 		//draw object panel 
 		self.m_ObjectPanelRender = new ObjectPanelRender(self.m_iId, this.m_InObj, self.m_ObjectGroupManager);
 		self.m_ObjectPanelRender.addButtonsinObjectPanel();
+
+		//draw legend panel
+		self.m_LegendPanelRender = new LegendPanelRender(self.m_iId, self.m_ObjectGroupManager);
+		// self.m_LegendPanelRender.drawLegend
 
 		//draw property panel 
 		self.m_PropertyPanelRender = new PropertiesPanelRender(self.m_iId, self.m_InObj, self.m_ObjectGroupManager);
@@ -184,18 +192,22 @@ function InObjFilterRender(iId, inObj, objectGroupManager){
 		});
 	}
 
-	//set the property panel visible or not
+	//set the property, legend panel visible or not
 	Info.setPropertyPanelVisible = function(bVisible){
-		if(bVisible == true)
+		if(bVisible == true){
+			$('#legend_p_' + this.m_iId + '_div').css('visibility', 'visible');
 			$('#property_p_' + this.m_iId + '_div').css('visibility', 'visible');
-		else
+		}else{
+			$('#legend_p_' + this.m_iId + '_div').css('visibility', 'hidden');
 			$('#property_p_' + this.m_iId + '_div').css('visibility', 'hidden');
+		}
 	}
 
 	//draw the properties of given group
 	Info.drawProperties = function(iGroupId){
 		var self = this;
 		// $('#property_p_' + self.m_iId + '_div').css('visibility', 'visible');
+		self.m_LegendPanelRender.drawLegend(iGroupId);
 		self.m_PropertyPanelRender.drawProperties(iGroupId);
 	}
 

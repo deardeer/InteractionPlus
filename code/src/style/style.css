@@ -127,7 +127,7 @@
 	margin: 3px 0px 0px 0px;*/
 
 	/*width: 350px;	*/
-	width:250px;
+	width: 320px;
 	/*400*/
 	/* border: solid 1px #2196F3; */
 	/*border-radius: 5px;*/
@@ -330,8 +330,9 @@
 	height: 100%;
 	float: left;   
 	color: white;
-	background: #525252;
-	border: solid 1px #100;
+	/*background: #525252;*/
+	background: #000000;
+	border: solid 1px white;
 	text-align:center;
     border-radius: 3px;
 /*	height: 100%;
@@ -383,8 +384,8 @@
 	border: solid 1px #d9d9d9;
 	/* ;*/
 	height: 100%; 
-	position: absolute;
-	float: right;
+	/*position: absolute;*/
+	float: left;
 }
 
 .axis path,
@@ -402,8 +403,8 @@
 	border: solid 1px #d9d9d9;
 	/* ;*/
 	height: 100%; 
-	position: absolute;
-	float: right;
+	/*position: absolute;*/
+	float: left;
 }
 
 .inputtop_div{	

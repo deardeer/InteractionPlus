@@ -33,6 +33,17 @@ iScript.src = serverIp + "library/numeric.js";//"https://cdnjs.cloudflare.com/aj
 document.getElementsByTagName("head")[0].appendChild(iScript); 
 
 iScript = document.createElement("script");
+iScript.type = "text/javascript";
+iScript.src = serverIp + "library/svg-path-generator.js";//"https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js";
+document.getElementsByTagName("head")[0].appendChild(iScript); 
+
+
+iScript = document.createElement("script");
+iScript.type = "text/javascript";
+iScript.src = serverIp + "library/parser.js";//"https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js";
+document.getElementsByTagName("head")[0].appendChild(iScript); 
+
+iScript = document.createElement("script");
 iScript.type="text/javascript";
 iScript.src= serverIp + "library/jquery-1.11.3.min.js";
 document.getElementsByTagName("head")[0].appendChild(iScript); 
@@ -157,6 +168,13 @@ iScript.type="text/javascript";
 iScript.src= serverIp + "src/threepanels/drawpropertypanel.js";
 document.getElementsByTagName("head")[0].appendChild(iScript);
 
+
+iScript = document.createElement("script");
+iScript.type="text/javascript";
+iScript.src= serverIp + "src/threepanels/drawlegendpanel.js";
+document.getElementsByTagName("head")[0].appendChild(iScript);
+
+
 iScript = document.createElement("script");
 iScript.type="text/javascript";
 iScript.src= serverIp + "src/crossfilter.js";
@@ -240,6 +258,12 @@ document.getElementsByTagName("head")[0].appendChild(iScript);
 iScript = document.createElement("script");
 iScript.type="text/javascript";
 iScript.src= serverIp + "src/render/inobjfilterrender.js";
+document.getElementsByTagName("head")[0].appendChild(iScript); 
+
+
+iScript = document.createElement("script");
+iScript.type="text/javascript";
+iScript.src= serverIp + "src/comm/domstyle.js";
 document.getElementsByTagName("head")[0].appendChild(iScript); 
 
 
@@ -331,7 +355,8 @@ var timer = setInterval(function(){
 }, 300);
 
 var timer2 = setInterval(function(){
-	collectFeedback();
+	//feedback invalid
+	// collectFeedback();
 	// alert('Collect Feedback');
 	clearInterval(timer2);
 }, 5 * 60 * 1000)

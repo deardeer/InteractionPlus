@@ -1624,22 +1624,17 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 			
 		var maginwidth = 10;
 		
-		// if(self.m_mapProIdHeight[iGroupId + '-' + iPId] == undefined){
-		// 	self.m_mapProIdHeight[iGroupId + '-' + iPId] = disDivHeight;
-		// }else
-		// 	disDivHeight = self.m_mapProIdHeight[iGroupId + '-' + iPId];
-
-		//console.log(" expand histogram ", disDivHeight);
-
 		var labelTextSize = getTextSize(propertyName, font);
 		var gapWidth = 15;
-		var labelDisGap = 5;
+		var legendWidth = 30;
+		var labelDisGap = 2;
 		var boxplotDivWidth = 50;
 		
 		if(set_labelDivWidth == undefined || set_disDivWidth == undefined){
-			labelDivWidth = 40;//labelTextSize['w'] + gapWidth;
+			labelDivWidth = 40 + legendWidth;//labelTextSize['w'] + gapWidth;
 			// boxplotDivWidth = (prodiv.width() - 2 * labelDisGap - labelDivWidth) * 0.2;
-			disDivWidth = (prodiv.width() - labelDivWidth - 2 * labelDisGap  - boxplotDivWidth);
+			disDivWidth = (prodiv.width() - labelDivWidth  - 2 * labelDisGap  - boxplotDivWidth);
+			console.log(' width: ! ', prodiv.width(), disDivWidth, labelDivWidth, boxplotDivWidth);
 		}else{
 			labelDivWidth = set_labelDivWidth;
 			// boxplotDivWidth = prodiv.width() - labelDivWidth - disDivWidth;
@@ -1649,10 +1644,37 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 
 		/* label div */
 		var sPID = iPId + '';
+
+		var iconmap = {
+			'cx': 'rc/legend/x_pos.png',
+			'cy': 'rc/legend/y_pos.png',
+			'r': 'rc/legend/circle_radius.png',
+			'fill': 'rc/legend/circle_fill.png',
+		};
+
+		var iconstr = 'rc/legend/abstract.png';
+		if(iconmap[propertyType] != undefined)
+			iconstr = iconmap[propertyType];
+
+		//legend div
+		// var legendhtml = '<div value=<%=propertyType%>  style="position:relative; float:left; border: solid 1px" ><i class="fa fa-times delete_property_icon hidden"></i>' + 
+		// 					'<img src=<%=imgsrc%> style="height: 100%"></img>' + 
+		// 				'</div>';
+		// var compile_legendhtml = _.template(legendhtml);
+		// legendhtml = compile_legendhtml({
+		// 	propertyType: propertyType,
+		// 	imgsrc: serverIp + iconstr,
+		// });
+		// prodiv.html(prodiv.html() + legendhtml);
+
 		//console.log(' SPID ', sPID);
-		var labelhtml = 
-		'<div class="propertylabel" value=<%=propertyType%>  propertyid = <%=propertyId%> style="position:relative;" >'+
+		var labelhtml =
+		// '<div class="propertyimg">' + 
+		// 	'<img src=<%=imgsrc%> style="width: 50"/>' +
+		// '</div>' + 
+		'<div class="propertylabel" value=<%=propertyType%>  propertyid = <%=propertyId%> style="position:relative; padding-left: 2px" >'+
 			'<i class="fa fa-times delete_property_icon hidden"></i>'+
+			'<img src=<%=imgsrc%> style="height: 100%; float: left"></img>' + 
 			'<span class="propertyspan"><%=propertyName%></span>'+
 		'</div>';
 		var compile_labelhtml = _.template(labelhtml);
@@ -1660,6 +1682,8 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 	    	propertyId: iPId,
 			propertyType: propertyType,
 			propertyName: propertyName,
+			imgsrc: serverIp + iconstr,
+			// imgsrc: serverIp + 'rc/brush-note.png',
 		});
 		prodiv.html(prodiv.html() + labelhtml);
 
@@ -2940,20 +2964,29 @@ function drawProperty(iPId, ParentDivId, set_labelDivWidth, set_disDivWidth){
 	var font = '12px arial';
 	var labelDivWidth, disDivWidth;
 	var disDivHeight = 25;
+	// var legendWidth = 25;
 	var labelTextSize = getTextSize(propertyName, font);
 	var gapWidth = 15;
 	var labelDisGap = 5;
 	
 	if(set_labelDivWidth == undefined || set_disDivWidth == undefined){
 		labelDivWidth = labelTextSize['w'] + gapWidth;
-		disDivWidth = prodiv.width() - labelDivWidth - labelDisGap;
+		disDivWidth = prodiv.width() - labelDivWidth - labelDisGap - legendWidth - labelDisGap;
 	}else{
 		labelDivWidth = set_labelDivWidth;
 		disDivWidth = set_disDivWidth;
 	}
 
+	/* legend div */
+	// var sPID = iPId + '';
+	// var legendhtml = '<div class="propertylabel" value=<%=propertyType%>  style="position:relative" ><i class="fa fa-times delete_property_icon hidden"></i><img src=<%=imgsrc%> ></img></div>';
+	// var compile_legendhtml = _.template(legendhtml);
+	// legendhtml = compile_legendhtml({
+	// 	propertyType: propertyType,
+
+	// })
+
 	/* label div */
-	var sPID = iPId + '';
 	//console.log(' SPID ', sPID);
 	var labelhtml = '<div class="propertylabel" value=<%=propertyType%>  style="position:relative" ><i class="fa fa-times delete_property_icon hidden"></i><span class="propertyspan"><%=propertyName%></span></div>';
 	var compile_labelhtml = _.template(labelhtml);

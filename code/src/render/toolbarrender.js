@@ -54,9 +54,9 @@ function ToolBarRender(){
 				    '<button class="btn btn-warning btn-xs function_button" type="button" id="annotate_button"><img class="btn_img" src=<%=annotateimgsrc%>></img> Annotate</button>' + 				
 				'</div>' +
 
-				'<div class="btn-group" style="margin:5px; float: left;">' + 
-				    '<button class="btn btn-warning btn-xs function_button" type="button" id="panel_visible_button" showhide="show"><img class="btn_img" src=<%=eyeimgsrc%>></img> Invisible</button>' + 				
-				'</div>' +
+				// '<div class="btn-group" style="margin:5px; float: left;">' + 
+				//     '<button class="btn btn-warning btn-xs function_button" type="button" id="panel_visible_button" showhide="show"><img class="btn_img" src=<%=eyeimgsrc%>></img> Invisible</button>' + 				
+				// '</div>' +
 				//'<div class="btn-group" style="margin:5px; float: left;">' + 
 					// '<button class="btn btn-warning btn-xs function_button" type="button" id="tablemask_button"><img class="btn_img" src=<%=tabularimgsrc%>></img> Tabluar Mask</button>' + 
 					//'<button class="btn btn-warning btn-xs function_button" type="button" id="networkmask_button"><img class="btn_img" src=<%=networkimgsrc%>></img> Network</button>' + 
