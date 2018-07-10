@@ -20,7 +20,7 @@ function InObjManager(){
 		var inObj = this.m_mapIdInObj[iId];
 		if(inObj == undefined)
 			return;
-		inObj.finishSelectRect();
+		inObj.finishSelectRect_Adaptive();
 	}
 
 	Info.setCurrentObjId = function(iId){

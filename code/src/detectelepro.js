@@ -7,8 +7,6 @@ function ElementDetetor(iId){
 	Info.__init__ = function(iId){
 		this.m_iId = iId;
 		this.m_ElementProperties = new ElementPropoerties();
-
-
 		//console.log(" ElementDetetor ", this.m_iId);
 	}
 

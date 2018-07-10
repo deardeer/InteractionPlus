@@ -48,6 +48,124 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 
 	}
 
+	Info.drawColorLegend = function(iGroupId){
+
+		console.log(' draw color legend ', iGroupId);
+
+		var self = this;
+		var containerSvg = d3.select('#newsvg_' + this.m_iId)
+		var propertyBag = self.m_PropertyManager.getPropertyBag(iGroupId);
+	   	var propertyId = propertyBag.getPropertyIdbyName('fill')
+	   	var disConfig = propertyBag.getDisConfig(propertyId);
+
+	   	var liData = [];
+	   	var dis = propertyBag.getDis(propertyId);
+	   	for(var i = 0; i < disConfig.valueList.length; i ++){
+	   		liData.push({
+	   			'value': disConfig.valueList[i],
+	   			'count': dis[disConfig.getBinIndex(disConfig.valueList[i])],
+	   		})
+	   	}
+	   	// liData.sort(function(a, b){
+	   	// 	return b.count - a.count;
+	   	// })
+
+	   	console.log(' fill ', propertyId, disConfig, liData);
+
+	   	var group = containerSvg
+	   		.append('g')
+	   		.attr('class', 'colorlegend');
+
+	   	var recttext = group.selectAll('.colorcell')
+	   		 .data(liData)
+	   		 .enter()
+ 	   		 .append('g')
+ 	   		 .attr('transform', function(d, i){
+ 	   		 	return 'translate(0,' + (3 + 15 * i) + ')'
+ 	   		 })
+	   		 .attr('class', 'colorcell');
+
+	   	recttext.append('text')
+				.attr("dy", function(d, i){
+					return "1.0em"
+				})
+				.attr('dx', function(d, i){
+					return "25px"
+				})
+				.style("text-anchor", "middle")
+	   			.text(function(d, i){
+	   				return d.count;
+	   			})
+	   			
+
+	   	recttext
+	   		 .append('rect')
+	   		 .attr('width', '10')
+	   		 .attr('height', '10')
+	   		 .attr('clicked', 'yes')
+	   		 .attr('binindex', function(d,i){
+	   		 	return i;
+	   		 })
+	   		 .style('x', function(d, i){
+	   		 	return 5
+	   		 })
+	   		 .style('y', function(d, i){
+	   		 	return 0
+	   		 	// return (12 * i)
+	   		 })
+	   		 .style('stroke', 'black')
+	   		 .style('fill', function(d, i){
+	   		 	return d.value
+	   		 })
+	   		 .on('click', function(d, i){
+	   		 	var clicked = d3.select(this).attr('clicked');
+	   		 	if(clicked == 'yes'){
+	   		 		clicked = 'no';
+	   		 		d3.select(this).style('opacity', 0.3)
+	   		 	}else{
+	   		 		clicked = 'yes'
+	   		 		d3.select(this).style('opacity', 1.)	   		 		
+	   		 	}
+	   		 	d3.select(this).attr('clicked', clicked);
+
+	   		 	//get clicked index
+	   		 	// console.log(' click ', i);
+
+   		 		//compute thte selected ele if necessary
+				var liSelectIndexRange = [];
+				d3.selectAll("[clicked='yes']")
+				   .each(function(d, i){
+					liSelectIndexRange.push([d3.select(this).attr('binindex'), d3.select(this).attr('binindex')]);
+				   	// console.log(' clicked = ', );
+				})
+				var liSelectedEleId = propertyBag.getEleIdsbyPropertyIndexRangeList(propertyId, liSelectIndexRange);
+			
+				console.log(' selected ele id ', liSelectedEleId);	
+
+				//notify the cross-filter with selected property range
+				self.m_CrossFilterInfo.setFilterEleIdsofPropertyId(propertyId, liSelectedEleId);
+
+				//update the object_create_button
+				var liFilterEleId = self.m_CrossFilterInfo.getFilterEleIds();
+
+				//console.log(' lifilter ', liFilterEleId);
+				var eleNum = liFilterEleId.length;
+
+				if(self.m_ObjectGroupManager.isSelectedGroupTypeCompound()){// g_ObjectGroupManager.getSelectedGroupType() == 'compound' || g_ObjectGroupManager.getSelectedGroupType() == 'default_compound' || g_ObjectGroupManager.getSelectedGroupType() == 'logic_compound'){
+						//the compound ele
+						var liCompoundEleIds = self.m_ObjectGroupManager.sortToCompoundEleIdLists(self.m_ObjectGroupManager.getSelectedGroupId(), liFilterEleId);
+					eleNum = liCompoundEleIds.length;
+				}
+
+				$('#' + self.m_CreateButtonId).text(getCreateObjectButtonName(eleNum));	
+
+				self.updateFilteredRects();	
+				// self.updateBoxPlots(propertyId, adjustExtentRange);
+				//notify the mask
+				self.m_InObj.updateFilteredEleId(liFilterEleId);
+	   		 })
+	}
+
 	//draw buttons in property panel
 	Info.drawButtonsinPropertyPanel = function(){
 		var self = this;
@@ -2256,7 +2374,6 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 			var liFilterEleId = self.m_CrossFilterInfo.getFilterEleIds();
 
 			//console.log(' lifilter ', liFilterEleId);
-
 			var eleNum = liFilterEleId.length;
 
 			if(self.m_ObjectGroupManager.isSelectedGroupTypeCompound()){// g_ObjectGroupManager.getSelectedGroupType() == 'compound' || g_ObjectGroupManager.getSelectedGroupType() == 'default_compound' || g_ObjectGroupManager.getSelectedGroupType() == 'logic_compound'){

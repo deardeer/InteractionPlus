@@ -385,16 +385,18 @@ function CrossFilterInfo(iId, objectGroupManager, elementProperties, propertyMan
 
                 //recover the element's stroke
                 element.style['stroke'] = 'gray';
-                element.style['stroke-width'] = '1px';
+                // element.style['stroke-opacity'] = 1;
+                element.style['stroke-width'] = '3px';
             }else{
                 var stroke = self.m_ElementProperties.getEleStrokeInfo(iEleId);
                 element.style['stroke'] = stroke['stroke'];
+                // element.style['stroke-opacity'] = 0;
                 element.style['stroke-width'] = stroke['stroke-width'];
                 //not choose      
                 // $(element).removeClass('alpha-10');
                 // $(element).addClass('alpha-3');          
                 //OPCACITY
-                element.style.opacity = .3;   
+                // element.style.opacity = 0.3;   
             }
         });
     }
@@ -506,6 +508,7 @@ function clearFilter(){
   	$.each(liFilterEle, function(i, id){
       var ele = g_ElementProperties.getElebyId(id);
       $(ele).css('opacity', '0.3');
+      // $(ele).css('stroke-opacity', '0');
       $(ele).css('stroke', 'black');
   	});
 

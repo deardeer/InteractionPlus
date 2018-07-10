@@ -2,14 +2,17 @@
 	InObjFilterRender: render the filter panel
 */
 
-function InObjFilterRender(iId, inObj, objectGroupManager){
+function InObjFilterRender(iId, inObj, objectGroupManager, propertyManager){
 
 	var Info = {};
 	
-	Info.__init__ = function(iId, inObj, objectGroupManager){
+	Info.__init__ = function(iId, inObj, objectGroupManager, propertyManager){
 		this.m_iId = iId;
 		this.m_ObjectGroupManager = objectGroupManager;
+		this.m_PropertyManager = propertyManager;
 		this.m_InObj = inObj;
+		this.m_CrossFilterInfo = this.m_InObj.m_CrossFilter.m_CrossFilterInfo;
+
 		//console.log(" init inobjfilter render", this.m_iId);
 	}
 
@@ -99,6 +102,38 @@ function InObjFilterRender(iId, inObj, objectGroupManager){
 		self.m_ObjectPanelRender.TEST();
 		// self.drawFilterPart();
 	}
+
+ 	Info.drawColorLegend = function(iGroupId){
+
+	    var self = this;
+	   
+		var DrawLBPos = self.getDefaultDrawLBPoint();
+	    var x = DrawLBPos['x']
+	    var y = DrawLBPos['y'] + 10
+
+	    // var gDefineRegion = ;//d3.select(self.m_DragRectGName);
+	    var containerSvg = d3.select('#newsvg_' + this.m_iId)
+	    if(containerSvg.empty()){
+	    	containerSvg = d3.select('#addondiv')
+	    					 .append('svg')
+	    					 .attr('id', 'newsvg_' + this.m_iId)
+	    					 .style('position', 'absolute')	    					 
+			                .style('left', x)
+			                .style('top', y)
+			                .attr('width', 200)
+			                .attr('height', 500)
+	    }
+
+	    containerSvg
+			.append("rect")
+			.attr('x', 0)
+			.attr('y', 0)
+			.attr('width', 300)
+			.attr('height', 200)
+	        .style('fill', 'white');
+
+	    self.m_PropertyPanelRender.drawColorLegend(iGroupId);	  
+   }
 
 	//set the hovered eleid 
 	Info.hoverEleId = function(iHoveredEleId){
@@ -277,7 +312,7 @@ function InObjFilterRender(iId, inObj, objectGroupManager){
 	}
 
 
-	Info.__init__(iId, inObj ,objectGroupManager);
+	Info.__init__(iId, inObj ,objectGroupManager, propertyManager);
 
 	return Info;
 }

@@ -6,6 +6,7 @@ function ObjectGroupManager(iId, elementProperties){
 
 	Info.m_TitleContent = 'Object';
 
+	Info.m_mapRoleGroupId = {};
 	Info.m_mapOGroupIdElementIds = {};//get the elementids if origin
 									  //get the ele-group ids if compound or logic_compound
 	Info.m_mapOGroupIdAttr = {}; //{type: origin/compound/property; 
@@ -49,6 +50,27 @@ function ObjectGroupManager(iId, elementProperties){
 			
 		return iOGroupId;
 	}
+
+	Info.analyseRolesOfObjects = function(){
+		//analyze the roles of objects in each groups
+		var liRole = ['data', 'axes', 'legend', 'other'];
+		var liVisGroupId = this.getVisibleGroupIdList();
+		var iMaxEleNum = -1;
+		this.m_mapRoleGroupId = {};
+		for(var i = 0; i < liVisGroupId.length; i ++){
+			var iGroupId = liVisGroupId[i];
+			var liEleId = this.getEleIdsbyGroupId(iGroupId);
+			if(liEleId.length > iMaxEleNum){
+				//check the element
+				var repreEle = this.g_ElementProperties.getElePropertiesbyId(liEleId[0])
+				console.log(' repreEle ', repreEle);
+				iMaxEleNum = liEleId.length;
+				role = 'data';
+				this.m_mapRoleGroupId['data'] = iGroupId;
+			}
+		}
+	}
+
 	Info.setSelectedGroupId = function(iSelectedGroupId){
 		this.m_iSelectedGroupId = iSelectedGroupId;
 	}
@@ -303,6 +325,10 @@ function ObjectGroupManager(iId, elementProperties){
 		return false;
 	}
 
+	Info.getDataGroupId = function(){
+		return this.m_mapRoleGroupId['data'];
+	}
+
 	//function: generate original primitive object group
 	Info.generateOriginalOGroup = function(liAllEleIds) {
 		var self = this;
@@ -519,6 +545,7 @@ function ObjectGroupManager(iId, elementProperties){
 	Info.clear = function() {
 		Info.m_liOGroupId = [];
 		Info.m_liVisibleGroupId = [];
+		Info.m_mapRoleGroupId = {};
 		Info.m_mapOGroupIdElementIds = {};
 		Info.m_mapOGroupIdAttr = {};
 		Info.m_iSelectedGroupId = -1;

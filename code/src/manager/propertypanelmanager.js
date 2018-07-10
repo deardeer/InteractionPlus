@@ -22,6 +22,14 @@ function PropertyManager(iId, inObj, objectGroupManager, elementDetector){
 		return this.m_mapGroupIdPropertyBag[iGroupId];
 	}
 
+	//analyse the informatics of attributes 
+	Info.analyseAttributesOfGroups = function(iGroupId){
+		var propertyBag = this.getPropertyBag(iGroupId);
+		var liPropertyName = propertyBag.getPropertyNames();
+		console.log(' property name = ', liPropertyName);
+		return liPropertyName;
+	}
+
 	//compute the properties of object groups
 	Info.computeProperties = function(iGroupId){
 		//console.log(" compute getPropertyBag ");
@@ -1384,7 +1392,7 @@ function PropertyBag(iGroupId, bOrigin, objectGroupManager){
 
 		var liEleValue = this.m_mapPropertyIdInfo[iPropertyId];
 		var disConfig = this.m_mapPropertyIdDisConfig[iPropertyId];	
-		
+
 		for (var i = liEleValue.length - 1; i >= 0; i--) {
 			var paEleValue = liEleValue[i];
 			var iBinIndex = disConfig.getBinIndex(paEleValue['provalue'])		

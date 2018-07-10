@@ -59,7 +59,6 @@ iScript.type="text/javascript";
 iScript.src= serverIp + "library/underscore-min.js";
 document.getElementsByTagName("head")[0].appendChild(iScript); 
 
-
 //d3
 iScript = document.createElement("script");
 iScript.type="text/javascript";
@@ -399,7 +398,6 @@ function exec(){
 	g_GlobalElementIdManager = new ElementIdManager();
 	g_VisDecoder = new VisDecoder();
 	
-
 	// USER = "Guest";
 	welcome();
 
