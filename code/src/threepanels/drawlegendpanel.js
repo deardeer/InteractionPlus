@@ -2,13 +2,14 @@
 	legend panel
 */
 
-function LegendPanelRender(iId, objectGroupManager, containerId){
+function LegendPanelRender(iId, objectGroupManager, containerId, inObjFilterRender){
 
 	var Info = {};
 
-	Info.__init__ = function(iId, objectGroupManager, containerId){
+	Info.__init__ = function(iId, objectGroupManager, containerId, inObjFilterRender){
 		this.m_iId = iId;
 		this.m_ObjectGroupManager = objectGroupManager;
+		this.m_InObjFilterRender = inObjFilterRender;
 
 		this.m_containerId = containerId;
 		
@@ -252,6 +253,7 @@ function LegendPanelRender(iId, objectGroupManager, containerId){
 	}
 
 	Info.drawTextOn = function(label, cenPos, rotateDegree, anchor){
+		var self = this
 		if(rotateDegree == undefined)
 			rotateDegree = 0;
 		if(anchor == undefined)
@@ -262,6 +264,7 @@ function LegendPanelRender(iId, objectGroupManager, containerId){
 		  .text(label)
 		  .attr('x', 0)
 		  .attr('y', 0)
+		  .attr('attr-clicked', 'no')
 		  .attr('font-size', '12px')
 		  .style('text-anchor', anchor)
 		  .style('transform', function(){
@@ -274,7 +277,25 @@ function LegendPanelRender(iId, objectGroupManager, containerId){
 		  	.style('');
 		  })
 		  .on('mouseout', function(){
-		  	d3.select(this).style('fill', 'black');
+		  	if(d3.select(this).attr('attr-clicked') == 'no')
+		  		d3.select(this).style('fill', 'black');
+		  })
+		  .on('click', function(){	
+	  		var clicked = d3.select(this).attr('attr-clicked');
+   		 	if(clicked == 'yes'){
+   		 		clicked = 'no';
+   		 		d3.select(this).style('fill', 'black')
+   		 		console.log(' click black ')
+   		 	}else{
+   		 		clicked = 'yes'
+   		 		d3.select(this).style('fill', 'blue') 
+   		 		console.log(' click blue ') 		 		
+   		 	}
+   		 	console.log(' click ', clicked, d3.select(this).text())
+   		 	d3.select(this).attr('attr-clicked', clicked);
+   		 	if(clicked == 'yes'){
+   		 		self.m_InObjFilterRender.drawAttriHistogram(d3.select(this).text())
+   		 	}
 		  });
 
 		 // d3.select('#legend_example')
@@ -460,6 +481,6 @@ function LegendPanelRender(iId, objectGroupManager, containerId){
 			});			
 	}
 
-	Info.__init__(iId, objectGroupManager, containerId);
+	Info.__init__(iId, objectGroupManager, containerId, inObjFilterRender);
 	return Info;
 }

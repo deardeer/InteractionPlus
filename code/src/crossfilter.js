@@ -149,19 +149,29 @@ function CrossFilterInfo(iId, objectGroupManager, elementProperties, propertyMan
     //reset: heavey the element to detected element, and reset the property id and correspoinding eles
     //but not change the outlooking of the elements
     Info.reset = function(){
-        var iSelectGroupId = this.m_ObjectGroupManager.getSelectedGroupId(); 
-        if(iSelectGroupId == -1){
-            //no selection
-            this.m_liFilteredElementId = [];
-            this.m_mapPropertyIdFilterEleIds = {};
-            this.m_mapScatterPlotFilterEleIds = {};
-            this.m_liMDSFilterEleIds = [];
-        }else{          
-            this.m_liFilteredElementId = this.m_ObjectGroupManager.getAllEleIdsofGroup(iSelectGroupId);
-            this.m_mapPropertyIdFilterEleIds = {};  
-            this.m_mapScatterPlotFilterEleIds = {};  
-            this.m_liMDSFilterEleIds = [];      
+        var liSelectGroupId = this.m_ObjectGroupManager.getSelectedGroupIds(); 
+        this.m_liFilteredElementId = [];
+        this.m_mapPropertyIdFilterEleIds = {};
+        this.m_mapScatterPlotFilterEleIds = {};
+        this.m_liMDSFilterEleIds = [];
+        for(var i = 0; i < liSelectGroupId.length; i ++){
+            var iSelectGroupId = liSelectGroupId[i];
+            this.m_liFilteredElementId = this.m_liFilteredElementId.concat(this.m_ObjectGroupManager.getAllEleIdsofGroup(iSelectGroupId));
         }
+        // if(liSelectGroupId.length == 0){
+        // // if(iSelectGroupId == -1){
+        //     //no selection
+        //     this.m_liFilteredElementId = [];
+        //     this.m_mapPropertyIdFilterEleIds = {};
+        //     this.m_mapScatterPlotFilterEleIds = {};
+        //     this.m_liMDSFilterEleIds = [];
+        // }else{          
+
+        //     this.m_liFilteredElementId = this.m_ObjectGroupManager.getAllEleIdsofGroup(iSelectGroupId);
+        //     this.m_mapPropertyIdFilterEleIds = {};  
+        //     this.m_mapScatterPlotFilterEleIds = {};  
+        //     this.m_liMDSFilterEleIds = [];      
+        // }
     }
     //filter the eles
     Info.setFilterEleIds = function(liFilteredElementId){
@@ -206,14 +216,19 @@ function CrossFilterInfo(iId, objectGroupManager, elementProperties, propertyMan
     }
 
     Info.getFilterEleIds = function(){      
-        var self = this;
+       var self = this;
+       // console.log("dis result 1 get Filter ELE ", this.m_liFilteredElementId, Object.keys(this.m_mapPropertyIdFilterEleIds).length == 0, Object.keys(this.m_mapScatterPlotFilterEleIds).length == 0, this.m_liMDSFilterEleIds.length == 0)
        if(Object.keys(this.m_mapPropertyIdFilterEleIds).length == 0 && Object.keys(this.m_mapScatterPlotFilterEleIds).length == 0 && this.m_liMDSFilterEleIds.length == 0){
-              var iSelectGroupId = self.m_ObjectGroupManager.getSelectedGroupId();  
+              var liGroupId = self.m_ObjectGroupManager.getSelectedGroupIds();  
               var liNewFilterEleId = [];
-              if(iSelectGroupId == -1)
-                liNewFilterEleId = self.m_ElementProperties.getElementIds();
-              else
-                liNewFilterEleId = self.m_ObjectGroupManager.getAllEleIdsofGroup(iSelectGroupId);    
+              for(var i = 0; i < liGroupId.length; i ++){
+                var iSelectGroupId = liGroupId[i];
+                if(iSelectGroupId == -1)
+                  liNewFilterEleId = liNewFilterEleId.concat(self.m_ElementProperties.getElementIds());
+                else
+                  liNewFilterEleId = liNewFilterEleId.concat(self.m_ObjectGroupManager.getAllEleIdsofGroup(iSelectGroupId));    
+              }        
+              // console.log("dis result 1 get Filter ELE 222 ", liNewFilterEleId);     
               return liNewFilterEleId;          
        }  
        return this.m_liFilteredElementId;

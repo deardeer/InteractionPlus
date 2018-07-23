@@ -13,6 +13,9 @@ function InObjFilterRender(iId, inObj, objectGroupManager, propertyManager){
 		this.m_InObj = inObj;
 		this.m_CrossFilterInfo = this.m_InObj.m_CrossFilter.m_CrossFilterInfo;
 
+		this.m_liDataGroupId = [];
+		this.m_DataPropertyBag = undefined;
+
 		//console.log(" init inobjfilter render", this.m_iId);
 	}
 
@@ -106,13 +109,14 @@ function InObjFilterRender(iId, inObj, objectGroupManager, propertyManager){
  	Info.drawColorLegend = function(liGroupId, lefttop){
 
 	    var self = this;
+	    self.m_liDataGroupId = liGroupId;
 	   
 	    // var gDefineRegion = ;//d3.select(self.m_DragRectGName);
 	    var containerSvg = d3.select('#legend' + this.m_iId)
 	    if(containerSvg.empty()){
 	    	console.log(' lefttop ', lefttop);
 	    	containerSvg = d3.select('#addondiv')
-	    					 .append('svg')
+	    					 .append('div')
 	    					 .attr('id', 'legend' + this.m_iId)
 	    					 .style('position', 'absolute')	 					 
 			                .style('left', Number(lefttop.left) + 20)
@@ -128,13 +132,14 @@ function InObjFilterRender(iId, inObj, objectGroupManager, propertyManager){
 
    		console.log(' shape legend ', liGroupId);
 	    var self = this;
+	    self.m_liDataGroupId = liGroupId;
 	   
 	    // var gDefineRegion = ;//d3.select(self.m_DragRectGName);
 	    var containerSvg = d3.select('#legend' + this.m_iId)
 	    if(containerSvg.empty()){
 	    	console.log(' lefttop ', lefttop);
 	    	containerSvg = d3.select('#addondiv')
-	    					 .append('svg')
+	    					 .append('div')
 	    					 .attr('id', 'legend' + this.m_iId)
 	    					 .style('position', 'absolute')	 					 
 			                .style('left', Number(lefttop.left) + 20)
@@ -152,20 +157,94 @@ function InObjFilterRender(iId, inObj, objectGroupManager, propertyManager){
 		var DrawLBPos = self.getDefaultDrawLBPoint();
 	    var x = DrawLBPos['x']
 	    var y = DrawLBPos['y'] + 10
+	    self.m_liDataGroupId = liGroupId;
 
 	    // var gDefineRegion = ;//d3.select(self.m_DragRectGName);
 	    var containerSvg = d3.select('#legend' + this.m_iId)
 	    if(containerSvg.empty()){
-		    	containerSvg = d3.select('#addondiv')
-		    					 .append('svg')
-		    					 .attr('id', 'legend' + this.m_iId)
-		    					 .style('position', 'absolute')	    					 
-				                .style('left', Number(lefttop.left) + 20)
-				                .style('top', Number(lefttop.top))
-				                .attr('width', 200)
-				                .attr('height', 500)
+	    	console.log(' lefttop ', lefttop);
+	    	containerSvg = d3.select('#addondiv')
+	    					 .append('div')
+	    					 .attr('id', 'legend' + this.m_iId)
+	    					 .style('position', 'absolute')	 					 
+			                .style('left', Number(lefttop.left) + 20)
+			                .style('top', Number(lefttop.top))
+			                .attr('width', 200)
+			                .attr('height', 500)
+	    }
+
+	  	var iconLegendSVG = d3.select('#iconlegend_' + this.m_iId);
+	  	if(iconLegendSVG.empty()){
+	  		iconLegendSVG = containerSvg	 
+								.append('svg')
+								.attr('id', 'iconlegend_' + this.m_iId)
+								.attr('width', 130);
+								// .attr('height', 130);
 	  	}
-		self.m_PropertyPanelRender.drawSizeLegend(containerSvg, liGroupId, 'r');
+
+	  	var iconGroupId = 0;
+		var iGroupId = liGroupId[iconGroupId]
+		var drawIconId = 'iconlegend_' + this.m_iId
+
+	    iconLegendSVG.append('rect')
+	   		.attr('width', 130)
+	   		.attr('height', 130)
+			.attr('x', 0)
+			.attr('y', 0)
+			.style('fill', 'white')
+			.style('stroke', 'gray')
+
+		var iconRect = {'x': 0, 'y': 0, 'width': 100, 'height': 100};
+		var legendIconRender = new LegendPanelRender(this.m_iId, this.m_ObjectGroupManager, drawIconId, self);
+	   	legendIconRender.drawLegend(liGroupId[iconGroupId])
+	}
+
+	Info.drawAttriHistogram = function(propertyName){
+		propertyName = 'bwidth'
+		console.log(' draw drawAttriHistogram ', propertyName, this.m_liDataGroupId);
+		var self = this;
+
+		var containerSvg = d3.select('#attrhistogram' + this.m_iId)
+		 
+	    if(containerSvg.empty()){
+	   			var parentSvg = d3.select('#legend' + this.m_iId)
+		    	containerSvg = parentSvg
+		    					 .append('div')
+		    					 .attr('id', 'attrhistogram' + this.m_iId)			 
+				                 .attr('x', 0)
+				                 .attr('y', 130)
+				                 .attr('width', 200)
+				                 .attr('height', 500)
+	  	}
+	  	
+	  	var liEleId = [];
+		for(var i = 0; i < this.m_liDataGroupId.length; i ++){
+			var groupId = this.m_liDataGroupId[i];
+			console.log(' group ', groupId);
+			var liEleId_temp = this.m_ObjectGroupManager.getEleIdsbyGroupId(groupId);
+			liEleId = liEleId.concat(liEleId_temp)
+		}
+
+		if(self.m_DataPropertyBag == undefined){
+
+			self.m_DataPropertyBag = new PropertyBag(self.m_liDataGroupId.toString(), false, self.m_ObjectGroupManager);
+	
+			$.each(liEleId, function(index, iEleId){
+				var visualpro = self.m_InObj.m_ElementDetector.m_ElementProperties.getVisualElePropertiesbyId(iEleId);
+				for (var protype in visualpro){			
+				 	self.m_DataPropertyBag.addPro(iEleId, protype, visualpro[protype], 1);
+				}			
+			});
+			//compute the distri.
+			self.m_DataPropertyBag.computeDistri();
+		}
+		var iPId = self.m_DataPropertyBag.getPropertyIdbyName(propertyName)		
+		var liFilteredEleId = self.m_CrossFilterInfo.getFilterEleIds();
+		self.m_DataPropertyBag.setFilterEldIds(liFilteredEleId);
+		console.log(' filter dis ', liFilteredEleId);
+
+		self.m_PropertyPanelRender.drawProperty_new(self.m_liDataGroupId.toString(), self.m_DataPropertyBag, propertyName, 'attrhistogram' + this.m_iId);
+		// self.m_PropertyPanelRender.drawSizeLegend(containerSvg, liEleId, 'bwidth');
 	}
 
 	//set the hovered eleid 

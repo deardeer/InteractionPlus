@@ -98,6 +98,17 @@ function InObj(iId, bMask, maskType){
 	    this.m_CrossFilter = new CrossFilter(this.m_iId, this, this.m_ObjectGroupManager, this.m_PropertyManager);
 	    this.m_CrossFilter.resetCrossFilter();
 
+	    //[2.5] init filter to all data objects
+	    var liAllDataEleId = [];
+	    var liDataGroupId = this.m_ObjectGroupManager.getDataGroupId();
+	    for(var i = 0; i < liDataGroupId.length; i ++){
+	    	var liAllEleId = this.m_ObjectGroupManager.getAllEleIdsofGroup(liDataGroupId[i]);
+	    	liAllDataEleId = liAllDataEleId.concat(liAllEleId);         
+	    }
+	    this.m_CrossFilter.m_CrossFilterInfo.setFilterEleIds(liAllDataEleId); 
+	    console.log('dis result 1 ', this.m_CrossFilter.m_CrossFilterInfo.getFilterEleIds());
+	    console.log(" liSet ", liAllDataEleId);
+
 	    this.m_Render.setElementDetectorCrossFilter(this.m_ElementDetector, this.m_CrossFilter);
 	    
  		this.m_Render.initHoverinSelectRect();
@@ -124,6 +135,7 @@ function InObj(iId, bMask, maskType){
 	    }
 	    //[4] attribute brush
 	    if(1){
+	    	console.log('dis result ', this.m_CrossFilter.m_CrossFilterInfo.getFilterEleIds());
 	    	this.m_FilterRender.drawSizeLegend(this.m_ObjectGroupManager.getDataGroupId(),
 	    		{left: Number(boundaryBox.x) + Number(boundaryBox.width), top: Number(boundaryBox.y)});
 	    }
