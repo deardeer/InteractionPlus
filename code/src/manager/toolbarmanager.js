@@ -14,10 +14,16 @@ function ToolBarManager(){
 		this.m_MaskTypeList = ["rect", "tabular", 'radial', 'vparalell', 'hparallel', "none"];
 		this.m_bRectM = false; this.m_bTabularM = false; this.m_bRadialM = false; this.m_bVParaM = false; this.m_bHParaM = false;
 		Info.m_ToolBarRender = new ToolBarRender();
+
+		this.m_bLinearBrush = false;
 	}
 
 	Info.setMaskFalse = function(){
 		this.m_bRectM = false; this.m_bTabularM = false; this.m_bRadialM = false; this.m_bVParaM = false; this.m_bHParaM = false;
+	}
+
+	Info.setLinearBrush = function(){
+		this.m_bLinearBrush = true;
 	}
 
 	Info.setLineUpFalse = function(){
@@ -105,6 +111,10 @@ function ToolBarManager(){
 
 	Info.isHMaskEnable = function(){
 		return this.m_bMask && this.m_bHParaM;
+	}
+
+	Info.isLinearBrush = function(){
+		return this.m_bLinearBrush;
 	}
 
 	// Info.isMaskEnable = function(){

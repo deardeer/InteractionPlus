@@ -13,6 +13,47 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 
 	var Info = {};
 
+	Info.rgb2hsv = function(color) {
+	    var rr, gg, bb,
+	        r = color.r / 255,
+	        g = color.g / 255,
+	        b = color.b / 255,
+	        h, s,
+	        v = Math.max(r, g, b),
+	        diff = v - Math.min(r, g, b),
+	        diffc = function(c){
+	            return (v - c) / 6 / diff + 1 / 2;
+	        };
+
+	    if (diff == 0) {
+	        h = s = 0;
+	    } else {
+	        s = diff / v;
+	        rr = diffc(r);
+	        gg = diffc(g);
+	        bb = diffc(b);
+
+	        if (r === v) {
+	            h = bb - gg;
+	        }else if (g === v) {
+	            h = (1 / 3) + rr - bb;
+	        }else if (b === v) {
+	            h = (2 / 3) + gg - rr;
+	        }
+	        if (h < 0) {
+	            h += 1;
+	        }else if (h > 1) {
+	            h -= 1;
+	        }
+	    }
+	    return {
+	        h: Math.round(h * 360),
+	        s: Math.round(s * 100),
+	        v: Math.round(v * 100)
+	    };
+	}
+
+
 	Info.__init__ = function(iId, inObj, objectGroupManager){
 		//console.log(" init PropertiesPanelRender ", iId);
 		this.m_iId = iId;
@@ -40,85 +81,354 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		//current drop property id
 		this.m_liDropPropertyId = [];
 
+
+		this.m_repreEleBox = {
+			'width': 30,
+			'height': 30,
+		}
+
+		this.m_LegendCellHeight = 15;
+		this.m_LegendCellWidth = 30;
+		this.m_LegendPadding = 5
+
 		//container for property: self.m_iId + 'proset_' + compoundindex;
 		//property_li in invisible_menu: 'p_' + self.m_iId + 'pro_li_' + id;
 		//pro-div for property: 'p_' + self.m_iId + 'pro_' + id;
 		//'p_' + self.m_iId + 'dis_' + iPId;
 		//'#' 'p_' + self.m_iId + 'scatterplot_' + iSPID
-
 	}
 
-	Info.drawColorLegend = function(iGroupId){
+	Info.drawSizeLegend = function(containerSvg, liGroupId, attrName){
 
-		console.log(' draw color legend ', iGroupId);
+		// console.log(' draw size legend ', iGroupId);
 
 		var self = this;
-		var containerSvg = d3.select('#newsvg_' + this.m_iId)
-		var propertyBag = self.m_PropertyManager.getPropertyBag(iGroupId);
-	   	var propertyId = propertyBag.getPropertyIdbyName('fill')
+		var attrName = 'r';
+		var legendSvg = containerSvg.append('svg')
+									.attr('id', 'sizelegend_' + this.m_iId)
+								    .attr('width', '100%')
+								    .attr('height', '100%');
+
+		var propertyBag = new PropertyBag(199, false, self.m_ObjectGroupManager);
+		for(var i = 0; i < liGroupId.length; i ++){
+			var groupId = liGroupId[i];
+			var liEleId = self.m_ObjectGroupManager.getEleIdsbyGroupId(groupId);
+			$.each(liEleId, function(index, iEleId){
+				var visualpro = self.m_ElementProperty.getVisualElePropertiesbyId(iEleId);
+				for (var protype in visualpro){
+					// if(protype == 'g_x')
+						//console.log(' g_x ', visualpro[protype] );
+				 	propertyBag.addPro(iEleId, protype, visualpro[protype], 1);
+				 	console.log(' add pro ', iEleId, protype, visualpro[protype]);
+				}			
+			});
+			// // var propertyBag = self.m_PropertyManager.getPropertyBag(groupId);
+			// for(var j = 0; j < liEleId.length; j ++){
+			// 	var iEleId = liEleId[j];
+			// 	var properties = self.m_ElementProperty.getElePropertiesbyId(iEleId);
+			// 	console.log(' ElE ', properties['pros'][propertyName])
+			// }
+		}
+		//compute the distri.
+		propertyBag.computeDistri();
+
+		var propertyName = 'bwidth';
+
+		var iconGroupId = 0;
+		var iGroupId = liGroupId[iconGroupId]
+
+	   	var propertyId = propertyBag.getPropertyIdbyName(propertyName)
 	   	var disConfig = propertyBag.getDisConfig(propertyId);
 
 	   	var liData = [];
 	   	var dis = propertyBag.getDis(propertyId);
-	   	for(var i = 0; i < disConfig.valueList.length; i ++){
+	   	var maxCount = -1
+	   	for(var i = 0; i < disConfig.binNum; i ++){
 	   		liData.push({
-	   			'value': disConfig.valueList[i],
-	   			'count': dis[disConfig.getBinIndex(disConfig.valueList[i])],
+	   			'value': i,
+	   			'count':dis[i]
 	   		})
-	   	}
-	   	// liData.sort(function(a, b){
-	   	// 	return b.count - a.count;
-	   	// })
+	   		if(maxCount < dis[i])
+	   			maxCount = dis[i]
+	   	};
+	   	console.log(' disconfi ', propertyId, disConfig, dis);
+	 // 	var maxValue = dis.maxValue;
 
-	   	console.log(' fill ', propertyId, disConfig, liData);
+	 	var iconSize = {'width': 50, 'height': 50}
+		
+		var drawIconId = 'sizeicon_' + liGroupId[iconGroupId]
+	 	// var iconSVG = legendSvg.append('svg')
+	 	// 				.attr('id', drawIconId)
+		 // 				.attr('x', '0px')
+		 // 				.attr('y', '300px')
+			// 	   		.style('background', 'red');
 
-	   	var group = containerSvg
+	  //   iconSVG.append('rect')
+	  //  		.attr('width', iconSize.width)
+	  //  		.attr('height', iconSize.height)
+			// .attr('x', 0)
+			// .attr('y', 0)
+			// .style('fill', 'white')
+			// .style('stroke', 'gray')
+
+		// var iconRect = {'x': 0, 'y': 0, 'width': 100, 'height': 100};
+		// var legendIconRender = new LegendPanelRender(this.m_iId, this.m_ObjectGroupManager, drawIconId);
+	   	// legendIconRender.drawLegend(liGroupId[iconGroupId])
+
+	   	var barWidth = 100/disConfig.binNum;
+	   	var propertySVG = legendSvg.append('svg')
+	   						.attr('x', 0)
+	   						.attr('y', 120)
+	   						.attr('width', 200)
+	   						.attr('height', iconSize.height)
+	   						.attr('fill', 'red');
+	   	var bars = propertySVG.append('g')
+
+	    var yScale = d3.scale.linear()
+					.domain([maxCount, 0])
+					.range([4, iconSize.height]);
+
+        propertySVG.append('rect')
+        		   .attr('x', 0)
+        		   .attr('y', 0)
+                   .attr('width', 200)
+                   .attr('height', iconSize.height)
+                   .style('fill', 'none')
+                   .style('stroke', 'black')
+                   .style('stroke-dasharray', '2 2');
+
+		// bars.selectAll('.sizebar')
+		//     .data(liData)
+		//     .enter()
+		//     .append('rect')
+		//     .attr('class', 'sizebar')
+	 //   		.attr('barclicked', 'yes')
+	 //   		.attr('binindex', function(d,i){
+	 //   		 	return i;
+	 //   		 })
+		//     .attr('x', function(d, i){
+		//     	return i * barWidth
+		//     })
+		//     .attr('y', function(d, i){
+		//     	return yScale(d.count);
+		//     })
+		//     .attr('width', barWidth)
+		//     .attr('height', function(d, i){
+		//     	return 100 - yScale(d.count);
+		//     })
+		//     .attr('fill', 'gray')
+		//     .on('click', function(d, i){
+		// 		var clicked = d3.select(this).attr('barclicked');
+	 //   		 	if(clicked == 'yes'){
+	 //   		 		clicked = 'no';
+	 //   		 		d3.select(this).style('opacity', 0.3)
+		//     		console.log(' bar clicked opacity0.3 ');
+	 //   		 	}else{
+	 //   		 		clicked = 'yes'
+	 //   		 		d3.select(this).style('opacity', 1.)
+		//     		console.log(' bar clicked opacity1 ');	   		 		
+	 //   		 	}
+	 //   		 	d3.select(this).attr('barclicked', clicked);
+
+	 //   // 		 		//compute thte selected ele if necessary
+		// 		// var liSelectIndexRange = [];
+		// 		// d3.selectAll("[barclicked='yes']")
+		// 		//    .each(function(d, i){
+		// 		// 	liSelectIndexRange.push([d3.select(this).attr('binindex'), d3.select(this).attr('binindex')]);
+		// 		//    	// console.log(' clicked = ', );
+		// 		// })
+		// 		// var liSelectedEleId = propertyBag.getEleIdsbyPropertyIndexRangeList(propertyId, liSelectIndexRange);
+			
+		// 		// console.log(' selected ele id ', liSelectedEleId);	
+
+		// 		// //notify the cross-filter with selected property range
+		// 		// self.m_CrossFilterInfo.setFilterEleIdsofPropertyId(propertyId, liSelectedEleId);
+
+		// 		// //update the object_create_button
+		// 		// var liFilterEleId = self.m_CrossFilterInfo.getFilterEleIds();
+
+		// 		// //console.log(' lifilter ', liFilterEleId);
+		// 		// var eleNum = liFilterEleId.length;
+
+		// 		// if(self.m_ObjectGroupManager.isSelectedGroupTypeCompound()){// g_ObjectGroupManager.getSelectedGroupType() == 'compound' || g_ObjectGroupManager.getSelectedGroupType() == 'default_compound' || g_ObjectGroupManager.getSelectedGroupType() == 'logic_compound'){
+		// 		// 		//the compound ele
+		// 		// 		var liCompoundEleIds = self.m_ObjectGroupManager.sortToCompoundEleIdLists(self.m_ObjectGroupManager.getSelectedGroupId(), liFilterEleId);
+		// 		// 	eleNum = liCompoundEleIds.length;
+		// 		// }
+
+		// 		// $('#' + self.m_CreateButtonId).text(getCreateObjectButtonName(eleNum));	
+
+		// 		// self.updateFilteredRects();	
+		// 		// // self.updateBoxPlots(propertyId, adjustExtentRange);
+		// 		// //notify the mask
+		// 		// self.m_InObj.updateFilteredEleId(liFilterEleId);
+		//     })
+
+	   // propertySVG.append('rect')
+	   // 		  .attr('width', '100%')
+	   // 		  .attr('height', '100%')
+	   // 		  .attr('x', 0)
+	   // 		  .attr('y', 0)
+	   // 		  .style('fill', 'white')
+	   // 		  .style('stroke', 'gray')
+
+
+	   	// var yScale = d3.linear.scale().domain().value();
+
+	   	// var group = containerSvg
+	   	// 	.append('g')
+	   	// 	.attr('class', 'sizelegend');
+
+	   	// group.append('path')
+	   	// 	 ...
+
+	}
+
+	Info.drawColorLegend = function(containerSvg, liGroupId){
+
+		console.log(' draw color legend ', iGroupId);
+
+		var colorLegendSvg = containerSvg.append('svg')
+										.attr('id', 'colorlegend_' + this.m_iId)
+									   .attr('width', '100%')
+									   .attr('height', '100%');
+		var self = this;
+
+	   	var liData = [];
+	   	var mapColorCount = {};	   	
+		var tempHSVRGBList = [];
+		var bHex = false;
+		var bUpCase = false;
+
+		for(var groupIndex = 0; groupIndex < liGroupId.length; groupIndex ++){
+			var iGroupId = liGroupId[groupIndex]
+			var propertyBag = self.m_PropertyManager.getPropertyBag(iGroupId);
+		   	var propertyId = propertyBag.getPropertyIdbyName('fill')
+		   	if(propertyId != undefined){
+	   		   	var disConfig = propertyBag.getDisConfig(propertyId);
+			   	var dis = propertyBag.getDis(propertyId);
+			   	for(var i = 0; i < disConfig.valueList.length; i ++){
+			   		var value_temp = disConfig.valueList[i];
+			   		var count_temp = dis[disConfig.getBinIndex(disConfig.valueList[i])];
+			   		console.log(' count_temp ', count_temp, disConfig, dis)
+			   		var add = false;
+			   		for(var j = 0; j < liData.length; j ++){
+			   			var data_temp = liData[j]
+			   			if(data_temp['value'] == value_temp){
+			   				data_temp['count'] = Number(data_temp['count']) + count_temp;
+			   				add = true;
+			   				break;
+			   			}
+			   		}
+			   		if(add == false){			   			
+				   		liData.push({
+				   			'value': value_temp,
+				   			'count': count_temp,
+				   		})
+			   		}
+			   		if(mapColorCount[value_temp] == undefined)
+			   			mapColorCount[value_temp] = Number(count_temp);
+			   		else{
+			   			mapColorCount[value_temp] = Number(mapColorCount[value_temp]) + Number(count_temp);
+			   		}
+					if(value_temp[0] == '#')
+						bHex = true;		
+					if(value_temp.toLowerCase() != value_temp)
+						bUpCase = true;	
+			   		var tempRGB = d3.rgb(value_temp);
+					var tempHSV = self.rgb2hsv(tempRGB);
+					tempHSVRGBList.push({h: tempHSV.h, s: tempHSV.s, v: tempHSV.v, rgb: tempRGB});
+			   	}
+		   	}		
+		}
+
+		//sort the HSVList
+		function hsvcompare(hsv1, hsv2){
+			if(parseInt(hsv1.h) > parseInt(hsv2.h))
+				return 1;
+			else if(parseInt(hsv1.h) < parseInt(hsv2.h))
+				return -1;
+			else{
+				if(parseInt(hsv1.s) > parseInt(hsv2.s))
+					return 1;
+				else if(parseInt(hsv1.s) < parseInt(hsv2.s))
+					return -1;
+				else{
+					if(parseInt(hsv1.v) > parseInt(hsv2.v))
+						return 1;
+					else if(parseInt(hsv1.v) <= parseInt(hsv2.v))
+						return -1;
+					else
+						return 0;
+				}
+			}
+		}		
+		tempHSVRGBList.sort(hsvcompare);
+
+		var liSortColor = [];
+		$.each(tempHSVRGBList, function(i, HSVRGB){
+			// //console.log(" HSVRGB ", i, ' H ', HSVRGB.h, ' S ', HSVRGB.s, ' V ', HSVRGB.v);
+			var tempRGB = HSVRGB.rgb;
+			var tempRGB_str;
+			if(bHex){
+				tempRGB_str = tempRGB.toString();
+				if(bUpCase)
+					tempRGB_str = tempRGB_str.toUpperCase();
+			}else
+				tempRGB_str = 'rgb(' + tempRGB.r + ', ' + tempRGB.g + ', ' + tempRGB.b + ')';
+			if(liSortColor.indexOf(tempRGB_str) == -1)
+				liSortColor.push(tempRGB_str);
+			// //console.log(' String RGB ', tempRGB_str);
+		});	
+
+	   	console.log(' fill ', liSortColor);
+
+	   	var group = colorLegendSvg
 	   		.append('g')
-	   		.attr('class', 'colorlegend');
+	   		.attr('class', 'colorlegend')	
+
+	   	group.append('rect')
+	   		.attr('width', self.m_LegendCellWidth + self.m_LegendPadding * 2)
+	   		.attr('height', (self.m_LegendCellHeight + self.m_LegendPadding) * liData.length + self.m_LegendPadding)
+	   		.attr('x', 0)
+	   		.attr('y', 0)
+	   		.attr('fill', 'none')
+	   		.attr('stroke', 'black')
+	   		.attr('stroke-dasharray', '2 2');
 
 	   	var recttext = group.selectAll('.colorcell')
-	   		 .data(liData)
+	   		 .data(liSortColor)
 	   		 .enter()
  	   		 .append('g')
  	   		 .attr('transform', function(d, i){
- 	   		 	return 'translate(0,' + (3 + 15 * i) + ')'
+ 	   		 	return 'translate(0,' + ((self.m_LegendPadding + self.m_LegendCellHeight) * i) + ')'
  	   		 })
 	   		 .attr('class', 'colorcell');
 
-	   	recttext.append('text')
-				.attr("dy", function(d, i){
-					return "1.0em"
-				})
-				.attr('dx', function(d, i){
-					return "25px"
-				})
-				.style("text-anchor", "middle")
-	   			.text(function(d, i){
-	   				return d.count;
-	   			})
-	   			
-
 	   	recttext
 	   		 .append('rect')
-	   		 .attr('width', '10')
-	   		 .attr('height', '10')
-	   		 .attr('clicked', 'yes')
+	   		 .attr('width', self.m_LegendCellWidth)
+	   		 .attr('height', self.m_LegendCellHeight)
+	   		 .attr('colorclicked', 'yes')
 	   		 .attr('binindex', function(d,i){
 	   		 	return i;
 	   		 })
+	   		 .attr('binvalue', function(d, i){
+	   		 	return d;//['value']
+	   		 })
 	   		 .style('x', function(d, i){
-	   		 	return 5
+	   		 	return self.m_LegendPadding
 	   		 })
 	   		 .style('y', function(d, i){
-	   		 	return 0
+	   		 	return self.m_LegendPadding
 	   		 	// return (12 * i)
 	   		 })
 	   		 .style('stroke', 'black')
 	   		 .style('fill', function(d, i){
-	   		 	return d.value
+	   		 	return d
 	   		 })
 	   		 .on('click', function(d, i){
-	   		 	var clicked = d3.select(this).attr('clicked');
+	   		 	var clicked = d3.select(this).attr('colorclicked');
 	   		 	if(clicked == 'yes'){
 	   		 		clicked = 'no';
 	   		 		d3.select(this).style('opacity', 0.3)
@@ -126,24 +436,227 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 	   		 		clicked = 'yes'
 	   		 		d3.select(this).style('opacity', 1.)	   		 		
 	   		 	}
-	   		 	d3.select(this).attr('clicked', clicked);
+	   		 	d3.select(this).attr('colorclicked', clicked);
 
 	   		 	//get clicked index
 	   		 	// console.log(' click ', i);
 
    		 		//compute thte selected ele if necessary
 				var liSelectIndexRange = [];
-				d3.selectAll("[clicked='yes']")
+				var liSelectValues = [];
+				d3.selectAll("[colorclicked='yes']")
 				   .each(function(d, i){
 					liSelectIndexRange.push([d3.select(this).attr('binindex'), d3.select(this).attr('binindex')]);
+					liSelectValues.push(d3.select(this).attr('binvalue'))
 				   	// console.log(' clicked = ', );
 				})
-				var liSelectedEleId = propertyBag.getEleIdsbyPropertyIndexRangeList(propertyId, liSelectIndexRange);
-			
+				var liSelectedEleId = [];
+				var propertyIdAlias = "";
+				for(var groupIndex = 0; groupIndex < liGroupId.length; groupIndex ++){
+					var propertyBag = self.m_PropertyManager.getPropertyBag(liGroupId[groupIndex]);
+					var propertyId =  propertyBag.getPropertyIdbyName('fill');
+					var liSelectEleId_temp = propertyBag.getEleIdsbyPropertyValueList(propertyId, liSelectValues) //getEleIdsbyPropertyIndexRangeList(propertyId, liSelectIndexRange);
+					console.log(' select group ', liGroupId[groupIndex], liSelectEleId_temp);
+					liSelectedEleId = liSelectedEleId.concat(liSelectEleId_temp)
+					propertyIdAlias += '_' + String(propertyId);
+				}
+							
 				console.log(' selected ele id ', liSelectedEleId);	
 
 				//notify the cross-filter with selected property range
-				self.m_CrossFilterInfo.setFilterEleIdsofPropertyId(propertyId, liSelectedEleId);
+				self.m_CrossFilterInfo.setFilterEleIdsofPropertyId(propertyIdAlias, liSelectedEleId);
+
+				//update the object_create_button
+				var liFilterEleId = self.m_CrossFilterInfo.getFilterEleIds();
+
+				//console.log(' lifilter ', liFilterEleId);
+				var eleNum = liFilterEleId.length;
+
+				if(self.m_ObjectGroupManager.isSelectedGroupTypeCompound()){// g_ObjectGroupManager.getSelectedGroupType() == 'compound' || g_ObjectGroupManager.getSelectedGroupType() == 'default_compound' || g_ObjectGroupManager.getSelectedGroupType() == 'logic_compound'){
+						//the compound ele
+						var liCompoundEleIds = self.m_ObjectGroupManager.sortToCompoundEleIdLists(self.m_ObjectGroupManager.getSelectedGroupId(), liFilterEleId);
+					eleNum = liCompoundEleIds.length;
+				}
+
+				$('#' + self.m_CreateButtonId).text(getCreateObjectButtonName(eleNum));	
+
+				self.updateFilteredRects();	
+				// self.updateBoxPlots(propertyId, adjustExtentRange);
+				//notify the mask
+				self.m_InObj.updateFilteredEleId(liFilterEleId);
+	   		 })
+
+	   	recttext.append('text')
+				.attr("dy", function(d, i){
+					// return '0px'
+					return '1.5em'
+				})
+				.attr('dx', function(d, i){
+					return (self.m_LegendCellWidth/2. + 4) + 'px'
+				})
+				.style('fill', 'white')
+				.style("text-anchor", "middle")
+				.style('font-size', '12px')
+	   			.text(function(d, i){
+	   				return mapColorCount[d ];
+	   			})	   
+	}
+
+	Info.drawShapeLegend = function(containerSvg, liGroupId){
+
+		var self = this;
+
+		console.log(' draw shape legend ', liGroupId);
+
+		var colorLegendSvg = containerSvg.append('svg')
+										.attr('id', 'shapelegend_' + this.m_iId)
+									   .attr('width', '100%')
+									   .attr('height', '100%');
+
+	   	var mapShapeCount = {};
+
+		for(var groupIndex = 0; groupIndex < liGroupId.length; groupIndex ++){
+			var iGroupId = liGroupId[groupIndex]
+			console.log(' groupid = ', iGroupId);
+			var liEleId = self.m_ObjectGroupManager.getEleIdsbyGroupId(iGroupId);
+			if(liEleId.length > 0){
+				var iRepreEleId = liEleId[0];
+				var repreEle = self.m_ElementProperty.getElebyId(iRepreEleId);
+				if(repreEle.tagName == 'rect'){
+					mapShapeCount['rect'] = {
+						'groupId': iGroupId,
+						'count': liEleId.length
+					}
+				}else if(repreEle.tagName == 'circle'){
+					mapShapeCount['circle'] = {
+						'groupId': iGroupId,
+						'count': liEleId.length
+					}
+				}else if(repreEle.tagName == 'path'){
+					mapShapeCount['path'] = {
+						'groupId': iGroupId,
+						'count': liEleId.length
+					}
+				}else{
+					if(mapShapeCount['other'] == undefined)
+						mapShapeCount['other'] = {
+						'groupId': [iGroupId],
+						'count': liEleId.length
+					}
+					else{
+						mapShapeCount['other']['groupId'].push(iGroupId)
+						mapShapeCount['other']['count'] = Number(mapShapeCount['other']['count']) + liEleId.length
+					}
+				}
+			}
+		}
+
+	   	var group = colorLegendSvg
+	   		.append('g')
+	   		.attr('class', 'shapelegend')
+	   		.attr('transform', 'translate(' + (self.m_LegendPadding * 3 + self.m_LegendCellWidth) + ',0)');
+
+	   	group.append('rect')
+	   	     .attr('width', self.m_LegendCellWidth + self.m_LegendPadding * 2)
+	   		 .attr('height', (self.m_LegendCellHeight + self.m_LegendPadding) * Object.keys(mapShapeCount).length + self.m_LegendPadding)
+	   		 .attr('x', 0)
+	   		 .attr('y', 0)
+	   		 .attr('fill', 'none')
+	   		 .attr('stroke', 'black')
+	   		 .attr('stroke-dasharray', '2 2');
+
+	   	var cx = self.m_LegendPadding, cy = self.m_LegendPadding;	   	
+	   	if(mapShapeCount['circle'] != undefined){
+	   		var circleG = group.append('g')
+	   		                   .attr('transform', 'translate(' + (cx + self.m_LegendCellHeight/2.) + ',' + (cy + self.m_LegendCellHeight/2.) + ')');
+			circleG.append('circle')
+	   			 .attr('class', 'shapecell')
+	   			 .attr('groupid', mapShapeCount['circle']['groupId'])
+	   			 .attr('cx', 0)//cx + self.m_LegendCellHeight/2.)
+	   			 .attr('cy', 0)//cy + self.m_LegendCellHeight/2.)
+	   			 .attr('r', self.m_LegendCellHeight/2.)
+	   			 .style('fill', '#9E9E9E');
+
+	   		circleG.append('text')
+				.attr("dy", function(d, i){
+					// return '0px'
+					return '0.5em'
+				})
+				.attr('dx', function(d, i){
+					return (self.m_LegendCellHeight + 2) + 'px'
+				})
+				.style('fill', 'gray')
+				.style("text-anchor", "middle")
+				.style('font-size', '12px')
+	   			.text(function(d, i){
+	   				return mapShapeCount['circle']['count'];
+	   			})	 
+
+	   	    cy += (self.m_LegendCellHeight + self.m_LegendPadding);	   	
+	   	}
+	   	if(mapShapeCount['rect'] != undefined){
+	   		var rectG = group.append('g')
+	   		                   .attr('transform', 'translate(' + (cx + self.m_LegendCellHeight/2.) + ',' + (cy + self.m_LegendCellHeight/2.) + ')');
+			
+	   		rectG.append('rect')
+	   		     .attr('class', 'shapecell')
+	   			 .attr('groupid', mapShapeCount['rect']['groupId'])
+	   		     .attr('x', -self.m_LegendCellHeight/2.)
+	   		     .attr('y', -self.m_LegendCellHeight/2.)
+	   		     .attr('width', self.m_LegendCellHeight)
+	   		     .attr('height', self.m_LegendCellHeight)
+	   		     .style('fill', '#9E9E9E');
+
+ 	   		rectG.append('text')
+				.attr("dy", function(d, i){
+					// return '0px'
+					return '0.5em'
+				})
+				.attr('dx', function(d, i){
+					return (self.m_LegendCellHeight + 2) + 'px'
+				})
+				.style('fill', 'gray')
+				.style("text-anchor", "middle")
+				.style('font-size', '12px')
+	   			.text(function(d, i){
+	   				return mapShapeCount['rect']['count'];
+	   			})	
+	   	} 	
+
+	   	d3.selectAll('.shapecell')	   		 
+	   		 .attr('shapeclicked', 'yes')
+	   		 .on('click', function(d, i){
+	   		 	var clicked = d3.select(this).attr('shapeclicked');
+	   		 	if(clicked == 'yes'){
+	   		 		clicked = 'no';
+	   		 		d3.select(this).style('opacity', 0.3)
+	   		 	}else{
+	   		 		clicked = 'yes'
+	   		 		d3.select(this).style('opacity', 1.)	   		 		
+	   		 	}
+	   		 	d3.select(this).attr('shapeclicked', clicked);
+
+   		 		//compute thte selected ele if necessary
+				// var liSelectIndexRange = [];
+				var liSelectGroupId = [];
+				d3.selectAll("[shapeclicked='yes']")
+				   .each(function(d, i){					
+					liSelectGroupId.push(d3.select(this).attr('groupid'))
+				   	// console.log(' clicked = ', );
+				})
+				var liSelectedEleId = [];
+				var propertyIdAlias = "groupid";
+				for(var groupIndex = 0; groupIndex < liSelectGroupId.length; groupIndex ++){
+					var liSelectEleId_temp = self.m_ObjectGroupManager.getEleIdsbyGroupId(liSelectGroupId[groupIndex]);
+					console.log(' select group ', liSelectEleId_temp);
+					liSelectedEleId = liSelectedEleId.concat(liSelectEleId_temp)
+					// propertyIdAlias += '_' + String(propertyId);
+				}
+							
+				console.log(' selected ele id ', liSelectedEleId);	
+
+				//notify the cross-filter with selected property range
+				self.m_CrossFilterInfo.setFilterEleIdsofPropertyId(propertyIdAlias, liSelectedEleId);
 
 				//update the object_create_button
 				var liFilterEleId = self.m_CrossFilterInfo.getFilterEleIds();
@@ -1878,9 +2391,6 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		});
 		prodiv.html(prodiv.html() + topDivHtml);
 
-
-
-	
 		var boxplotSvg = d3.select('#' + boxplotDivId)
 		.append('svg');
 

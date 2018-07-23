@@ -23,11 +23,22 @@ function PropertyManager(iId, inObj, objectGroupManager, elementDetector){
 	}
 
 	//analyse the informatics of attributes 
-	Info.analyseAttributesOfGroups = function(iGroupId){
-		var propertyBag = this.getPropertyBag(iGroupId);
-		var liPropertyName = propertyBag.getPropertyNames();
+	Info.analyseAttributesOfGroups = function(liGroupId){
+		var liPropertyName = [];
+		for(var i = 0; i < liGroupId.length; i ++){				
+			var propertyBag = this.getPropertyBag(liGroupId[i]);
+			var liPropertyName_temp = propertyBag.getPropertyNames();
+			for(var j = 0; j < liPropertyName_temp.length; j ++){
+				if(liPropertyName.indexOf(liPropertyName_temp[j]) == -1)
+					liPropertyName.push(liPropertyName_temp[j])
+			}				
+		}
 		console.log(' property name = ', liPropertyName);
 		return liPropertyName;
+	}
+
+	Info.analyseLayoutOfGroups = function(iGroupId){
+		return 'linear';
 	}
 
 	//compute the properties of object groups
@@ -48,7 +59,7 @@ function PropertyManager(iId, inObj, objectGroupManager, elementDetector){
 					// if(protype == 'g_x')
 						//console.log(' g_x ', visualpro[protype] );
 				 	propertyBag.addPro(iEleId, protype, visualpro[protype], 1);
-				 	// //console.log(' add pro ', iEleId, protype, visualpro[protype]);
+				 	console.log(' add pro ', iEleId, protype, visualpro[protype]);
 				}			
 			});
 			//compute the distri.
@@ -655,6 +666,7 @@ function PropertyBag(iGroupId, bOrigin, objectGroupManager){
 					// var binIndex = this.valueList.indexOf(value);
 					// // //console.log(' bin index !! ', binIndex, ' value ', value, ' valuelist ', this.valueList);					
 					// return binIndex;
+					console.log(' binIndex ', binIndex, count)
 				}
 				// if(isNaN(binIndex))
 				count[binIndex] += 1;
@@ -1402,6 +1414,32 @@ function PropertyBag(iGroupId, bOrigin, objectGroupManager){
 				if(iBinIndex >= IndexRange[0] && iBinIndex <= IndexRange[1])
 					liSeleEleIds.push(paEleValue['eleid'])
 			};
+		}
+		return liSeleEleIds;
+	}
+
+	Info.getEleIdsbyPropertyValueList = function(iPropertyId, valueList){
+		var liSeleEleIds = [];
+
+		var liEleValue = this.m_mapPropertyIdInfo[iPropertyId];
+		if(liEleValue == undefined)
+			return liSeleEleIds;
+
+		var disConfig = this.m_mapPropertyIdDisConfig[iPropertyId];	
+		for (var i = liEleValue.length - 1; i >= 0; i--) {
+			var paEleValue = liEleValue[i];
+			var value = paEleValue['provalue'];
+			console.log(' select values ', valueList, value)
+			if(valueList.indexOf(value) != -1){
+				liSeleEleIds.push(paEleValue['eleid'])
+			}
+			// var iBinIndex = disConfig.getBinIndex()		
+			// //check if bin in bin range
+			// for (var j = IndexRangeList.length - 1; j >= 0; j--) {
+			// 	var IndexRange = IndexRangeList[j];
+			// 	if(iBinIndex >= IndexRange[0] && iBinIndex <= IndexRange[1])
+			// 		liSeleEleIds.push(paEleValue['eleid'])
+			// };
 		}
 		return liSeleEleIds;
 	}

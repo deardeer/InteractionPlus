@@ -2,22 +2,28 @@
 	legend panel
 */
 
-function LegendPanelRender(iId, objectGroupManager){
+function LegendPanelRender(iId, objectGroupManager, containerId){
 
 	var Info = {};
 
-	Info.__init__ = function(iId, objectGroupManager){
+	Info.__init__ = function(iId, objectGroupManager, containerId){
 		this.m_iId = iId;
 		this.m_ObjectGroupManager = objectGroupManager;
 
-		d3.select('#legend_p_' + this.m_iId)
-		.append('svg')
-		.attr('height', '100px')
-		.attr('width', '100%');
+		this.m_containerId = containerId;
+		
+		if(this.m_containerId == undefined){
+			this.m_containerId = 'legend_p_' + this.m_iId			
+			d3.select('#legend_p_' + this.m_containerId)
+			.append('svg')
+			.attr('height', '100px')
+			.attr('width', '100%');
+		}
 
-		var boundingRect = d3.select('#legend_p_' + this.m_iId + ' svg')
+		var boundingRect = d3.select('#' + this.m_containerId)
 							.node()
 							.getBoundingClientRect();
+
 		this.m_CenterPos = {
 			'x' : boundingRect['width'] * 0.5,
 			'y' : boundingRect['height'] * 0.5
@@ -59,7 +65,7 @@ function LegendPanelRender(iId, objectGroupManager){
 			d3.select('#legend_example')
 			.remove();
 			//add new one
-			var group = d3.select('#legend_p_' + self.m_iId  + ' svg')
+			var group = d3.select('#' + self.m_containerId)// legend_p_' + self.m_iId  + ' svg')
 			.append('g')
 			.attr('id', 'legend_example')
 		
@@ -454,6 +460,6 @@ function LegendPanelRender(iId, objectGroupManager){
 			});			
 	}
 
-	Info.__init__(iId, objectGroupManager);
+	Info.__init__(iId, objectGroupManager, containerId);
 	return Info;
 }

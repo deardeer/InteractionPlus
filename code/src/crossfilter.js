@@ -173,7 +173,8 @@ function CrossFilterInfo(iId, objectGroupManager, elementProperties, propertyMan
     Info.setFilterEleIdsofPropertyId = function(iPropertyId, liFilteredElementId){
         this.m_mapPropertyIdFilterEleIds[iPropertyId] = liFilteredElementId;
         //console.log(' m_mapPropertyIdFilterEleIds ', this.m_mapPropertyIdFilterEleIds);
-        this.updateFilterEleIds();
+        // this.updateFilterEleIds();
+        this.updateFilterEleIds_new();
     }
     Info.setFilterEleIdsofMDS = function(liFilteredElementId){
 
@@ -218,9 +219,75 @@ function CrossFilterInfo(iId, objectGroupManager, elementProperties, propertyMan
        return this.m_liFilteredElementId;
     }
 
+    Info.updateFilterEleIds_new = function(){      
+        var self = this; 
+        var liNewFilterEleId = [];
+        if(Object.keys(this.m_mapPropertyIdFilterEleIds).length == 0){
+              var liSelectedGroupId = self.m_ObjectGroupManager.getSelectedGroupIds(); 
+              for(var i = 0; i < liSelectedGroupId.length; i ++){
+                var iSelectGroupId = liSelectedGroupId[i]
+                liNewFilterEleId = self.m_ObjectGroupManager.getAllEleIdsofGroup(iSelectGroupId);   
+              }                  
+        }else{   
+            var first = true;
+            for(var p = 0; p < Object.keys(self.m_mapPropertyIdFilterEleIds).length; p ++){
+                    var iPId = Object.keys(self.m_mapPropertyIdFilterEleIds)[p];
+                    var liThisEle = self.m_mapPropertyIdFilterEleIds[iPId];
+                    if(liThisEle != undefined){                   
+                        if(first){
+                            first = false;
+                            liNewFilterEleId = liThisEle;
+                        }else{
+                            var liAfterNewFilterEleId = [];
+                            for (var i = liThisEle.length - 1; i >= 0; i--) {
+                                var eleId = liThisEle[i];
+                                //console.log(" liFilteredEleId.indexOf(eleId) ", eleId, liFilteredEleId.indexOf(eleId));
+                                if(liNewFilterEleId.indexOf(eleId)>=0){
+                                    liAfterNewFilterEleId.push(eleId);
+                                }
+                            };
+                            liNewFilterEleId = liAfterNewFilterEleId;
+                        }
+                    }
+             }
+        }
+
+            // if(Object.keys(this.m_mapScatterPlotFilterEleIds).length != 0){
+            //     for(var iSPId in this.m_mapScatterPlotFilterEleIds){
+            //         var liThisFilterId = this.m_mapScatterPlotFilterEleIds[iSPId];
+            //         var liAfterNewFilterEleId = [];
+            //         for (var i = liThisFilterId.length - 1; i >= 0; i--) {
+            //             var eleId = liThisFilterId[i];
+            //             if(liNewFilterEleId.indexOf(eleId)>=0){
+            //                 liAfterNewFilterEleId.push(eleId);
+            //             }
+            //         };
+            //         liNewFilterEleId = liAfterNewFilterEleId;
+            //     }
+            // }
+
+            // //mds
+            // //console.log("XXXX [3]", liNewFilterEleId, this.m_liMDSFilterEleIds);
+            // //console.log("????", liNewFilterEleId.length, this.m_liMDSFilterEleIds);
+            // if(this.m_liMDSFilterEleIds.length != 0){
+            //     //console.log("XXXX [5]", this.m_liMDSFilterEleIds.length);
+            //     var liAfterNewFilterEleId = [];
+            //     for (var i = this.m_liMDSFilterEleIds.length - 1; i >= 0; i--) {
+            //         var eleId = this.m_liMDSFilterEleIds[i];
+            //         if(liNewFilterEleId.indexOf(eleId)>=0){
+            //             liAfterNewFilterEleId.push(eleId);
+            //         }
+            //     };
+            //     liNewFilterEleId = liAfterNewFilterEleId;
+            // }
+            //console.log("XXXX [4]", liNewFilterEleId.length);
+        
+        this.setFilterEleIds(liNewFilterEleId);
+    }
+
     //update the eleids by filter property
     Info.updateFilterEleIds = function(){        
-        var self = this;
+        var self = this; 
         var liNewFilterEleId = [];
 
         // //console.log(" FILTER *** ", this.m_mapPropertyIdFilterEleIds, ' , ', this.m_mapScatterPlotFilterEleIds);
@@ -389,14 +456,12 @@ function CrossFilterInfo(iId, objectGroupManager, elementProperties, propertyMan
                 element.style['stroke-width'] = '3px';
             }else{
                 var stroke = self.m_ElementProperties.getEleStrokeInfo(iEleId);
-                element.style['stroke'] = stroke['stroke'];
-                // element.style['stroke-opacity'] = 0;
-                element.style['stroke-width'] = stroke['stroke-width'];
-                //not choose      
-                // $(element).removeClass('alpha-10');
-                // $(element).addClass('alpha-3');          
-                //OPCACITY
-                // element.style.opacity = 0.3;   
+                if(stroke != undefined){
+                     element.style['stroke'] = stroke['stroke'];
+                    // element.style['stroke-opacity'] = 0;
+                    element.style['stroke-width'] = stroke['stroke-width'];                    
+                }
+                element.style.opacity = 0.3;   
             }
         });
     }

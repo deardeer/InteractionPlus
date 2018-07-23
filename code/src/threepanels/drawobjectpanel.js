@@ -54,8 +54,8 @@ function ObjectPanelRender(iId, inObj, objectGroupManager){
 		var groupType = attrs['type'];
 		var buttonType, buttonDefaultName;
 		var liEles = [];
-		switch(groupType)
-		{
+
+		switch(groupType){
 			case 'origin':
 				liEles = self.m_ObjectGroupManager.getEleIdsbyGroupId(iGroupId);
 				buttonType = 'origin_group_span';
@@ -212,8 +212,6 @@ function ObjectPanelRender(iId, inObj, objectGroupManager){
 
 	//draw the object buttons
 	Info.drawObjectButtons = function(){
-
-		//console.log("drawObjectButtons");
 
 		var self = this;
 

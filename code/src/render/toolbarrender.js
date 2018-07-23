@@ -38,6 +38,7 @@ function ToolBarRender(){
 				'<img src=<%=imgsrc%> style="height: 25px; margin-top: 3px; margin-right: 10px; margin-left: 10px; float: left;"></img>' + 
 				// '<span class="label label-default" style="display: inline-block; float: left;">Filter+</span>' + 
 				'<div class="btn-group" style="margin:5px; float: left;">' + 
+				    '<button class="btn btn-warning btn-xs function_button" type="button" id="extract_button"><img class="btn_img" src=<%=selectimgsrc%>></img> Extract</button>' + 
 				    '<button class="btn btn-warning btn-xs function_button" type="button" id="rectselect_button"><img class="btn_img" src=<%=selectimgsrc%>></img> Selection</button>' + 
 					'<button class="btn btn-warning btn-xs function_button" type="button" id="radialmask_button"><img class="btn_img" src=<%=radialimgsrc%>></img> Radial</button>' + 
 					'<button class="btn btn-warning btn-xs function_button" type="button" id="vparallelmask_button"><img class="btn_img" src=<%=vparallelimgsrc%>></img> V-Parallel</button>' + 
@@ -144,6 +145,13 @@ function ToolBarRender(){
 			exitAddOn();
 			// exit();
 		});
+
+		$('#extract_button').on('click', function(event){
+			event.stopPropagation;
+			console.log(' extract element ');
+			g_InObjManager.extractGlobalRectOfInObj();
+      	    // g_ElementDetector.detectElement();
+		})
 
 		$('#rectselect_button').on('click', function(event){
 

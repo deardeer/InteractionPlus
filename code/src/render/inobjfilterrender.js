@@ -103,37 +103,70 @@ function InObjFilterRender(iId, inObj, objectGroupManager, propertyManager){
 		// self.drawFilterPart();
 	}
 
- 	Info.drawColorLegend = function(iGroupId){
+ 	Info.drawColorLegend = function(liGroupId, lefttop){
 
 	    var self = this;
 	   
+	    // var gDefineRegion = ;//d3.select(self.m_DragRectGName);
+	    var containerSvg = d3.select('#legend' + this.m_iId)
+	    if(containerSvg.empty()){
+	    	console.log(' lefttop ', lefttop);
+	    	containerSvg = d3.select('#addondiv')
+	    					 .append('svg')
+	    					 .attr('id', 'legend' + this.m_iId)
+	    					 .style('position', 'absolute')	 					 
+			                .style('left', Number(lefttop.left) + 20)
+			                .style('top', Number(lefttop.top))
+			                .attr('width', 200)
+			                .attr('height', 500)
+	    }
+
+	    self.m_PropertyPanelRender.drawColorLegend(containerSvg, liGroupId);	  
+   }
+
+   Info.drawShapeLegend = function(liGroupId, lefttop){
+
+   		console.log(' shape legend ', liGroupId);
+	    var self = this;
+	   
+	    // var gDefineRegion = ;//d3.select(self.m_DragRectGName);
+	    var containerSvg = d3.select('#legend' + this.m_iId)
+	    if(containerSvg.empty()){
+	    	console.log(' lefttop ', lefttop);
+	    	containerSvg = d3.select('#addondiv')
+	    					 .append('svg')
+	    					 .attr('id', 'legend' + this.m_iId)
+	    					 .style('position', 'absolute')	 					 
+			                .style('left', Number(lefttop.left) + 20)
+			                .style('top', Number(lefttop.top))
+			                .attr('width', 200)
+			                .attr('height', 500)
+	    }
+
+	    self.m_PropertyPanelRender.drawShapeLegend(containerSvg, liGroupId);
+   }
+
+   Info.drawSizeLegend = function(liGroupId, lefttop){
+
+	    var self = this;	   
 		var DrawLBPos = self.getDefaultDrawLBPoint();
 	    var x = DrawLBPos['x']
 	    var y = DrawLBPos['y'] + 10
 
 	    // var gDefineRegion = ;//d3.select(self.m_DragRectGName);
-	    var containerSvg = d3.select('#newsvg_' + this.m_iId)
+	    var containerSvg = d3.select('#legend' + this.m_iId)
 	    if(containerSvg.empty()){
-	    	containerSvg = d3.select('#addondiv')
-	    					 .append('svg')
-	    					 .attr('id', 'newsvg_' + this.m_iId)
-	    					 .style('position', 'absolute')	    					 
-			                .style('left', x)
-			                .style('top', y)
-			                .attr('width', 200)
-			                .attr('height', 500)
-	    }
-
-	    containerSvg
-			.append("rect")
-			.attr('x', 0)
-			.attr('y', 0)
-			.attr('width', 300)
-			.attr('height', 200)
-	        .style('fill', 'white');
-
-	    self.m_PropertyPanelRender.drawColorLegend(iGroupId);	  
-   }
+		    	containerSvg = d3.select('#addondiv')
+		    					 .append('svg')
+		    					 .attr('id', 'legend' + this.m_iId)
+		    					 .style('position', 'absolute')	    					 
+				                .style('left', Number(lefttop.left) + 20)
+				                .style('top', Number(lefttop.top))
+				                .attr('width', 200)
+				                .attr('height', 500)
+	  	}
+		self.m_PropertyPanelRender.drawSizeLegend(containerSvg, liGroupId, 'r');
+	}
 
 	//set the hovered eleid 
 	Info.hoverEleId = function(iHoveredEleId){

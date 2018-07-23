@@ -14,7 +14,20 @@ var g_TempEleIdStroke = {};
 var g_ElementDetector = new ElementDetetor(-1);
 // console.log(" g_ElementDetector ", g_ElementDetector == undefined);
 
-function handleMouseUp() {
+function handleMouseUp(){
+
+   if(f_bRectCreating && g_ToolBarManager.isLinearBrush()){
+       f_bRectCreating = false;
+       var linearBrushRect = {
+        'x1': g_MouseBegin['x'], 'y1': g_MouseBegin['y'],
+        'x2': g_MouseEnd['x'], 'y2': g_MouseEnd['y'] 
+       }
+       var tempEleDetector = new ElementDetetor();
+       tempEleDetector.detectElement(linearBrushRect);
+       console.log(" Detect Ele # = ", linearBrushRect, tempEleDetector.m_ElementProperties.getElements().length);
+
+       return;
+   }
 
    if(f_bRectCreating){
 
@@ -64,6 +77,16 @@ function handleMouseUp() {
 
 function handleMouseMove(pos, addOnSvg){
   if(f_bRectCreating){
+      if(g_ToolBarManager.isLinearBrush()){
+
+        d3.select('#linearBrushRect')
+          .attr('width', function(){
+            return g_MouseEnd['x'] - g_MouseBegin['x']
+          })
+          .attr('height', function(){
+            return g_MouseEnd['y'] - g_MouseBegin['y']
+          });
+      }
       g_MouseEnd['x'] = pos.x;
       g_MouseEnd['y'] = pos.y;
       mouseMoveToDefineRegion(addOnSvg);
@@ -76,7 +99,7 @@ function handleMouseMove(pos, addOnSvg){
 
 var g_CircleButtonRadius = 10;
 
-function handleMouseDown(pos, addOnSvg){
+function handleMouseDown(pos, addOnSvg, linearBrush){
   var self = this;
 
   if(g_ToolBarManager.isSelectEnable()){
@@ -91,11 +114,31 @@ function handleMouseDown(pos, addOnSvg){
       f_Timer = window.setInterval(myTimer, 200);
       g_StaticRectCount = 0;
       g_PreviousDragRect = {};
-  }else{
-    //if decode mode
-    if(g_VisDecoder.isInDecodeMode()){
+  }else if(g_ToolBarManager.isLinearBrush()){
+      //linear brush
+      console.log(' linear brush mouse down! ');
+      f_bRectCreating = true;
+      g_MouseBegin['x'] = pos.x;//getPosInAddonSvg(e)['x'];//parseInt(e.clientX);//pageX);
+      g_MouseBegin['y'] = pos.y;//getPosInAddonSvg(e)['y'];//parseInt(e.clientY);//pageY);
+
+      var rectSel = d3.select('#linearBrushRect')
+      if(rectSel.empty()){
+        rectSel = addOnSvg.append('rect')
+                          .attr('id', 'linearBrushRect')
+                          .attr('x', g_MouseBegin['x'])
+                          .attr('y', g_MouseBegin['y'])
+                          .style('stroke','gray')
+                          .style('fill', 'none');
+      }else{        
+        rectSel.attr('x', g_MouseBegin['x'])
+               .attr('y', g_MouseBegin['y'])
+               .attr('width', 0)
+               .attr('height', 0);
+      }
+
+      // f_Timer = window.setInterval(myTimer, 200);
+  }else if(g_VisDecoder.isInDecodeMode()){
       g_VisDecoder.handleMouseDown(pos);
-    }
   }
 }
 

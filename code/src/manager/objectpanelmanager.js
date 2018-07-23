@@ -18,6 +18,7 @@ function ObjectGroupManager(iId, elementProperties){
 
 	//current selected group
 	Info.m_iSelectedGroupId = -1;
+	Info.m_liSelectedGroupId = []
 
 	//visibile group
 	Info.m_liVisibleGroupId = [];
@@ -57,22 +58,30 @@ function ObjectGroupManager(iId, elementProperties){
 		var liVisGroupId = this.getVisibleGroupIdList();
 		var iMaxEleNum = -1;
 		this.m_mapRoleGroupId = {};
+
 		for(var i = 0; i < liVisGroupId.length; i ++){
 			var iGroupId = liVisGroupId[i];
 			var liEleId = this.getEleIdsbyGroupId(iGroupId);
-			if(liEleId.length > iMaxEleNum){
-				//check the element
-				var repreEle = this.g_ElementProperties.getElePropertiesbyId(liEleId[0])
-				console.log(' repreEle ', repreEle);
-				iMaxEleNum = liEleId.length;
-				role = 'data';
-				this.m_mapRoleGroupId['data'] = iGroupId;
-			}
+			if(this.m_mapRoleGroupId['data'] == undefined){
+				this.m_mapRoleGroupId['data'] = [iGroupId]
+			}else
+				this.m_mapRoleGroupId['data'].push(iGroupId)
+			// if(liEleId.length > iMaxEleNum){
+			// 	//check the element
+			// 	var repreEle = this.g_ElementProperties.getElePropertiesbyId(liEleId[0])
+			// 	console.log(' repreEle ', repreEle);
+			// 	iMaxEleNum = liEleId.length;
+			// 	role = 'data';
+			// 	this.m_mapRoleGroupId['data'] = iGroupId;
+			// }
 		}
 	}
 
 	Info.setSelectedGroupId = function(iSelectedGroupId){
 		this.m_iSelectedGroupId = iSelectedGroupId;
+	}
+	Info.setSelectedGroupIds = function(liSelectedGroupId){
+		this.m_liSelectedGroupId = liSelectedGroupId;
 	}
 	Info.setGroupNamebyId = function(iGroupId, GroupName){
 		var attr = this.m_mapOGroupIdAttr[iGroupId];
@@ -100,6 +109,9 @@ function ObjectGroupManager(iId, elementProperties){
 	}
 	Info.getSelectedGroupId = function(){
 		return this.m_iSelectedGroupId;
+	}
+	Info.getSelectedGroupIds = function(){
+		return this.m_liSelectedGroupId;
 	}
 	Info.getSelectedGroupType = function(){
 		return this.getGroupType(this.m_iSelectedGroupId);

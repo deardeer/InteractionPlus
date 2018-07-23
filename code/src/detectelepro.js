@@ -18,7 +18,7 @@ function ElementDetetor(iId){
 		if(g_GlobalElementIdManager.isEleIdBuild() == false)
 			g_GlobalElementIdManager.buildupEleIdMap();
 		//detect
-		this.updateInsideElements2(detectRect, circleBool);
+		return this.updateInsideElements2(detectRect, circleBool);
 	}
 
 	// Info.updateInsideElementsInCircle = function(definedCircle){
@@ -42,49 +42,61 @@ function ElementDetetor(iId){
 	Info.updateInsideElements2 = function(definedRect, circleBool){
 
 		var self = this;
+		var left = 1e6, right = -1, top = 1e6, bottom = -1;
 
 		var liElementIds = g_GlobalElementIdManager.getCandiateElementIds();
+
 		var liSelectElement = [];
 		var liSelectEleId = [];
 
-		var center_circle = {}; 
-		var center_radius = 0; 
-		if(circleBool != undefined){
-			center_circle = {
-				'x': (definedRect['x1'] + definedRect['x2']) * 0.5,
-				'y': (definedRect['y1'] + definedRect['y2']) * 0.5
-			};
-			center_radius = (definedRect['x2'] - definedRect['x1'])/2.;	
-		}
-
-		for (var i = liElementIds.length - 1; i >= 0; i--) {
-
-			var EleId = liElementIds[i];		
-			var Ele = g_GlobalElementIdManager.getElebyId(EleId);
-			var tempFrame = g_GlobalElementIdManager.getIFramebyEleId(EleId);
-					
-			tempRect = g_GlobalElementIdManager.getGlobalRectbyEleId(EleId);
-
+		if(definedRect != undefined){
+			//define the boundary rect
+			var center_circle = {}; 
+			var center_radius = 0; 
 			if(circleBool != undefined){
-				//circle
-				var center_temp = {
-					'x': tempRect['g_x'],
-					'y': tempRect['g_y'],
+				center_circle = {
+					'x': (definedRect['x1'] + definedRect['x2']) * 0.5,
+					'y': (definedRect['y1'] + definedRect['y2']) * 0.5
 				};
-				if(Math.sqrt( (center_temp.x - center_circle.x) * (center_temp.x - center_circle.x) + (center_temp.y - center_circle.y) * (center_temp.y - center_circle.y)) <= center_radius){
-					liSelectEleId.push(EleId);
-					liSelectElement.push(Ele);
-				}
-			}else{
-				//rect
-				var bIntersect = isIntersect(definedRect, tempRect);
-				var bIntersect2 = isIntersect(tempRect, definedRect);	
-				if(bIntersect || bIntersect2){	
-					liSelectEleId.push(EleId);
-					liSelectElement.push(Ele);
-				}
+				center_radius = (definedRect['x2'] - definedRect['x1'])/2.;	
 			}
-		};
+
+			for (var i = liElementIds.length - 1; i >= 0; i--) {
+
+				var EleId = liElementIds[i];		
+				var Ele = g_GlobalElementIdManager.getElebyId(EleId);
+				var tempFrame = g_GlobalElementIdManager.getIFramebyEleId(EleId);
+						
+				tempRect = g_GlobalElementIdManager.getGlobalRectbyEleId(EleId);
+
+				if(circleBool != undefined){
+					//circle
+					var center_temp = {
+						'x': tempRect['g_x'],
+						'y': tempRect['g_y'],
+					};
+					if(Math.sqrt( (center_temp.x - center_circle.x) * (center_temp.x - center_circle.x) + (center_temp.y - center_circle.y) * (center_temp.y - center_circle.y)) <= center_radius){
+						liSelectEleId.push(EleId);
+						liSelectElement.push(Ele);
+					}
+				}else{
+					//rect
+					var bIntersect = isIntersect(definedRect, tempRect);
+					var bIntersect2 = isIntersect(tempRect, definedRect);	
+					if(bIntersect || bIntersect2){	
+						liSelectEleId.push(EleId);
+						liSelectElement.push(Ele);
+					}
+				}
+			};
+		}else{
+			for (var i = liElementIds.length - 1; i >= 0; i--) {
+				var EleId = liElementIds[i];		
+				var Ele = g_GlobalElementIdManager.getElebyId(EleId);
+				liSelectEleId.push(EleId);
+				liSelectElement.push(Ele);
+			}
+		}
 
 		console.log(" New Detect ", liSelectEleId.length);
 
@@ -93,7 +105,6 @@ function ElementDetetor(iId){
 			var selEle = liSelectElement[i];
 			var iframe = g_GlobalElementIdManager.getIFramebyEleId(EleId);
 	
-
 			//get the global rect
 			var tempRect = g_GlobalElementIdManager.getGlobalRectbyEleId(selEleId);
 			
@@ -102,6 +113,14 @@ function ElementDetetor(iId){
 				'y': (tempRect['y1'] + tempRect['y2']) * 0.5
 			};
 
+			if(left > tempRect['x1'])
+				left = tempRect['x1']
+			if(right < tempRect['x2'])
+				right = tempRect['x2']
+			if(top > tempRect['y1'])
+				top = tempRect['y1']
+			if(bottom < tempRect['y2'])
+				bottom = tempRect['y2']
 			// var globalCenPos = //selGlobalCenPos[i];
 
 			var properties = getAttributesofElement(selEle);
@@ -113,9 +132,13 @@ function ElementDetetor(iId){
 				'x1': tempRect['x1'],'x2': tempRect['x2'],
 				'y1': tempRect['y1'],'y2': tempRect['y2'],
 			}
+			properties['bwidth'] = tempRect['x2'] - tempRect['x1']
+			properties['bheight'] = tempRect['y2'] - tempRect['y1'];
 			// console.log('globalCenPos 333 ', selEle, globalCenPos);
 			self.m_ElementProperties.addElemenet(selEle, selEleId, properties, style, iframe);
 		};
+
+		return {'x': left, 'y': top, 'width': right - left , 'height': bottom - top}
 	}
 
 	//detect and update the elements inside the rect/circle in the elepro-object
@@ -286,6 +309,8 @@ function ElementDetetor(iId){
 			properties['g_x'] = globalCenPos['x'];
 			properties['g_y'] = globalCenPos['y'];
 			properties['g_box'] = tempRect;
+			properties['bwidth'] = tempRect['x2'] - tempRect['x1']
+			properties['bheight'] = tempRect['y2'] - tempRect['y1'];
 
 			// console.log('globalCenPos 333 ', selEle, globalCenPos);
 			self.m_ElementProperties.addElemenet(selEle, undefined, properties, style, iframe);

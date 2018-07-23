@@ -15,6 +15,14 @@ function InObjManager(){
 			return;
 		inObj.dragSelectRect(rect);
 	}
+
+	Info.extractGlobalRectOfInObj = function(iId){
+		var inObj = this.m_mapIdInObj[this.addInObj()];
+		if(inObj == undefined)
+			return;
+		inObj.finishSelectRect_GlobalAdaptive();
+	}
+
 	
 	Info.finishSelectRectOfInObj = function(iId){
 		var inObj = this.m_mapIdInObj[iId];

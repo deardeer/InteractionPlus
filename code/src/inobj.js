@@ -46,6 +46,150 @@ function InObj(iId, bMask, maskType){
  		// //console.log("m_TempElementDetector ", temp_grobalRect, this.m_TempElementDetector.m_ElementProperties.getElementIds().length);
  	}
 
+ 	Info.finishSelectRect_GlobalAdaptive = function(){
+ 	
+ 		var circleMask;
+
+ 		if(g_ToolBarManager.isRadialMaskEnable() == true)
+ 			circleMask = true;
+
+ 		//render tool bar
+ 		this.m_Render.updateSelectRect({'x': 0, 'y': 0, 'width': 100 , 'height': 100})
+ 		this.m_Render.addToolBar();
+
+ 		//delete the elements and pros
+ 		this.m_ElementDetector = new ElementDetetor(this.m_iId);
+ 		// var globalRect = this.m_Render.getSelectGlobalRect();
+ 		var boundaryBox = this.m_ElementDetector.detectElement();
+ 		this.m_Render.updateSelectRect(boundaryBox)
+ 		console.log(" boundaryBoxboundaryBox ", boundaryBox);
+	    //console.log(" wwww DETECT ", globalRect, this.m_Rect, circleMask, g_ToolBarManager.isRadialMaskEnable());
+		
+	    //fade unselected 
+	    // fadeUndetected();
+	    // // generate the original object groups	
+	    // //console.log(" this.m_ElementDetector.m_ElementProperties ", this.m_ElementDetector.m_ElementProperties);
+	    this.m_ObjectGroupManager = new ObjectGroupManager(this.m_iId, this.m_ElementDetector.m_ElementProperties);
+	    this.m_ObjectGroupManager.generateOriginalOGroup();
+
+	    //[1] analyze roles   
+	    this.m_ObjectGroupManager.analyseRolesOfObjects();
+
+	    //init 
+	    this.m_PropertyManager = new PropertyManager(this.m_iId, this, this.m_ObjectGroupManager, this.m_ElementDetector);
+
+	    //[2] analyze attributes
+	    this.m_ObjectGroupManager.setSelectedGroupId(this.m_ObjectGroupManager.getDataGroupId()[0]);
+	    this.m_ObjectGroupManager.setSelectedGroupIds(this.m_ObjectGroupManager.getDataGroupId());
+	    var liInforPropertyName = this.m_PropertyManager.analyseAttributesOfGroups(this.m_ObjectGroupManager.getDataGroupId());
+	    var layoutAnalysis = this.m_PropertyManager.analyseLayoutOfGroups(this.m_ObjectGroupManager.getDataGroupId());
+
+	    if(this.m_bMask){
+	    	config = this.computeConfigofEleIds();
+	    	if(config['adjustrect'] == true){
+	    		this.dragSelectRect(this.m_Rect);
+	    	}
+ 			//compute the default mask
+ 			this.m_Mask.configure(this.m_Rect, config);
+			this.m_Mask.renderMask();
+ 		} 	
+
+		//reset the cross filter
+	    this.m_CrossFilter = new CrossFilter(this.m_iId, this, this.m_ObjectGroupManager, this.m_PropertyManager);
+	    this.m_CrossFilter.resetCrossFilter();
+
+	    this.m_Render.setElementDetectorCrossFilter(this.m_ElementDetector, this.m_CrossFilter);
+	    
+ 		this.m_Render.initHoverinSelectRect();
+
+	    // //detect the default linked groups
+	    // //generate "default_compound"
+	    //g_ObjectGroupManager.detectDefaultLinkedGroups();
+	    //console.log(" init [0] ");
+	 	this.m_FilterRender = new InObjFilterRender(this.m_iId, this, this.m_ObjectGroupManager, this.m_PropertyManager);
+	 	//console.log(" init [1] ");
+	    this.m_FilterRender.addFilterPanel();  
+	    //console.log(" init [2] ");
+	    
+	    //[3] integrate interactions
+	    if(liInforPropertyName.indexOf('fill') != -1){
+	    	d3.select('#filter_panel1').style('visibility', 'hidden')
+	    	d3.select('#define_region_rect1').style('visibility', 'hidden')
+	    	this.m_FilterRender.drawColorLegend(this.m_ObjectGroupManager.getDataGroupId(),
+	    		{left: Number(boundaryBox.x) + Number(boundaryBox.width), top: Number(boundaryBox.y)});
+		}		
+	    if(this.m_ObjectGroupManager.getDataGroupId().length > 1){
+	    	this.m_FilterRender.drawShapeLegend(this.m_ObjectGroupManager.getDataGroupId(),
+	    		{left: Number(boundaryBox.x) + Number(boundaryBox.width), top: Number(boundaryBox.y)});
+	    }
+	    //[4] attribute brush
+	    if(1){
+	    	this.m_FilterRender.drawSizeLegend(this.m_ObjectGroupManager.getDataGroupId(),
+	    		{left: Number(boundaryBox.x) + Number(boundaryBox.width), top: Number(boundaryBox.y)});
+	    }
+
+		// if(liInforPropertyName.indexOf('r') != -1){
+		// 	this.m_FilterRender.drawSizeLegend(this.m_ObjectGroupManager.getDataGroupId(),
+	 //    		{left: Number(boundaryBox.x) + Number(boundaryBox.width), top: Number(boundaryBox.y)});
+		// }
+
+		switch(layoutAnalysis){
+			case 'linear':
+				g_ToolBarManager.setLinearBrush();
+				console.log(' Linear Enhancement ');			
+				break
+			case 'arc':
+				console.log(' arc Enhancement ');
+				break
+			case 'hierarchy':
+				console.log(' hierarchy Enhancement ');
+				break
+			case 'rank':
+				console.log(' rank Enhancement ');
+				break
+			case 'other':
+				console.log(' other Enhancement ');
+				break
+		}
+		// if(layoutAnalysis == 'linear'){
+		// 	//linear Axis
+		// }
+		// if(layoutAnalysis == 'arc'){
+		// 	//todo
+		// }
+		// if(layoutAnalysis == 'hierarchy'){
+		// 	//todo
+		// }
+		// if(layoutAnalysis == 'rank'){
+		// 	//todo
+		// }
+		// if(layoutAnalysis == 'other'){
+		// 	//todo
+		// }
+
+	    //filter setting info
+	    this.m_FilterSettingInfo = new FilterSettingInfo(this.m_iId, this.m_ObjectGroupManager, this.m_PropertyManager);
+		
+		this.m_DialogRender = new InObjDialogRender(this, this.m_iId, this.m_ObjectGroupManager, this.m_PropertyManager, 
+			this.m_CrossFilter, this.m_FilterSettingInfo);
+		this.m_DialogRender.addDecodeDialog_step1();
+		this.m_DialogRender.addDecodeDialog_Pos();
+		this.m_DialogRender.addDecodeDialog_SizeRule();
+		this.m_DialogRender.addDecodeDialog_Bound();
+		this.m_DialogRender.addDecodeDialog_Legend();
+		this.m_DialogRender.addProReNameDialog();
+		this.m_DialogRender.addObjReNameDialog();
+		this.m_DialogRender.addSubmitDialog();
+		
+		//logic composition
+		this.m_LogicCompositionManager = new LogicCompositionManager(this.m_iId, this, this.m_ObjectGroupManager);
+		this.m_LogicCompositionManager.addObjectCompositionDialog();
+
+		//annotation 
+		this.m_AnnotationDialog = new AnnotationDialog(this.m_iId, this);
+		this.m_AnnotationDialog.addAnnotationDialog();
+ 	}
+
  	Info.finishSelectRect_Adaptive = function(){
  	
  		var circleMask;
