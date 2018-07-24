@@ -294,7 +294,9 @@ function LegendPanelRender(iId, objectGroupManager, containerId, inObjFilterRend
    		 	console.log(' click ', clicked, d3.select(this).text())
    		 	d3.select(this).attr('attr-clicked', clicked);
    		 	if(clicked == 'yes'){
-   		 		self.m_InObjFilterRender.drawAttriHistogram(d3.select(this).text())
+   		 		self.m_InObjFilterRender.drawAttriHistogram(d3.select(this).text(), true)
+   		 	}else{
+   		 		self.m_InObjFilterRender.drawAttriHistogram(d3.select(this).text(), false)
    		 	}
 		  });
 

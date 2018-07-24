@@ -132,6 +132,8 @@ function ElementDetetor(iId){
 				'x1': tempRect['x1'],'x2': tempRect['x2'],
 				'y1': tempRect['y1'],'y2': tempRect['y2'],
 			}
+			properties['cen-x'] = 0.5 * (tempRect['x2'] + tempRect['x1'])
+			properties['cen-y'] = 0.5 * (tempRect['y2'] + tempRect['y1'])
 			properties['bwidth'] = tempRect['x2'] - tempRect['x1']
 			properties['bheight'] = tempRect['y2'] - tempRect['y1'];
 			// console.log('globalCenPos 333 ', selEle, globalCenPos);
@@ -309,6 +311,8 @@ function ElementDetetor(iId){
 			properties['g_x'] = globalCenPos['x'];
 			properties['g_y'] = globalCenPos['y'];
 			properties['g_box'] = tempRect;
+			properties['cen-x'] = 0.5 * (tempRect['x2'] + tempRect['x1'])
+			properties['cen-y'] = 0.5 * (tempRect['y2'] + tempRect['y1'])
 			properties['bwidth'] = tempRect['x2'] - tempRect['x1']
 			properties['bheight'] = tempRect['y2'] - tempRect['y1'];
 

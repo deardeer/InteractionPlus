@@ -199,8 +199,24 @@ function InObjFilterRender(iId, inObj, objectGroupManager, propertyManager){
 	   	legendIconRender.drawLegend(liGroupId[iconGroupId])
 	}
 
-	Info.drawAttriHistogram = function(propertyName){
-		propertyName = 'bwidth'
+	Info.convertPropertyName = function(propertyName){
+		if(['width', 'bwidth'].indexOf(propertyName) != -1)
+			return 'bwidth'
+		if(['height', 'bheight'].indexOf(propertyName) != -1)
+			return 'bheight'
+		if(['r', 'radius'].indexOf(propertyName) != -1)
+			return 'r';
+		if(['cen-x'].indexOf(propertyName) != -1)
+			return 'cen-x'		
+		if(['cen-y'].indexOf(propertyName) != -1)
+			return 'cen-y'
+	}
+
+	Info.drawAttriHistogram = function(propertyName, addOn){
+
+		propertyName = this.convertPropertyName(propertyName);
+
+
 		console.log(' draw drawAttriHistogram ', propertyName, this.m_liDataGroupId);
 		var self = this;
 
@@ -237,13 +253,21 @@ function InObjFilterRender(iId, inObj, objectGroupManager, propertyManager){
 			});
 			//compute the distri.
 			self.m_DataPropertyBag.computeDistri();
+			self.m_PropertyManager.addGroupPropertyBag(self.m_liDataGroupId.toString(), self.m_DataPropertyBag);
 		}
 		var iPId = self.m_DataPropertyBag.getPropertyIdbyName(propertyName)		
+
+
 		var liFilteredEleId = self.m_CrossFilterInfo.getFilterEleIds();
 		self.m_DataPropertyBag.setFilterEldIds(liFilteredEleId);
 		console.log(' filter dis ', liFilteredEleId);
 
-		self.m_PropertyPanelRender.drawProperty_new(self.m_liDataGroupId.toString(), self.m_DataPropertyBag, propertyName, 'attrhistogram' + this.m_iId);
+		if(addOn == false){
+			//remove			
+			var propertyDivId =  'p_' + self.m_iId + 'pro_' + iPId; 
+			$('#'+ propertyDivId +' .delete_property_icon').click();
+		}else
+			self.m_PropertyPanelRender.drawProperty_new(self.m_liDataGroupId.toString(), self.m_DataPropertyBag, propertyName, 'attrhistogram' + this.m_iId);
 		// self.m_PropertyPanelRender.drawSizeLegend(containerSvg, liEleId, 'bwidth');
 	}
 

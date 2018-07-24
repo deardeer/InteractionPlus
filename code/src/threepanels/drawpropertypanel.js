@@ -827,11 +827,11 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 
 		//update the filter ele ids
 		var liFilteredEleId = self.m_CrossFilterInfo.getFilterEleIds();
-		var iSelectedGroupId = self.m_ObjectGroupManager.getSelectedGroupId();
-		var propertyBag = self.m_PropertyManager.getPropertyBag(iSelectedGroupId);
+		var liSelectedGroupId = self.m_ObjectGroupManager.getSelectedGroupIds();
+		var propertyBag = self.m_PropertyManager.getPropertyBag(liSelectedGroupId.toString());
 
 		propertyBag.setFilterEldIds(liFilteredEleId);
-		// //console.log(" iPId ", iPId, ' filter ele id ', liFilteredEleId);
+		console.log(" iPId ", iPId, ' filter ele id ', liFilteredEleId);
 
 		//change the rect
 		self.updateFilteredRects();
@@ -2926,6 +2926,8 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 	}
 
 	//draw one property
+
+	//draw one property
 	Info.drawProperty_new = function(iGroupId, propertyBag, propertyName, ParentDivId, preFix, bExpand, set_labelDivWidth, set_disDivWidth){
         
 		var self = this;
@@ -2934,34 +2936,12 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		if(preFix == undefined)
 			preFix = '';
 
-		if(parentdiv.length == 0)
-		{
-			// alert('not exist ', ParentDivId);
-			var proset = 'proset_';
-			var iCompoundIndex = Number(ParentDivId.substring(proset.length));
-
-			//add a compound div
-			var compoundDiv = $("<div>");
-			var compoundId =  ParentDivId;
-			compoundDiv.attr('id', compoundId)
-			.attr('class', 'propertyset-div compoundrow')
-			.attr('compoundindex', iCompoundIndex);
-
-			$("#" + self.m_ProPanelDivId).append(compoundDiv);
-		}
-
-		// var iGroupId = self.m_ObjectGroupManager.getSelectedGroupId();
-		// var propertyBag = self.m_PropertyManager.getPropertyBag(iGroupId);
-
 	   	var iPId = propertyBag.getPropertyIdbyName(propertyName)
 		//every property
 		var propertyInfo = propertyBag.getPropertyInfo(iPId);
 		var propertyType = propertyBag.getPropertyTypebyId(iPId);
 		var propertyNumeric = propertyBag.isPropertyNumber(iPId);
 		var propertyName = propertyBag.getPropertyNamebyId(iPId);
-
-		//suggested by decode vis
-		// var suggestSemanticName = g_VisDecoder.getSemanticMap(propertyName);
 
 		//check the name
 		var changeName = ['fill', 'cx', 'cy', 'r'];
@@ -2970,36 +2950,9 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		if(changeName.indexOf(propertyName) != -1){
 			propertyName = okName[changeName.indexOf(propertyName)];
 		}		
-
-		//check for length
-		if(propertyName.length > 5){
-			propertyName = propertyName.slice(0, 4);
-			propertyName += '.';
-		}
-
-		//add suggested name
-		// if(suggestSemanticName != undefined)
-		// 	propertyName += " - " + suggestSemanticName;
-
-		// console.log(" suggestSemanticName ", propertyName, suggestSemanticName);
-
-		// if(prodiv.length == 0){
-		// 	//if parent div not exist
-		// // var prodiv = $('#' + ParentDivId);
-
-		// }
+	
 		var disDivHeight = UNEXPANDBARHEIGHT;	
 		var bExpand = false;
-
-		//console.log("expand histogram  MM ", self.m_mapProIdExpand);
-		if(self.m_mapProIdExpand[iGroupId + '-' + iPId] == undefined){			
-			self.m_mapProIdExpand[iGroupId + '-' + iPId] = 'false';
-		}
-		if(self.m_mapProIdExpand[iGroupId + '-' + iPId] == 'true'){
-			// //console.log(" expand histogram XXX ");
-			bExpand = true;
-			disDivHeight = EXPANDBARHEIGHT;
-		}
 
 		var	prodiv = $("<div>");
 		var propertyDivId =  preFix + 'p_' + self.m_iId + 'pro_' + iPId;
@@ -3023,8 +2976,6 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		// .height('25px');
 		$("#" + ParentDivId).append(prodiv);
 
-		// prodiv.draggable();
-
 		//compute the width of label and dis div
 		var font = '12px arial';
 		var labelDivWidth, disDivWidth, boxplotDivWidth;
@@ -3035,13 +2986,13 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		var gapWidth = 15;
 		var legendWidth = 30;
 		var labelDisGap = 2;
-		var boxplotDivWidth = 50;
+		var boxplotDivWidth = 0;
 		
 		if(set_labelDivWidth == undefined || set_disDivWidth == undefined){
 			labelDivWidth = 40 + legendWidth;//labelTextSize['w'] + gapWidth;
 			// boxplotDivWidth = (prodiv.width() - 2 * labelDisGap - labelDivWidth) * 0.2;
 			disDivWidth = (prodiv.width() - labelDivWidth  - 2 * labelDisGap  - boxplotDivWidth);
-			console.log(' width: ! ', prodiv.width(), disDivWidth, labelDivWidth, boxplotDivWidth);
+			// console.log(' width: ! ', prodiv.width(), disDivWidth, labelDivWidth, boxplotDivWidth);
 		}else{
 			labelDivWidth = set_labelDivWidth;
 			// boxplotDivWidth = prodiv.width() - labelDivWidth - disDivWidth;
@@ -3050,38 +3001,13 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		}
 
 		/* label div */
-		var sPID = iPId + '';
-
-		var iconmap = {
-			'cx': 'rc/legend/x_pos.png',
-			'cy': 'rc/legend/y_pos.png',
-			'r': 'rc/legend/circle_radius.png',
-			'fill': 'rc/legend/circle_fill.png',
-		};
-
-		var iconstr = 'rc/legend/abstract.png';
-		if(iconmap[propertyType] != undefined)
-			iconstr = iconmap[propertyType];
-
-		//legend div
-		// var legendhtml = '<div value=<%=propertyType%>  style="position:relative; float:left; border: solid 1px" ><i class="fa fa-times delete_property_icon hidden"></i>' + 
-		// 					'<img src=<%=imgsrc%> style="height: 100%"></img>' + 
-		// 				'</div>';
-		// var compile_legendhtml = _.template(legendhtml);
-		// legendhtml = compile_legendhtml({
-		// 	propertyType: propertyType,
-		// 	imgsrc: serverIp + iconstr,
-		// });
-		// prodiv.html(prodiv.html() + legendhtml);
+		var sPID = iPId + '';	
 
 		//console.log(' SPID ', sPID);
 		var labelhtml =
-		// '<div class="propertyimg">' + 
-		// 	'<img src=<%=imgsrc%> style="width: 50"/>' +
-		// '</div>' + 
 		'<div class="propertylabel" value=<%=propertyType%>  propertyid = <%=propertyId%> style="position:relative; padding-left: 2px" >'+
 			'<i class="fa fa-times delete_property_icon hidden"></i>'+
-			'<img src=<%=imgsrc%> style="height: 100%; float: left"></img>' + 
+			// '<img src=<%=imgsrc%> style="height: 100%; float: left"></img>' + 
 			'<span class="propertyspan"><%=propertyName%></span>'+
 		'</div>';
 		var compile_labelhtml = _.template(labelhtml);
@@ -3089,7 +3015,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 	    	propertyId: iPId,
 			propertyType: propertyType,
 			propertyName: propertyName,
-			imgsrc: serverIp + iconstr,
+			// imgsrc: serverIp + iconstr,
 			// imgsrc: serverIp + 'rc/brush-note.png',
 		});
 		prodiv.html(prodiv.html() + labelhtml);
@@ -3097,13 +3023,10 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		prodiv.find('.propertylabel').width(labelDivWidth + 'px');
 		prodiv.find('.propertylabel').height(labelTextSize['h'] * 1.5 + 'px');
 
-
 		//compute disdivwidth, boxplotwidth
 		//his div
 		var disDivId = preFix + 'p_' + self.m_iId + 'dis_' + iPId;
-		// var disDiv = prodiv.append("div")
-		// .attr()
-
+	
 		var disDiv = $("<div>");
 		disDiv
 		.attr('id', disDivId)
@@ -3113,11 +3036,8 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		.css('left', labelDivWidth + labelDisGap + maginwidth/2. + 'px');
 		prodiv.append(disDiv);
 
-		//box-plot div
-		var boxplotDivId = preFix + 'p_' + self.m_iId + 'box_' + iPId;
-		var boxplotDiv = $('<div>');
-
-		var boxplotLeftText = '', boxplotRightText = '';
+	
+		// var boxplotLeftText = '', boxplotRightText = '';
 		var selectRange_temp = self.m_mapProIdSelect[iGroupId + '-' + iPId];
 		var leftBrushSelect = -1, rightBrushSelect = -1;
 
@@ -3136,165 +3056,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 			rightBrushSelect = selectRange_temp[1];			
 			//console.log('BRUSHBRUSH ', leftBrushSelect, rightBrushSelect);
 		}
-
-		boxplotDiv
-		// var boxplotDiv = prodiv.append('div')
-		.attr("id", boxplotDivId)
-		.attr('class', 'boxplot_div')
-		.css('width', boxplotDivWidth + 'px')
-		.css('height', disDivHeight + 'px')
-		.css('left', labelDivWidth + disDivWidth + 2 * labelDisGap + maginwidth/2. + 'px');
-		prodiv.append(boxplotDiv);
-
-		//input div	
-		var topDivHtml = 
-		'<div class="sub_panel hidden" id=<%=topDivId%> style="position:absolute; height: <%=topdivheight%>; left: <%=topleft%>;" >'+
-			'<p style="display: inline-block; float:left">Top: </p>' +
-			'<input type="text" class="top_topdiv" style="font-size: 14px; float: left; width:40%; height: 80%; margin: 3px">' + 
-			'<button class="top-ok btn btn-warning btn-xs function_button">Ok</button>'+
-			'<button class="top-cancel btn btn-warning btn-xs function_button">Cancel</button>'+
-			// '<input type="text" class="left_topdiv" style="font-size: 14px; float: left; width:40%; height: 80%; margin: 3px">' + 
-			// '<p style="display: inline-block; width:10%; float:left">~</p>' +
-			// '<input type="text" class="right_topdiv" style="font-size: 14px; float: left; width:40%; height: 80%; margin: 3px">' + 
-		'</div>';
-
-
-		var compile_labelhtml = _.template(topDivHtml);
-	    topDivHtml = compile_labelhtml({
-	    	topDivId: preFix + 'p_' + self.m_iId + 'top_' + iPId,
-			topdivheight: disDivHeight + 'px',
-			topleft: prodiv.width() + maginwidth * 3 + 'px',
-		});
-		prodiv.html(prodiv.html() + topDivHtml);
-
-		var boxplotSvg = d3.select('#' + boxplotDivId)
-		.append('svg');
-
-		boxplotSvg.append('rect')		
-		.attr('width', boxplotDivWidth + 'px')
-		.attr('height', disDivHeight + 'px')
-		.attr('fill', '#B2EBF2');
-
-		//DECODE
-		boxplotSvg.append('rect')
-		.attr('width', '10px')
-		.attr('height', disDivHeight)
-		.attr('x', boxplotDivWidth - 25 )
-		.attr('y', disDivHeight * 0.5 - disDivHeight * 0.5)
-		.style('fill', 'green')
-		.on('click', function(){
-			var whichproperty = getDecodePropertyType(propertyType);
-			console.log(' data decode ', propertyType, propertyName, whichproperty);			
-			g_VisDecoder.enterDecodeMode();
-			$('#decodepos_data_dialog_step1_' + self.m_iId).dialog('open');
-			// switch(whichproperty){
-			// 	case 'pos':
-			// 		$('#decode_data_dialog_' + self.m_iId).dialog('open');
-			// }
-			self.m_InObj.m_CurrentDecodePropertyId = iPId;
-		});
-	
-
-		//TOP
-		boxplotSvg.append('rect')
-		.attr('width', '10px')
-		.attr('height', '10px')
-		.style('fill', 'red')
-		// .attr('src', 'rc/brush-note.png')
-		.attr('x', boxplotDivWidth - 10)
-		.attr('y', disDivHeight - 10)
-		.on('click', function(){
-			//console.log(" boxplot click ");
-			var id_temp = '#' + preFix + 'p_' + self.m_iId + 'top_' + iPId;			
-			$(id_temp).toggleClass('hidden');
-		});
-
-		d3.select('#' + preFix + 'p_' + self.m_iId + 'top_' + iPId + ' .top-ok')
-		.on('click', function(){
-			console.log(' click top ok ');
-			var id_temp = '#' + preFix + 'p_' + self.m_iId + 'top_' + iPId;
-			var top = Number($(id_temp + ' .top_topdiv').val());
-			//console.log(' top *** ', top, $(id_temp + ' .top_topdiv').val());
-			if(isNaN(top) == false && top != 0){
-				var iSelectGroupId = self.m_ObjectGroupManager.getSelectedGroupId();
-				var liSelectedEleId = self.m_ObjectGroupManager.getEleIdsbyGroupId(iSelectGroupId);
-				if(top > liSelectedEleId.length)
-					top = liSelectedEleId.length;
-				self.selectTopRange(iPId, liSelectedEleId.length - top, liSelectedEleId.length - 1);
-			}				
-			$(id_temp).addClass('hidden');
-		});
-
-		d3.select('#' + preFix + 'p_' + self.m_iId + 'top_' + iPId + ' .top-cancel')
-		.on('click', function(){
-			console.log(" click top Cancel");	
-			var id_temp = '#' + preFix + 'p_' + self.m_iId + 'top_' + iPId;		
-			$(id_temp).addClass('hidden');
-		})
-
-		//EXPAND
-		boxplotSvg
-		// .append('img')
-		.append('rect')
-		// .attr("xlink:href", serverIp + "rc/exit.png")
-		.attr('iPropertyId', iPId)
-		.attr('iGroupId', iGroupId)
-		.attr("x", boxplotDivWidth - 10)
-		.attr('width', '10px')
-		.attr("height", '10px')
-		.attr("fill", 'black')
-		.attr('stroke', 'none')
-		.on('click', function(){
-			d3.event.stopPropagation();
-			// var expand = d3.select(this).attr("bExpand");
-			var iPropertyId = Number(d3.select(this).attr('iPropertyId'));
-			var iGroupId = Number(d3.select(this).attr('iGroupId'));
-			var expand = self.m_mapProIdExpand[iGroupId + '-' + iPropertyId];
-			//console.log(" expand histogram !! ", iPropertyId, iGroupId, expand);
-			if(expand == 'true'){
-				//close
-				// d3.select(this).attr("bExpand", 'true');
-				//console.log("  expand histogram close ");
-				self.m_mapProIdExpand[iGroupId + '-' + iPropertyId] = 'false';
-				// d3.select(this).attr('bExpand', '');
-				// self.drawProperty(iPropertyId);
-				self.drawProperties(iGroupId);
-				// self.expandPropertyRow(iPropertyId, false);
-			}else{
-				//expand
-				//console.log(" expand histogram open ");
-				// d3.select(this).attr("bExpand", 'false');
-				self.m_mapProIdExpand[iGroupId + '-' + iPropertyId] = 'true';
-				self.drawProperties(iGroupId);
-				// d3.select(this).attr('bExpand', 'true');
-				// self.drawProperty(iPropertyId, 'true')
-				// self.expandPropertyRow(iPropertyId, true);
-			}
-		})
-		.on('mouseover', function(){
-			d3.select(this).style("fill", 'gray');
-		})
-		.on('mouseout', function(){
-			d3.select(this).style("fill", 'black');
-		});
-
-		var boxTextFont = '10px arial';
-		var boxTextSize = getTextSize('100%', boxTextFont);
-
-		boxplotSvg.append('text')
-		.attr('class', 'boxplot-text left-text')
-		.text(boxplotLeftText)
-		.attr('x', 0)
-		.attr('y', disDivHeight * 0.1 + boxTextSize['h']/2.)
-		.style('font', boxTextFont);
-
-		boxplotSvg.append('text')
-		.attr('class', 'boxplot-text right-text')
-		.text(boxplotRightText)
-		.attr('x', 0)
-		.attr('y', disDivHeight * 0.5 + boxTextSize['h']/2.)
-		.style('font', boxTextFont);
-
+		
 		/*draw histogram */
 		var disCountList = propertyBag.getDis(iPId);
 		var disFilterList = propertyBag.getFilteredDis(iPId);
@@ -3363,29 +3125,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		      .attr("class", "y axis")
 			.attr("transform", "translate(" + xShift + "," + yAxisExpandPad + ") ")
 		      .call(yAxis);
-		    // .append("text")
-		    //   .attr("class", "label")
-		    //   .attr("transform", "rotate(-90)")
-		    //   .attr("y", 6)
-		    //   .attr("dy", ".71em")
-		    //   .style("text-anchor", "end")
-		    //   .text("Sepal Length (cm)")
-
-			// svg.append("g")
-			// .attr("class", "y axis")
-			// .attr("transform", "translate(" + xShift + ",0) ")
-			// .call(yAxis);
-
-			// baseLineY = 
-			// .append("text")
-			// .attr("transform", "rotate(90)")
-			// // .attr("")
-			// .attr("y", 6)
-			// .attr("dy", ".71em")
-			// .style("text-anchor", "end")
-			// .text("#");
 		}
-
 
 		$('.propertylabel').draggable({helper:'clone'});
 
@@ -3505,61 +3245,38 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		// 	.attr('class', 'marker_group');
 
 		var font = '12px arial';
-		//left
-		var leftMarker = markerGroup.append('g')
-		.attr('class', 'marker_left')
-		.attr('transform', function(){		
-			var left = d3.select('#' + propertyDivId + ' .extent').attr('x');
-			var top = yAxisLength/2.;
-			return 'translate(' + left + ',' +  top + ')';
-		});
+		// //left
+		// var leftMarker = markerGroup.append('g')
+		// .attr('class', 'marker_left')
+		// .attr('transform', function(){		
+		// 	var left = d3.select('#' + propertyDivId + ' .extent').attr('x');
+		// 	var top = yAxisLength/2.;
+		// 	return 'translate(' + left + ',' +  top + ')';
+		// });
 
-		leftMarker.append('text')
-		.attr('class', 'text-center')
-		.style('visibility', 'hidden')
-		.style('font', font)
-		.style('color', 'black');
+		// leftMarker.append('text')
+		// .attr('class', 'text-center')
+		// .style('visibility', 'hidden')
+		// .style('font', font)
+		// .style('color', 'black');
 
-		//right
-		var rightMarker = markerGroup.append('g')
-		.attr('class', 'marker_right hidden')
-		.attr('transform', function(){
-			var left = parseInt(d3.select('#' + propertyDivId  + ' .extent').attr('x'));
-			left += parseInt(d3.select('#' + propertyDivId  + ' .extent').attr('width'));
-			var top = yAxisLength/2.;		
-			return 'translate(' + left + ',' +  top + ')';
-		});
+		// //right
+		// var rightMarker = markerGroup.append('g')
+		// .attr('class', 'marker_right hidden')
+		// .attr('transform', function(){
+		// 	var left = parseInt(d3.select('#' + propertyDivId  + ' .extent').attr('x'));
+		// 	left += parseInt(d3.select('#' + propertyDivId  + ' .extent').attr('width'));
+		// 	var top = yAxisLength/2.;		
+		// 	return 'translate(' + left + ',' +  top + ')';
+		// });
 
-		rightMarker.append('text')
-		.style('visibility', 'hidden')
-		.attr('class', 'text-center')
-		.style('font', font)
-		.style('color', 'black')
+		// rightMarker.append('text')
+		// .style('visibility', 'hidden')
+		// .attr('class', 'text-center')
+		// .style('font', font)
+		// .style('color', 'black')
 
-		// markerGroup.exit().remove();
-
-		// var gSel = d3.select("#scatterplot_"+SPID);
-
-		// var groups = gSel.selectAll("g.scatterplot_filter_group")
-		// 	.data(mapValueList,function(d){
-		// 		return d.index;
-		// 	})
-
-		// var enter = groups.enter().append("g")
-		// 	.attr("class","scatterplot_filter_group");
-
-		// enter.append("rect");
-		// enter.append("title");
-
-		// groups.select("rect").attr("x","")
-		// groups.select("title").attr("text",)
-
-		// groups.exit().remove();
-
-		// var left = d3.select('#pro_' + iPId + ' .extent').attr('x');
-		// var right = left + d3.select('#pro_' + iPId + ' .extent').attr('width');
-		// var middle_y = yAxisLength/2.;
-
+		
 		function brushended() {
 			var extentRange = brush.extent();
 			var adjustExtentRange = [Math.floor(extentRange[0]), Math.floor(extentRange[1])];		
@@ -3715,8 +3432,9 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 			//console.log(" release <>", liFilterEleId.length);
 			//update the boxplot text
 			delete self.m_mapProIdSelect[iGroupId + '-' + iPropertyId];
-			self.updateBoxPlots(iPropertyId, []);
+			// self.updateBoxPlots(iPropertyId, []);
 			self.m_InObj.updateFilteredEleId(liFilterEleId);
+			console.log(" clear ", liFilterEleId);
 	    });
 
 	    $('.propertyspan').bind('mouseenter', function(){
@@ -3738,6 +3456,8 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 			var iPropertyId = parseInt(sPropertyId);
 			//console.log('[2] ', iPropertyId);
 			self.deleteProperty(iPropertyId);
+
+			//todo
 		});
 
 		// d3.selectAll('.propertyrow').style('height', '50px');
@@ -3804,11 +3524,12 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 
 		//update the filtered bars
 		var liFilteredId = self.m_CrossFilterInfo.getFilterEleIds();
-		var iGroupId = self.m_ObjectGroupManager.getSelectedGroupId();
-		var propertyBag = self.m_PropertyManager.getPropertyBag(iGroupId);
+		var liGroupId = self.m_ObjectGroupManager.getSelectedGroupIds();
+		var iGroupId = liGroupId[1]
+		var propertyBag = self.m_PropertyManager.getPropertyBag(liGroupId.toString());
 		propertyBag.setFilterEldIds(liFilteredId);
 
-		// //console.log(' &&&& filter Ele Id Number = ', liFilteredId.length);
+		console.log(' &&&& filter Ele Id Number = ', liFilteredId);
 
 		//for each property, add the filter_bar rects
 		var mapPropertyIdFilterIdsDistri = propertyBag.getPropertyIdFilteredEleDis();
@@ -4283,8 +4004,8 @@ function releaseFilter(iPId){
 
 	//update the filter ele ids
 	var liFilteredEleId = g_CrossFilterInfo.getFilterEleIds();
-	var iSelectedGroupId = g_ObjectGroupManager.getSelectedGroupId();
-	var propertyBag = g_PropertyManager.getPropertyBag(iSelectedGroupId);
+	var liSelectedGroupId = g_ObjectGroupManager.getSelectedGroupIds();
+	var propertyBag = g_PropertyManager.getPropertyBag(liSelectedGroupId.toString());
 
 	propertyBag.setFilterEldIds(liFilteredEleId);
 	// //console.log(" iPId ", iPId, ' filter ele id ', liFilteredEleId);

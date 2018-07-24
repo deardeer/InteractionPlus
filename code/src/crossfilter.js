@@ -201,8 +201,11 @@ function CrossFilterInfo(iId, objectGroupManager, elementProperties, propertyMan
     }
     //release the filtered ele of property
     Info.releaseFilterEleIdsofPropertyId = function(iPropertyId){
+        console.log(' release property id ', iPropertyId)
+        console.log(' new ! before ', this.m_mapPropertyIdFilterEleIds);
         delete this.m_mapPropertyIdFilterEleIds[iPropertyId];
-        this.updateFilterEleIds();
+        console.log(' new ! ', this.m_mapPropertyIdFilterEleIds);
+        this.updateFilterEleIds_new();
     }
 
     Info.releaseFilterEleIdsofScatterPlotId = function(iSPId){
@@ -241,10 +244,12 @@ function CrossFilterInfo(iId, objectGroupManager, elementProperties, propertyMan
               var liSelectedGroupId = self.m_ObjectGroupManager.getSelectedGroupIds(); 
               for(var i = 0; i < liSelectedGroupId.length; i ++){
                 var iSelectGroupId = liSelectedGroupId[i]
-                liNewFilterEleId = self.m_ObjectGroupManager.getAllEleIdsofGroup(iSelectGroupId);   
+                liNewFilterEleId = liNewFilterEleId.concat(self.m_ObjectGroupManager.getAllEleIdsofGroup(iSelectGroupId));   
               }                  
+              console.log(' [1] ', liSelectedGroupId, liNewFilterEleId)
         }else{   
             var first = true;
+            console.log(' m_mapPropertyIdFilterEleIds ', self.m_mapPropertyIdFilterEleIds);
             for(var p = 0; p < Object.keys(self.m_mapPropertyIdFilterEleIds).length; p ++){
                     var iPId = Object.keys(self.m_mapPropertyIdFilterEleIds)[p];
                     var liThisEle = self.m_mapPropertyIdFilterEleIds[iPId];
@@ -267,35 +272,7 @@ function CrossFilterInfo(iId, objectGroupManager, elementProperties, propertyMan
              }
         }
 
-            // if(Object.keys(this.m_mapScatterPlotFilterEleIds).length != 0){
-            //     for(var iSPId in this.m_mapScatterPlotFilterEleIds){
-            //         var liThisFilterId = this.m_mapScatterPlotFilterEleIds[iSPId];
-            //         var liAfterNewFilterEleId = [];
-            //         for (var i = liThisFilterId.length - 1; i >= 0; i--) {
-            //             var eleId = liThisFilterId[i];
-            //             if(liNewFilterEleId.indexOf(eleId)>=0){
-            //                 liAfterNewFilterEleId.push(eleId);
-            //             }
-            //         };
-            //         liNewFilterEleId = liAfterNewFilterEleId;
-            //     }
-            // }
-
-            // //mds
-            // //console.log("XXXX [3]", liNewFilterEleId, this.m_liMDSFilterEleIds);
-            // //console.log("????", liNewFilterEleId.length, this.m_liMDSFilterEleIds);
-            // if(this.m_liMDSFilterEleIds.length != 0){
-            //     //console.log("XXXX [5]", this.m_liMDSFilterEleIds.length);
-            //     var liAfterNewFilterEleId = [];
-            //     for (var i = this.m_liMDSFilterEleIds.length - 1; i >= 0; i--) {
-            //         var eleId = this.m_liMDSFilterEleIds[i];
-            //         if(liNewFilterEleId.indexOf(eleId)>=0){
-            //             liAfterNewFilterEleId.push(eleId);
-            //         }
-            //     };
-            //     liNewFilterEleId = liAfterNewFilterEleId;
-            // }
-            //console.log("XXXX [4]", liNewFilterEleId.length);
+        console.log(" liNewFilterEleId ", liNewFilterEleId);
         
         this.setFilterEleIds(liNewFilterEleId);
     }

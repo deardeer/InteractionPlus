@@ -241,6 +241,10 @@ function PropertyManager(iId, inObj, objectGroupManager, elementDetector){
 		return numberList;
 	}
 
+	Info.addGroupPropertyBag = function(iGroupId, propertyBag){
+		this.m_mapGroupIdPropertyBag[iGroupId] = propertyBag;
+	}
+
 	//clear
 	Info.clear = function(){
 		this.m_mapGroupIdPropertyBag = {};
