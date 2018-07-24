@@ -149,7 +149,7 @@ function InObj(iId, bMask, maskType){
 	 //    		{left: Number(boundaryBox.x) + Number(boundaryBox.width), top: Number(boundaryBox.y)});
 		// }
 
-		layoutAnalysis = 'v-linear'
+		layoutAnalysis = 'arc'//'v-linear'//'v-linear'//'square'
 		switch(layoutAnalysis){
 			case 'h-linear':
 				console.log('H Linear Enhancement ');
@@ -162,9 +162,15 @@ function InObj(iId, bMask, maskType){
 				break
 			case 'square':
 				console.log(' square Enhancement ');
+				g_ToolBarManager.setBrushType('square')
 				break
 			case 'arc':
-				console.log(' arc Enhancement ');
+				var brushBag = {
+					'x': Number(boundaryBox.x) + Number(boundaryBox.width) * 0.5, 
+					'y': Number(boundaryBox.y) + Number(boundaryBox.height) * 0.5,
+					'r': Number(boundaryBox.width) * 0.5}
+				console.log(' arc Enhancement ', brushBag);
+				g_ToolBarManager.setBrushType('arc', brushBag)
 				break
 			case 'hierarchy':
 				console.log(' hierarchy Enhancement ');

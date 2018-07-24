@@ -18,7 +18,7 @@ var g_ElementDetector = new ElementDetetor(-1);
 
 function handleMouseUp(){
 
-   if(f_bRectCreating && g_ToolBarManager.isBrushEnable()){
+   if(f_bRectCreating && g_ToolBarManager.isBrushEnable() && g_ToolBarManager.getBrushType() != 'arc'){
        f_bRectCreating = false;
        var linearBrushRect = {
         'x1': g_MouseBegin['x'], 'y1': g_MouseBegin['y'],
@@ -31,7 +31,7 @@ function handleMouseUp(){
        }else
          tempEleDetector.detectElement(linearBrushRect);
        var liSelectEleId = tempEleDetector.m_ElementProperties.getElementIds();
-       console.log(" Detect Ele # = ", linearBrushRect, liSelectEleId.length)
+       console.log(" Detect Ele # 11 = ", linearBrushRect, liSelectEleId.length)
        var inObj = g_InObjManager.getCurrentInObj();
        console.log(' current obj ', inObj);
        inObj.m_CrossFilter.m_CrossFilterInfo.setFilterEleIdsofPropertyId('brush', liSelectEleId);
@@ -90,11 +90,13 @@ function handleMouseMove(pos, addOnSvg){
         var height =  g_MouseEnd['y'] - g_MouseBegin['y']
         switch(g_brushType){
           case 'v-linear':
-            width = 5
+            width = 1
             break
           case 'h-linear':
-            height = 5
+            height = 1
             break;
+          case 'square':
+            break
         }
         d3.select('#linearBrushRect')
           .attr('width', function(){
@@ -140,34 +142,108 @@ function handleMouseDown(pos, addOnSvg, linearBrush){
 
   }else if(g_ToolBarManager.isBrushEnable()){
 
+    console.log(" g_ToolBarManager.getBrushType() ", g_ToolBarManager.getBrushType());
+
       f_bRectCreating = true;
       g_brushType = g_ToolBarManager.getBrushType();
 
-      g_MouseBegin['x'] = pos.x;//getPosInAddonSvg(e)['x'];//parseInt(e.clientX);//pageX);
-      g_MouseBegin['y'] = pos.y;//getPosInAddonSvg(e)['y'];//parseInt(e.clientY);//pageY);
-      
-      g_MouseEnd['x'] = pos.x;//getPosInAddonSvg(e)['x'];//parseInt(e.clientX);//pageX);
-      g_MouseEnd['y'] = pos.y;//getPosInAddonSvg(e)['y'];//parseInt(e.clientY);//pageY);
-     
+      if(g_brushType == 'arc'){
+        //draw the center
+        var brushBag = g_ToolBarManager.getBrushBag();
+        console.log(' brush bag newnen ', brushBag);
+        var cenCircle = d3.select('.brushrefer');
+        if(cenCircle.empty()){
+          addOnSvg.append('circle')
+          .attr('class', 'brushrefer')
+          .attr('cx', Number(brushBag.x))
+          .attr('cy', Number(brushBag.y))
+          .attr('r', 10)
+          .style('fill', 'black')
+        }  
 
-      // console.log(" MMMM ", g_ToolBarManager.getMaskType(), g_ToolBarManager.isMaskEnable());
-      var rectSel = d3.select('#linearBrushRect')
-      if(rectSel.empty()){
-        rectSel = addOnSvg.append('rect')
-                          .attr('id', 'linearBrushRect')
-                          .attr('x', g_MouseBegin['x'])
-                          .attr('y', g_MouseBegin['y'])
-                          .style('stroke','gray')
-                          .style('fill', 'black');
-      }else{        
-        rectSel.attr('x', g_MouseBegin['x'])
-               .attr('y', g_MouseBegin['y'])
-               .attr('width', 0)
-               .attr('height', 0);
-      }
+        g_MouseBegin['x'] = pos.x;//getPosInAddonSvg(e)['x'];//parseInt(e.clientX);//pageX);
+        g_MouseBegin['y'] = pos.y;//getPosInAddonSvg(e)['y'];//parseInt(e.clientY);//pageY);
+        
+        g_MouseEnd['x'] = pos.x;//getPosInAddonSvg(e)['x'];//parseInt(e.clientX);//pageX);
+        g_MouseEnd['y'] = pos.y;//getPosInAddonSvg(e)['y'];//parseInt(e.clientY);//pageY);
+
+        var line1 = addOnSvg.select('#arcline1')
+        if(line1.empty()){
+          addOnSvg.append('line')
+                  .attr('id', 'arcline1')
+                  .attr('x1', Number(brushBag.x))
+                  .attr('y1', Number(brushBag.y))
+                  .attr('x2', g_MouseBegin['x'])
+                  .attr('y2', g_MouseBegin['y'])
+                  .style('stroke', 'black')   
+                  .style('stroke-width', 2)
+        }else{
+          var line2 = addOnSvg.select('#arcline2')
+          if(line2.empty()){            
+            addOnSvg.append('line')
+                .attr('id', 'arcline2')
+                .attr('x1', Number(brushBag.x))
+                .attr('y1', Number(brushBag.y))
+                .attr('x2', g_MouseBegin['x'])
+                .attr('y2', g_MouseBegin['y'])
+                .style('stroke', 'black')   
+                .style('stroke-width', 2)
+
+            var angle1 = getAngle({'x': Number(d3.select('#arcline1').attr('x2')), 'y': Number(d3.select('#arcline1').attr('y2'))}, {'x': brushBag.x, 'y': brushBag.y})
+            var angle2 = getAngle(g_MouseBegin, {'x': brushBag.x, 'y': brushBag.y})
+
+            //get current filter
+            var inObj = g_InObjManager.getCurrentInObj();
+            // var liSelectGroupId = 
+            var liFilterEleId = inObj.m_CrossFilter.m_CrossFilterInfo.getFilterEleIds();
+            console.log(" protemp before !!", liFilterEleId);
+            var liNewFilterEleId = [];
+            for(var temp = 0; temp < liFilterEleId.length; temp++){
+              var iEleId = liFilterEleId[temp]
+              var ele = inObj.m_ElementDetector.m_ElementProperties.getElebyId(iEleId);
+              var protemp = inObj.m_ElementDetector.m_ElementProperties.getElePropertiesbyId(iEleId);
+              console.log(" protemp !!", iEleId, protemp, ele);
+              var tempAngle = getAngle({'x': protemp['pros']['g_x'], 'y':  protemp['pros']['g_y']}, {'x': brushBag.x, 'y': brushBag.y})
+              console.log(' tempAngle ', tempAngle);
+              if(tempAngle >= angle1 && tempAngle <= angle2){
+                liNewFilterEleId.push(iEleId)
+              }
+            }
+            console.log(" Detect Ele # 22 = ", liNewFilterEleId)
+            // console.log(' current obj ', inObj);
+            inObj.m_CrossFilter.m_CrossFilterInfo.setFilterEleIdsofPropertyId('brush', liNewFilterEleId);
+  
+            //get the element
+            // console.log(' angle ', angle1, angle2)  
+          }           
+        }
+        
+      }else{
+        g_MouseBegin['x'] = pos.x;//getPosInAddonSvg(e)['x'];//parseInt(e.clientX);//pageX);
+        g_MouseBegin['y'] = pos.y;//getPosInAddonSvg(e)['y'];//parseInt(e.clientY);//pageY);
+        
+        g_MouseEnd['x'] = pos.x;//getPosInAddonSvg(e)['x'];//parseInt(e.clientX);//pageX);
+        g_MouseEnd['y'] = pos.y;//getPosInAddonSvg(e)['y'];//parseInt(e.clientY);//pageY);
+       
+        // console.log(" MMMM ", g_ToolBarManager.getMaskType(), g_ToolBarManager.isMaskEnable());
+        var rectSel = d3.select('#linearBrushRect')
+        if(rectSel.empty()){
+          rectSel = addOnSvg.append('rect')
+                            .attr('id', 'linearBrushRect')
+                            .attr('x', g_MouseBegin['x'])
+                            .attr('y', g_MouseBegin['y'])
+                            .style('stroke','gray')
+                            .style('fill', 'none');
+        }else{        
+          rectSel.attr('x', g_MouseBegin['x'])
+                 .attr('y', g_MouseBegin['y'])
+                 .attr('width', 0)
+                 .attr('height', 0);
+        }
+      }  
   }else if(g_ToolBarManager.isLinearBrush()){
       //linear brush
-      console.log(' linear brush mouse down! ');
+      // console.log(' linear brush mouse down! ');
       f_bRectCreating = true;
       g_MouseBegin['x'] = pos.x;//getPosInAddonSvg(e)['x'];//parseInt(e.clientX);//pageX);
       g_MouseBegin['y'] = pos.y;//getPosInAddonSvg(e)['y'];//parseInt(e.clientY);//pageY);
@@ -286,6 +362,17 @@ function mouseMoveToDefineRegion(addOnSvg){//e,
   }
 
   g_InObjManager.dragSelectRectOfInObj(f_CurrentInObjId, rect);
+}
+
+function getAngle(pos, centerPos){   
+    //compute angle
+    var lineLength = Math.sqrt((pos['x'] - centerPos.x) * (pos['x'] - centerPos.x) + (pos['y'] - centerPos.y) * (pos['y'] - centerPos.y))
+    var faction = (pos['x'] - Number(centerPos.x))/(lineLength)
+    var angle = 180 * Math.acos(faction)/Math.PI
+    if(pos.y > centerPos.y)
+      angle = 360 - angle
+    console.log(' angle ', angle)   
+    return angle;
 }
 
 function removeDefineRegion(){
