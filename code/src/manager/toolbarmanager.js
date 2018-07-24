@@ -8,6 +8,7 @@ function ToolBarManager(){
 	Info.__init__ = function(){
 		//console.log(" init toolbar manager ");
 		this.m_bSelectEnable = false;
+		this.m_bBrush = false; this.m_brushType = "";
 		this.m_bLineUp = false;
 		this.m_bVLineUp = false; this.m_bHLineUp = false;
 		this.m_bMask = false;  //the rectangluar select
@@ -22,7 +23,15 @@ function ToolBarManager(){
 		this.m_bRectM = false; this.m_bTabularM = false; this.m_bRadialM = false; this.m_bVParaM = false; this.m_bHParaM = false;
 	}
 
-	Info.setLinearBrush = function(){
+	Info.setBrushEnable = function(){
+		this.m_bBrush = true;
+	}
+
+	Info.setBrushType = function(brushType){
+		this.m_brushType = brushType;
+	}
+
+	Info.setLinearBrush = function(bBrushType){
 		this.m_bLinearBrush = true;
 	}
 
@@ -42,6 +51,7 @@ function ToolBarManager(){
 
 	Info.setVLineupEnable = function(bEnable){
 		this.setLineUpFalse();
+		console.log(' setVLineupEnable ', bEnable)
 		this.m_bLineUp = bEnable;
 		this.m_bVLineUp = bEnable;
 	}
@@ -82,6 +92,14 @@ function ToolBarManager(){
 
 	Info.isSelectEnable = function(){
 		return this.m_bSelectEnable;
+	}
+
+	Info.isBrushEnable = function(){
+		return this.m_bBrush;
+	}
+
+	Info.getBrushType = function(){
+		return this.m_brushType;
 	}
 
 	Info.isLineUpEnable = function(){

@@ -10,27 +10,35 @@ var g_PreviousDragRect = {};
 var g_LiTempCurrentEleId = [];
 var g_TempEleIdStroke = {};
 
+var g_brushType = ""
+
 // console.log(" g_ElementDetector [1] ");
 var g_ElementDetector = new ElementDetetor(-1);
 // console.log(" g_ElementDetector ", g_ElementDetector == undefined);
 
 function handleMouseUp(){
 
-   if(f_bRectCreating && g_ToolBarManager.isLinearBrush()){
+   if(f_bRectCreating && g_ToolBarManager.isBrushEnable()){
        f_bRectCreating = false;
        var linearBrushRect = {
         'x1': g_MouseBegin['x'], 'y1': g_MouseBegin['y'],
         'x2': g_MouseEnd['x'], 'y2': g_MouseEnd['y'] 
        }
        var tempEleDetector = new ElementDetetor();
-       tempEleDetector.detectElement(linearBrushRect);
-       console.log(" Detect Ele # = ", linearBrushRect, tempEleDetector.m_ElementProperties.getElements().length);
-
+       if(Math.abs(linearBrushRect['y2'] - linearBrushRect['y1']) < 20){
+         d3.select('#linearBrushRect').remove()
+         tempEleDetector.detectElement()
+       }else
+         tempEleDetector.detectElement(linearBrushRect);
+       var liSelectEleId = tempEleDetector.m_ElementProperties.getElementIds();
+       console.log(" Detect Ele # = ", linearBrushRect, liSelectEleId.length)
+       var inObj = g_InObjManager.getCurrentInObj();
+       console.log(' current obj ', inObj);
+       inObj.m_CrossFilter.m_CrossFilterInfo.setFilterEleIdsofPropertyId('brush', liSelectEleId);
        return;
    }
 
    if(f_bRectCreating){
-
       $('.function_button-clicked').removeClass('function_button-clicked');
        f_bRectCreating = false;
 
@@ -77,14 +85,23 @@ function handleMouseUp(){
 
 function handleMouseMove(pos, addOnSvg){
   if(f_bRectCreating){
-      if(g_ToolBarManager.isLinearBrush()){
-
+      if(g_ToolBarManager.isBrushEnable()){
+        var width = g_MouseEnd['x'] - g_MouseBegin['x']
+        var height =  g_MouseEnd['y'] - g_MouseBegin['y']
+        switch(g_brushType){
+          case 'v-linear':
+            width = 5
+            break
+          case 'h-linear':
+            height = 5
+            break;
+        }
         d3.select('#linearBrushRect')
           .attr('width', function(){
-            return g_MouseEnd['x'] - g_MouseBegin['x']
+            return width
           })
           .attr('height', function(){
-            return g_MouseEnd['y'] - g_MouseBegin['y']
+            return height
           });
       }
       g_MouseEnd['x'] = pos.x;
@@ -100,13 +117,19 @@ function handleMouseMove(pos, addOnSvg){
 var g_CircleButtonRadius = 10;
 
 function handleMouseDown(pos, addOnSvg, linearBrush){
+
+  console.log(" Mouse Down!! ");
   var self = this;
 
   if(g_ToolBarManager.isSelectEnable()){
+
       f_bRectCreating = true;
       g_MouseBegin['x'] = pos.x;//getPosInAddonSvg(e)['x'];//parseInt(e.clientX);//pageX);
       g_MouseBegin['y'] = pos.y;//getPosInAddonSvg(e)['y'];//parseInt(e.clientY);//pageY);
       // console.log(" MMMM ", g_ToolBarManager.getMaskType(), g_ToolBarManager.isMaskEnable());
+      g_MouseEnd['x'] = pos.x;//getPosInAddonSvg(e)['x'];//parseInt(e.clientX);//pageX);
+      g_MouseEnd['y'] = pos.y;//getPosInAddonSvg(e)['y'];//parseInt(e.clientY);//pageY);
+     
       f_CurrentInObjId = g_InObjManager.addInObj(g_ToolBarManager.isMaskEnable(), g_ToolBarManager.getMaskType());
       g_InObjManager.setCurrentObjId(f_CurrentInObjId);
 
@@ -114,6 +137,34 @@ function handleMouseDown(pos, addOnSvg, linearBrush){
       f_Timer = window.setInterval(myTimer, 200);
       g_StaticRectCount = 0;
       g_PreviousDragRect = {};
+
+  }else if(g_ToolBarManager.isBrushEnable()){
+
+      f_bRectCreating = true;
+      g_brushType = g_ToolBarManager.getBrushType();
+
+      g_MouseBegin['x'] = pos.x;//getPosInAddonSvg(e)['x'];//parseInt(e.clientX);//pageX);
+      g_MouseBegin['y'] = pos.y;//getPosInAddonSvg(e)['y'];//parseInt(e.clientY);//pageY);
+      
+      g_MouseEnd['x'] = pos.x;//getPosInAddonSvg(e)['x'];//parseInt(e.clientX);//pageX);
+      g_MouseEnd['y'] = pos.y;//getPosInAddonSvg(e)['y'];//parseInt(e.clientY);//pageY);
+     
+
+      // console.log(" MMMM ", g_ToolBarManager.getMaskType(), g_ToolBarManager.isMaskEnable());
+      var rectSel = d3.select('#linearBrushRect')
+      if(rectSel.empty()){
+        rectSel = addOnSvg.append('rect')
+                          .attr('id', 'linearBrushRect')
+                          .attr('x', g_MouseBegin['x'])
+                          .attr('y', g_MouseBegin['y'])
+                          .style('stroke','gray')
+                          .style('fill', 'black');
+      }else{        
+        rectSel.attr('x', g_MouseBegin['x'])
+               .attr('y', g_MouseBegin['y'])
+               .attr('width', 0)
+               .attr('height', 0);
+      }
   }else if(g_ToolBarManager.isLinearBrush()){
       //linear brush
       console.log(' linear brush mouse down! ');

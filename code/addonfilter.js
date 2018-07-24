@@ -492,18 +492,19 @@ function enterAddOn(){
 		"top": 0
 	});
 
-	$('#addondiv')
-	.on('mousedown', function (e) {
+
+	$('#addondiv').on('mousedown', function (e) {
 		var pos = getPosInAddonSvg(e);
 		handleMouseDown(pos, addOnSvg);
-	})
-	.on('mouseup', function(e) {
+	});
+
+	$('#addondiv')[0].addEventListener('mouseup', function(e) {
 		handleMouseUp(); //e
-	})
-	.on('mousemove', function(e){
+	}, false)
+	$('#addondiv')[0].addEventListener('mousemove', function(e){
 		var pos = getPosInAddonSvg(e);	
 		handleMouseMove(pos, addOnSvg);
-	});
+	}, false);
 
 	var testDiv = document.getElementById('addonsvg_here');  
 

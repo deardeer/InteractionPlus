@@ -40,6 +40,7 @@ function ToolBarRender(){
 				'<div class="btn-group" style="margin:5px; float: left;">' + 
 				    '<button class="btn btn-warning btn-xs function_button" type="button" id="extract_button"><img class="btn_img" src=<%=selectimgsrc%>></img> Extract</button>' + 
 				    '<button class="btn btn-warning btn-xs function_button" type="button" id="rectselect_button"><img class="btn_img" src=<%=selectimgsrc%>></img> Selection</button>' + 
+				    '<button class="btn btn-warning btn-xs function_button" type="button" id="brush_button"><img class="btn_img" src=<%=selectimgsrc%>></img> Brush </button>' + 
 					'<button class="btn btn-warning btn-xs function_button" type="button" id="radialmask_button"><img class="btn_img" src=<%=radialimgsrc%>></img> Radial</button>' + 
 					'<button class="btn btn-warning btn-xs function_button" type="button" id="vparallelmask_button"><img class="btn_img" src=<%=vparallelimgsrc%>></img> V-Parallel</button>' + 
 					'<button class="btn btn-warning btn-xs function_button" type="button" id="hparallelmask_button"><img class="btn_img" src=<%=hparallelimgsrc%>></img> H-Parallel</button>' + 
@@ -164,6 +165,14 @@ function ToolBarRender(){
 			$('.function_button-clicked').removeClass('function_button-clicked');
 			$(this).addClass('function_button-clicked');
 		});
+
+		$('#brush_button').on('click', function(event){
+			event.stopPropagation;
+			console.log(' brush!');
+			g_ToolBarManager.setBrushEnable(true);
+			// g_InObjManager.extractGlobalRectOfInObj();
+      	    // g_ElementDetector.detectElement();
+		})
 
 		$('#textselect_button').on('click', function(){
 			//TODO if no inobj

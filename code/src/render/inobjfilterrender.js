@@ -118,11 +118,15 @@ function InObjFilterRender(iId, inObj, objectGroupManager, propertyManager){
 	    	containerSvg = d3.select('#addondiv')
 	    					 .append('div')
 	    					 .attr('id', 'legend' + this.m_iId)
-	    					 .style('position', 'absolute')	 					 
+	    					 .style('position', 'absolute')	 	
+	    					 .style('z-index', 105)				 
 			                .style('left', Number(lefttop.left) + 20)
 			                .style('top', Number(lefttop.top))
 			                .attr('width', 200)
 			                .attr('height', 500)
+			                .on('mousedown', function(){
+			                	event.stopPropagation();
+			                })
 	    }
 
 	    self.m_PropertyPanelRender.drawColorLegend(containerSvg, liGroupId);	  
@@ -141,11 +145,15 @@ function InObjFilterRender(iId, inObj, objectGroupManager, propertyManager){
 	    	containerSvg = d3.select('#addondiv')
 	    					 .append('div')
 	    					 .attr('id', 'legend' + this.m_iId)
+	    					 .style('z-index', 105)				 
 	    					 .style('position', 'absolute')	 					 
 			                .style('left', Number(lefttop.left) + 20)
 			                .style('top', Number(lefttop.top))
 			                .attr('width', 200)
 			                .attr('height', 500)
+			                .on('mousedown', function(){
+			                	event.stopPropagation();
+			                })
 	    }
 
 	    self.m_PropertyPanelRender.drawShapeLegend(containerSvg, liGroupId);
@@ -166,11 +174,15 @@ function InObjFilterRender(iId, inObj, objectGroupManager, propertyManager){
 	    	containerSvg = d3.select('#addondiv')
 	    					 .append('div')
 	    					 .attr('id', 'legend' + this.m_iId)
+	    					 .style('z-index', 105)				 
 	    					 .style('position', 'absolute')	 					 
 			                .style('left', Number(lefttop.left) + 20)
 			                .style('top', Number(lefttop.top))
 			                .attr('width', 200)
 			                .attr('height', 500)
+			                .on('mousedown', function(){
+			                	event.stopPropagation();
+			                })
 	    }
 
 	  	var iconLegendSVG = d3.select('#iconlegend_' + this.m_iId);

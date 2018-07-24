@@ -17,7 +17,9 @@ function InObjManager(){
 	}
 
 	Info.extractGlobalRectOfInObj = function(iId){
+
 		var inObj = this.m_mapIdInObj[this.addInObj()];
+		this.m_CurrentObjId = inObj.getId();
 		if(inObj == undefined)
 			return;
 		inObj.finishSelectRect_GlobalAdaptive();

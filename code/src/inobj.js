@@ -26,6 +26,10 @@ function InObj(iId, bMask, maskType){
  		this.m_iAnnotationNextId = 0;
 	}
 
+	Info.getId = function(){
+		return this.m_iId;
+	}
+
 //~~~~~~~~~ API for drag selection rect~~~~~~~~~~~~//
  	//dragging the selection rect
  	Info.dragSelectRect = function(rect){
@@ -145,10 +149,19 @@ function InObj(iId, bMask, maskType){
 	 //    		{left: Number(boundaryBox.x) + Number(boundaryBox.width), top: Number(boundaryBox.y)});
 		// }
 
+		layoutAnalysis = 'v-linear'
 		switch(layoutAnalysis){
-			case 'linear':
-				g_ToolBarManager.setLinearBrush();
-				console.log(' Linear Enhancement ');			
+			case 'h-linear':
+				console.log('H Linear Enhancement ');
+				// g_ToolBarManager.setHLineupEnable(true);
+				break
+			case 'v-linear':		
+				console.log('V Linear Enhancement ');	
+				g_ToolBarManager.setBrushType('v-linear')
+				// g_ToolBarManager.setVLineupEnable(true);
+				break
+			case 'square':
+				console.log(' square Enhancement ');
 				break
 			case 'arc':
 				console.log(' arc Enhancement ');

@@ -245,7 +245,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 
 	Info.drawColorLegend = function(containerSvg, liGroupId){
 
-		console.log(' draw color legend ', iGroupId);
+		console.log(' draw color legend !!! ', iGroupId);
 
 		var colorLegendSvg = containerSvg.append('svg')
 										.attr('id', 'colorlegend_' + this.m_iId)
@@ -385,7 +385,9 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 	   		 .style('fill', function(d, i){
 	   		 	return d
 	   		 })
-	   		 .on('click', function(d, i){
+	   		 .on('mousedown', function(d, i){
+
+	   		 	console.log(" COlor LEGEND Click ! ");
 	   		 	var clicked = d3.select(this).attr('colorclicked');
 	   		 	if(clicked == 'yes'){
 	   		 		clicked = 'no';
@@ -442,6 +444,8 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 				// self.updateBoxPlots(propertyId, adjustExtentRange);
 				//notify the mask
 				self.m_InObj.updateFilteredEleId(liFilterEleId);
+
+  			    event.stopPropagation();
 	   		 })
 
 	   	recttext.append('text')
@@ -582,7 +586,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 
 	   	d3.selectAll('.shapecell')	   		 
 	   		 .attr('shapeclicked', 'yes')
-	   		 .on('click', function(d, i){
+	   		 .on('mousedown', function(d, i){
 	   		 	var clicked = d3.select(this).attr('shapeclicked');
 	   		 	if(clicked == 'yes'){
 	   		 		clicked = 'no';
