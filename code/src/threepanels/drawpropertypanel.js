@@ -3036,7 +3036,6 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		.css('left', labelDivWidth + labelDisGap + maginwidth/2. + 'px');
 		prodiv.append(disDiv);
 
-	
 		// var boxplotLeftText = '', boxplotRightText = '';
 		var selectRange_temp = self.m_mapProIdSelect[iGroupId + '-' + iPId];
 		var leftBrushSelect = -1, rightBrushSelect = -1;
@@ -3211,7 +3210,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		   svg.selectAll('.filter_barrect')
 			   .attr('fill', 'gray');
 		}
-		
+
 		//add brush
 		var brush = d3.svg.brush()
 		.x(xScale)
@@ -3241,41 +3240,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		var markerGroup = gBrush.append('g')
 		.attr('class', 'marker_group');
 
-		// var enter = markerGroup.enter().append('g')
-		// 	.attr('class', 'marker_group');
-
 		var font = '12px arial';
-		// //left
-		// var leftMarker = markerGroup.append('g')
-		// .attr('class', 'marker_left')
-		// .attr('transform', function(){		
-		// 	var left = d3.select('#' + propertyDivId + ' .extent').attr('x');
-		// 	var top = yAxisLength/2.;
-		// 	return 'translate(' + left + ',' +  top + ')';
-		// });
-
-		// leftMarker.append('text')
-		// .attr('class', 'text-center')
-		// .style('visibility', 'hidden')
-		// .style('font', font)
-		// .style('color', 'black');
-
-		// //right
-		// var rightMarker = markerGroup.append('g')
-		// .attr('class', 'marker_right hidden')
-		// .attr('transform', function(){
-		// 	var left = parseInt(d3.select('#' + propertyDivId  + ' .extent').attr('x'));
-		// 	left += parseInt(d3.select('#' + propertyDivId  + ' .extent').attr('width'));
-		// 	var top = yAxisLength/2.;		
-		// 	return 'translate(' + left + ',' +  top + ')';
-		// });
-
-		// rightMarker.append('text')
-		// .style('visibility', 'hidden')
-		// .attr('class', 'text-center')
-		// .style('font', font)
-		// .style('color', 'black')
-
 		
 		function brushended() {
 			var extentRange = brush.extent();
@@ -3505,7 +3470,7 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 
 	//update the highlighed filtered rects
 	Info.updateFilteredRects = function(){
-		// //console.log(" xxx !! ");
+		console.log(" xxx !! ");
 		//remove the filter rect
 		// $(".filter_barrect").remove();
 		var self = this;
@@ -3534,6 +3499,8 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 		//for each property, add the filter_bar rects
 		var mapPropertyIdFilterIdsDistri = propertyBag.getPropertyIdFilteredEleDis();
 
+		console.log(' &&&& filter Ele Id Number = ', mapPropertyIdFilterIdsDistri);
+
 		for(var iPId in mapPropertyIdFilterIdsDistri){
 		
 			var liDistri = mapPropertyIdFilterIdsDistri[iPId];
@@ -3541,6 +3508,8 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 
 			var xScale = propertyBag.getXScaleOfPropertyId(iPId);
 			var yScale = propertyBag.getYScaleOfPropertyId(iPId);
+
+			console.log(" iPI ", iPId, xScale);
 		
 			var xAxisLength = $('#' + 'p_' + self.m_iId + 'dis_' + iPId +' svg').width(); //self.m_iId + 'dis_' + iPId;
 			var yAxisLength = $('#' + 'p_' + self.m_iId + 'dis_' + iPId +' svg').height();
@@ -3563,8 +3532,9 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 				yAxisExpandPad = 10;
 			}
 				
-			if(xScale == undefined)
-				return;
+			if(xScale == undefined){
+				continue;
+			}
 			
 			var xScaleDomain = xScale.domain();
 			// xScale.range([0, xAxisLength]);
@@ -3610,6 +3580,8 @@ function PropertiesPanelRender(iId, inObj, objectGroupManager){
 			// var barWidth = xAxisLength/liDistri.length;
 			// var barRatio = 0.95;//0.8;
 			// var baseLineY = yAxisLength;
+
+			console.log(" clear rects ", '#' + 'p_' + self.m_iId + 'dis_' + iPId);
 
 			
 			d3.selectAll('#' + 'p_' + self.m_iId + 'dis_' + iPId + ' .filter_barrect')
